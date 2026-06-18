@@ -1,6 +1,7 @@
-package com.daniela.creditflow.infrastructure.persistence.entity;
+package com.daniela.creditflow.infrastructure.persistence.customer.entity;
 
 import com.daniela.creditflow.domain.customer.model.CustomerStatus;
+import com.daniela.creditflow.infrastructure.persistence.credity.entity.CreditEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
