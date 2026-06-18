@@ -1,0 +1,56 @@
+package com.daniela.creditflow.application.customer.usecase;
+
+import com.daniela.creditflow.application.customer.CustomerValidationService;
+import com.daniela.creditflow.application.customer.dto.input.UpdateCustomerInput;
+import com.daniela.creditflow.application.customer.dto.output.CustomerOutput;
+import com.daniela.creditflow.application.customer.mapper.CustomerDataMapper;
+import com.daniela.creditflow.application.customer.mapper.CustomerOutputMapper;
+import com.daniela.creditflow.domain.customer.model.Customer;
+import com.daniela.creditflow.domain.customer.model.CustomerData;
+import com.daniela.creditflow.domain.customer.repository.CustomerRepository;
+import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
+import org.springframework.stereotype.Service;
+
+@Service
+public class UpdateCustomerUseCase {
+
+    private final CustomerRepository customerRepository;
+    private final CustomerValidationService customerValidationService;
+    private final CustomerOutputMapper customerOutputMapper;
+    private final CustomerDataMapper customerDataMapper;
+
+    public UpdateCustomerUseCase(CustomerRepository customerRepository,
+                                 CustomerValidationService customerValidationService,
+                                 CustomerOutputMapper customerOutputMapper,
+                                 CustomerDataMapper customerDataMapper) {
+
+        this.customerRepository = customerRepository;
+        this.customerValidationService = customerValidationService;
+        this.customerOutputMapper = customerOutputMapper;
+        this.customerDataMapper = customerDataMapper;
+    }
+
+    public CustomerOutput execute(UpdateCustomerInput input) {
+
+        CustomerData customerData = customerDataMapper.from(input);
+
+        CustomerId customerId = new CustomerId(input.id());
+
+        Customer customer =
+                customerValidationService
+                        .findCustomer(customerId);
+
+        customerValidationService
+                .validateForUpdate(
+                        customerId,
+                        customerData.cpf(),
+                        customerData.email()
+                );
+
+        customer.update(customerData);
+
+        return customerOutputMapper.from(
+                customerRepository.save(customer)
+        );
+    }
+}
