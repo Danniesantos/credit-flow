@@ -1,0 +1,2 @@
+ALTER TABLE credits
+ALTER COLUMN payment_method SET NOT NULL;
