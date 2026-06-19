@@ -1,6 +1,6 @@
 package com.daniela.creditflow.application.customer.usecase;
 
-import com.daniela.creditflow.application.customer.CustomerService;
+import com.daniela.creditflow.application.customer.service.CustomerService;
 import com.daniela.creditflow.application.customer.dto.output.CustomerOutput;
 import com.daniela.creditflow.application.customer.mapper.CustomerOutputMapper;
 import com.daniela.creditflow.domain.customer.model.Customer;
