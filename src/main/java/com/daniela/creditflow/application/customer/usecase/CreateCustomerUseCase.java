@@ -14,17 +14,17 @@ import org.springframework.stereotype.Service;
 public class CreateCustomerUseCase {
 
     private final CustomerRepository customerRepository;
-    private final CustomerService customerValidationService;
+    private final CustomerService customerService;
     private final CustomerOutputMapper customerOutputMapper;
     private final CustomerDataMapper customerDataMapper;
 
     public CreateCustomerUseCase(CustomerRepository customerRepository,
-                                 CustomerService customerValidationService,
+                                 CustomerService customerService,
                                  CustomerOutputMapper customerOutputMapper,
                                  CustomerDataMapper customerDataMapper) {
 
         this.customerRepository = customerRepository;
-        this.customerValidationService = customerValidationService;
+        this.customerService = customerService;
         this.customerOutputMapper = customerOutputMapper;
         this.customerDataMapper = customerDataMapper;
     }
@@ -33,7 +33,7 @@ public class CreateCustomerUseCase {
 
         CustomerData customerData = customerDataMapper.from(input);
 
-        customerValidationService.validateForCreate(
+        customerService.validateForCreate(
                 customerData.cpf(),
                 customerData.email()
         );

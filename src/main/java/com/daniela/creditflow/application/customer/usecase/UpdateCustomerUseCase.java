@@ -15,17 +15,17 @@ import org.springframework.stereotype.Service;
 public class UpdateCustomerUseCase {
 
     private final CustomerRepository customerRepository;
-    private final CustomerService customerValidationService;
+    private final CustomerService customerService;
     private final CustomerOutputMapper customerOutputMapper;
     private final CustomerDataMapper customerDataMapper;
 
     public UpdateCustomerUseCase(CustomerRepository customerRepository,
-                                 CustomerService customerValidationService,
+                                 CustomerService customerService,
                                  CustomerOutputMapper customerOutputMapper,
                                  CustomerDataMapper customerDataMapper) {
 
         this.customerRepository = customerRepository;
-        this.customerValidationService = customerValidationService;
+        this.customerService = customerService;
         this.customerOutputMapper = customerOutputMapper;
         this.customerDataMapper = customerDataMapper;
     }
@@ -37,10 +37,10 @@ public class UpdateCustomerUseCase {
         CustomerId customerId = new CustomerId(input.id());
 
         Customer customer =
-                customerValidationService
+                customerService
                         .findCustomer(customerId);
 
-        customerValidationService
+        customerService
                 .validateForUpdate(
                         customerId,
                         customerData.cpf(),

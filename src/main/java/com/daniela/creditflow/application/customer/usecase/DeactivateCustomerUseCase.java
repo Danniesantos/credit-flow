@@ -10,22 +10,21 @@ import org.springframework.stereotype.Service;
 public class DeactivateCustomerUseCase {
 
     private final CustomerRepository customerRepository;
-    private final CustomerService customerValidationService;
+    private final CustomerService customerService;
 
-    public DeactivateCustomerUseCase(
-            CustomerRepository customerRepository,
-            CustomerService customerValidation) {
+    public DeactivateCustomerUseCase(CustomerRepository customerRepository,
+                                     CustomerService customerService) {
 
         this.customerRepository = customerRepository;
-        this.customerValidationService = customerValidation;
+        this.customerService = customerService;
     }
 
     public void execute(CustomerId customerId) {
 
-        Customer customer = customerValidationService
+        Customer customer = customerService
                 .findCustomer(customerId);
 
-        customerValidationService
+        customerService
                 .validateNoOpenCredits(customerId);
 
         customer.deactivate();
