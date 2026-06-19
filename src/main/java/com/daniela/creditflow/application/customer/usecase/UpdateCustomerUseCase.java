@@ -1,6 +1,6 @@
 package com.daniela.creditflow.application.customer.usecase;
 
-import com.daniela.creditflow.application.customer.CustomerValidationService;
+import com.daniela.creditflow.application.customer.CustomerService;
 import com.daniela.creditflow.application.customer.dto.input.UpdateCustomerInput;
 import com.daniela.creditflow.application.customer.dto.output.CustomerOutput;
 import com.daniela.creditflow.application.customer.mapper.CustomerDataMapper;
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Service;
 public class UpdateCustomerUseCase {
 
     private final CustomerRepository customerRepository;
-    private final CustomerValidationService customerValidationService;
+    private final CustomerService customerValidationService;
     private final CustomerOutputMapper customerOutputMapper;
     private final CustomerDataMapper customerDataMapper;
 
     public UpdateCustomerUseCase(CustomerRepository customerRepository,
-                                 CustomerValidationService customerValidationService,
+                                 CustomerService customerValidationService,
                                  CustomerOutputMapper customerOutputMapper,
                                  CustomerDataMapper customerDataMapper) {
 
