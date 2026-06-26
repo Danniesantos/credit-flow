@@ -1,12 +1,12 @@
 package com.daniela.creditflow.application.customer.service;
 
-import com.daniela.creditflow.application.exceptions.CustomerHasOpenCreditsException;
-import com.daniela.creditflow.application.exceptions.CustomerNotFoundException;
+import com.daniela.creditflow.domain.customer.exception.CpfAlreadyExistsException;
+import com.daniela.creditflow.domain.customer.exception.CustomerHasOpenCreditsException;
+import com.daniela.creditflow.domain.customer.exception.CustomerNotFoundException;
 import com.daniela.creditflow.domain.credit.repository.CreditRepository;
+import com.daniela.creditflow.domain.customer.exception.EmailAlreadyExistsException;
 import com.daniela.creditflow.domain.customer.model.Customer;
 import com.daniela.creditflow.domain.customer.repository.CustomerRepository;
-import com.daniela.creditflow.domain.exceptions.CpfAlreadyExistsException;
-import com.daniela.creditflow.domain.exceptions.EmailAlreadyExistsException;
 import com.daniela.creditflow.domain.customer.valueObject.CPF;
 import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
 import com.daniela.creditflow.domain.customer.valueObject.Email;
