@@ -4,7 +4,7 @@ import com.daniela.creditflow.application.credit.calculation.CreditCalculationRe
 import com.daniela.creditflow.domain.valueObject.InterestRate;
 import com.daniela.creditflow.domain.valueObject.Money;
 
-public abstract class BaseCreditStrategy implements InterestCalculationStrategy {
+public abstract class BaseCreditStrategy implements CreditInterestCalculationStrategy {
 
     protected abstract InterestRate rate();
 
