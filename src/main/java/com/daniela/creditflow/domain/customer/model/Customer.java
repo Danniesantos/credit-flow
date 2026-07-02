@@ -1,6 +1,6 @@
 package com.daniela.creditflow.domain.customer.model;
 
-import com.daniela.creditflow.application.exceptions.CustomerAlreadyInactiveException;
+import com.daniela.creditflow.domain.customer.exception.CustomerAlreadyInactiveException;
 import com.daniela.creditflow.domain.customer.valueObject.CPF;
 import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
 import com.daniela.creditflow.domain.customer.valueObject.Email;
