@@ -21,7 +21,7 @@ public class CreditCalculationService {
             Integer installments) {
 
         return strategyFactory
-                .create(creditType)
+                .getStrategy(creditType)
                 .calculate(
                         requestedAmount,
                         installments);
