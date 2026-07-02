@@ -1,0 +1,22 @@
+package com.daniela.creditflow.infrastructure.web.response;
+
+import com.daniela.creditflow.domain.customer.model.CustomerStatus;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.UUID;
+
+public record CustomerResponse(UUID id,
+                               String name,
+                               String cpf,
+                               String email,
+                               LocalDate dateOfBirth,
+                               String phoneNumber,
+                               BigDecimal monthlyIncome,
+                               Integer creditScore,
+                               CustomerStatus status,
+                               Instant createdAt,
+                               Instant updatedAt) {
+
+}
