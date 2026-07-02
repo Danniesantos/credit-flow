@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
 
     private static final String PATH = "path";
     private static final String TIMESTAMP = "timestamp";
-    
+
     @ExceptionHandler(DomainException.class)
     public ProblemDetail handleDomainException(
             DomainException ex,
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
                 request
         );
     }
-
+    
     @ExceptionHandler({
             CpfAlreadyExistsException.class,
             EmailAlreadyExistsException.class,
@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
                 request
         );
     }
-
+    
     @ExceptionHandler({
             CustomerNotFoundException.class,
             CreditNotFoundException.class
@@ -86,7 +86,7 @@ public class GlobalExceptionHandler {
                 request
         );
     }
-
+    
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
 
@@ -125,7 +125,7 @@ public class GlobalExceptionHandler {
                 request
         );
     }
-
+    
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ProblemDetail handleMethodNotAllowed(
             HttpRequestMethodNotSupportedException ex,
@@ -138,7 +138,7 @@ public class GlobalExceptionHandler {
                 request
         );
     }
-
+    
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGeneric(Exception ex, HttpServletRequest request) {
 
@@ -149,7 +149,7 @@ public class GlobalExceptionHandler {
                 request
         );
     }
-
+    
     private ProblemDetail buildProblem(
             HttpStatus status,
             String title,
