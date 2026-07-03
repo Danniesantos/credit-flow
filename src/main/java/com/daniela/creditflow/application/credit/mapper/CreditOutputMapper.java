@@ -5,8 +5,11 @@ import com.daniela.creditflow.application.credit.dto.output.RequestCreditOutput;
 import com.daniela.creditflow.application.installment.dto.output.InstallmentOutput;
 import com.daniela.creditflow.application.installment.mapper.InstallmentOutputMapper;
 import com.daniela.creditflow.domain.credit.model.Credit;
+import com.daniela.creditflow.domain.valueObject.InterestRate;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Component
@@ -24,7 +27,7 @@ public class CreditOutputMapper {
                 credit.getCustomerId().value(),
                 credit.getRequestedAmount().value(),
                 credit.getInstallments().size(),
-                credit.getInterestRate().displayValue(),
+                formatRate(credit.getInterestRate()),
                 credit.getCreditType(),
                 credit.getPaymentMethod(),
                 credit.getStatus(),
@@ -45,7 +48,7 @@ public class CreditOutputMapper {
                 credit.getId().value(),
                 credit.getCustomerId().value(),
                 credit.getRequestedAmount().value(),
-                credit.getInterestRate().displayValue(),
+                formatRate(credit.getInterestRate()),
                 credit.getCreditType(),
                 credit.getPaymentMethod(),
                 credit.getStatus(),
@@ -53,5 +56,10 @@ public class CreditOutputMapper {
                 credit.getCreatedAt(),
                 credit.getUpdatedAt()
         );
+    }
+
+    private BigDecimal formatRate(InterestRate rate) {
+        return rate.percentage()
+                .setScale(2, RoundingMode.HALF_UP);
     }
 }
