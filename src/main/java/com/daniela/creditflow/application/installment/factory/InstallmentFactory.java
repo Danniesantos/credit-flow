@@ -1,6 +1,7 @@
 package com.daniela.creditflow.application.installment.factory;
 
 import com.daniela.creditflow.application.installment.policy.DueDatePolicy;
+import com.daniela.creditflow.domain.credit.valueObject.CreditId;
 import com.daniela.creditflow.domain.installment.model.Installment;
 import com.daniela.creditflow.domain.valueObject.Money;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,8 @@ import java.util.List;
 @Component
 public class InstallmentFactory {
 
-    public List<Installment> createInstallment(
+    public List<Installment> createInstallments(
+            CreditId creditId,
             Integer quantity,
             Money totalAmount,
             LocalDate referenceDate,
@@ -36,19 +38,21 @@ public class InstallmentFactory {
             if (i == quantity) {
                 value = totalAmount.value()
                         .subtract(
-                                installmentValue
-                                        .multiply(
-                                                BigDecimal.valueOf(quantity - 1)
-                                        )
+                                installmentValue.multiply(
+                                        BigDecimal.valueOf(quantity - 1)
+                                )
                         );
             }
-            LocalDate dueDate = policy
-                    .calculate(i, referenceDate);
 
-            installments.add(new Installment(
+            LocalDate dueDate =
+                    policy.calculate(i, referenceDate);
+
+            installments.add(
+                    new Installment(
                             i,
                             new Money(value),
-                            dueDate
+                            dueDate,
+                            creditId
                     )
             );
         }
