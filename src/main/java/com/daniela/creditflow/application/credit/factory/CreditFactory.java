@@ -3,6 +3,7 @@ package com.daniela.creditflow.application.credit.factory;
 import com.daniela.creditflow.application.credit.calculation.CreditCalculationResult;
 import com.daniela.creditflow.application.credit.calculation.CreditCalculationService;
 import com.daniela.creditflow.application.credit.dto.input.RequestCreditInput;
+import com.daniela.creditflow.application.installment.factory.DueDatePolicy;
 import com.daniela.creditflow.application.installment.factory.InstallmentFactory;
 import com.daniela.creditflow.domain.credit.model.Credit;
 import com.daniela.creditflow.domain.credit.model.CreditStatus;
@@ -12,6 +13,7 @@ import com.daniela.creditflow.domain.installment.model.Installment;
 import com.daniela.creditflow.domain.valueObject.Money;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -19,12 +21,15 @@ public class CreditFactory {
 
     private final CreditCalculationService calculationService;
     private final InstallmentFactory installmentFactory;
+    private final DueDatePolicy dueDatePolicy;
 
     public CreditFactory(CreditCalculationService calculationService,
-                         InstallmentFactory installmentFactory) {
+                         InstallmentFactory installmentFactory,
+                         DueDatePolicy dueDatePolicy) {
 
         this.calculationService = calculationService;
         this.installmentFactory = installmentFactory;
+        this.dueDatePolicy = dueDatePolicy;
     }
 
     public Credit create(RequestCreditInput input) {
@@ -43,11 +48,15 @@ public class CreditFactory {
                         requestedAmount,
                         input.installments());
 
+        LocalDate referenceDate = LocalDate.now();
+
         List<Installment> installments =
-                installmentFactory.create(
-                        creditId,
+                installmentFactory.createInstallment(
                         input.installments(),
-                        calculation.totalAmount());
+                        calculation.totalAmount(),
+                        referenceDate,
+                        dueDatePolicy
+                );
 
         return new Credit(
                 creditId,
