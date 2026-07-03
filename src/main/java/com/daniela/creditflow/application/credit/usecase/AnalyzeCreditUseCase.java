@@ -12,6 +12,8 @@ import com.daniela.creditflow.domain.customer.repository.CustomerRepository;
 import com.daniela.creditflow.domain.exceptions.CreditNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class AnalyzeCreditUseCase {
 
@@ -28,8 +30,9 @@ public class AnalyzeCreditUseCase {
         this.creditAnalysisChain = creditAnalysisChain;
     }
 
-    public AnalyzeCreditOutput execute(CreditId creditId) {
+    public AnalyzeCreditOutput execute(UUID id) {
 
+        CreditId creditId = new CreditId(id);
         Credit credit =
                 creditRepository.findById(creditId)
                         .orElseThrow(() -> new CreditNotFoundException(creditId));
