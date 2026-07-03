@@ -1,9 +1,10 @@
 package com.daniela.creditflow.domain.credit.model;
 
+import com.daniela.creditflow.domain.credit.valueObject.CreditId;
 import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
 import com.daniela.creditflow.domain.exceptions.DomainException;
+import com.daniela.creditflow.domain.exceptions.InstallmentNotFoundException;
 import com.daniela.creditflow.domain.installment.model.Installment;
-import com.daniela.creditflow.domain.valueObject.CreditId;
 import com.daniela.creditflow.domain.valueObject.InstallmentId;
 import com.daniela.creditflow.domain.valueObject.InterestRate;
 import com.daniela.creditflow.domain.valueObject.Money;
@@ -17,12 +18,12 @@ import java.util.Objects;
 public class Credit {
 
     private final CreditId id;
-    private CustomerId customerId;
-    private Money requestedAmount;
+    private final CustomerId customerId;
+    private final Money requestedAmount;
     private List<Installment> installments;
-    private CreditType creditType;
-    private InterestRate interestRate;
-    private PaymentMethod paymentMethod;
+    private final CreditType creditType;
+    private final InterestRate interestRate;
+    private final PaymentMethod paymentMethod;
     private CreditStatus status;
     private final Instant createdAt;
     private Instant updatedAt;
@@ -134,7 +135,7 @@ public class Credit {
                 .filter(i -> i.getId().equals(installmentId))
                 .findFirst()
                 .orElseThrow(() ->
-                        new DomainException(
+                        new InstallmentNotFoundException(
                                 "Installment not found"));
     }
 
