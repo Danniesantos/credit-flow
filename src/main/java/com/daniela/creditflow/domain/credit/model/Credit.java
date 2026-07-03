@@ -135,8 +135,7 @@ public class Credit {
                 .filter(i -> i.getId().equals(installmentId))
                 .findFirst()
                 .orElseThrow(() ->
-                        new InstallmentNotFoundException(
-                                "Installment not found"));
+                        new InstallmentNotFoundException(installmentId));
     }
 
     private void validateRequestedAmount() {
