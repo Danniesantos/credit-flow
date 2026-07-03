@@ -7,7 +7,6 @@ import com.daniela.creditflow.infrastructure.persistence.customer.entity.Custome
 import com.daniela.creditflow.infrastructure.persistence.installment.entity.InstallmentEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,7 +14,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -80,7 +78,6 @@ public class CreditEntity {
     public CreditEntity(UUID id,
                         CustomerEntity customer,
                         BigDecimal requestedAmount,
-                        List<InstallmentEntity> installments,
                         CreditType creditType,
                         BigDecimal interestRate,
                         PaymentMethod paymentMethod,
@@ -91,15 +88,15 @@ public class CreditEntity {
         this.id = id;
         this.customer = customer;
         this.requestedAmount = requestedAmount;
-        this.installments =
-                Objects.requireNonNullElseGet(
-                        installments,
-                        ArrayList::new);
-        this.interestRate = interestRate;
         this.creditType = creditType;
+        this.interestRate = interestRate;
         this.paymentMethod = paymentMethod;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public void addInstallment(InstallmentEntity installment) {
+        installments.add(installment);
     }
 }
