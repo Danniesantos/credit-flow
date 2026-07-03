@@ -3,7 +3,7 @@ package com.daniela.creditflow.application.credit.factory;
 import com.daniela.creditflow.application.credit.calculation.CreditCalculationResult;
 import com.daniela.creditflow.application.credit.calculation.CreditCalculationService;
 import com.daniela.creditflow.application.credit.dto.input.RequestCreditInput;
-import com.daniela.creditflow.application.installment.factory.DueDatePolicy;
+import com.daniela.creditflow.application.installment.policy.DueDatePolicy;
 import com.daniela.creditflow.application.installment.factory.InstallmentFactory;
 import com.daniela.creditflow.domain.credit.model.Credit;
 import com.daniela.creditflow.domain.credit.model.CreditStatus;
