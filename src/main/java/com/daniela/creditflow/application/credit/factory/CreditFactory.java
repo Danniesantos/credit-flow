@@ -51,7 +51,8 @@ public class CreditFactory {
         LocalDate referenceDate = LocalDate.now();
 
         List<Installment> installments =
-                installmentFactory.createInstallment(
+                installmentFactory.createInstallments(
+                        creditId,
                         input.installments(),
                         calculation.totalAmount(),
                         referenceDate,
