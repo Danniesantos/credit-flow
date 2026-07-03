@@ -107,6 +107,10 @@ public class CustomerEntity {
         this.updatedAt = updatedAt;
     }
 
+    public CustomerEntity(UUID id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof CustomerEntity customer)) return false;
