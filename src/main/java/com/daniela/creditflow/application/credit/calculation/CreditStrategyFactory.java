@@ -1,11 +1,10 @@
 package com.daniela.creditflow.application.credit.calculation;
 
 import com.daniela.creditflow.application.credit.calculation.strategy.BusinessCreditStrategy;
-import com.daniela.creditflow.application.credit.calculation.strategy.InterestCalculationStrategy;
+import com.daniela.creditflow.application.credit.calculation.strategy.CreditInterestCalculationStrategy;
 import com.daniela.creditflow.application.credit.calculation.strategy.PayrollCreditStrategy;
 import com.daniela.creditflow.application.credit.calculation.strategy.PersonalCreditStrategy;
 import com.daniela.creditflow.domain.credit.model.CreditType;
-import com.daniela.creditflow.domain.exceptions.DomainException;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -14,7 +13,7 @@ import java.util.Map;
 public class CreditStrategyFactory {
 
     private final Map<CreditType,
-            InterestCalculationStrategy> strategies;
+            CreditInterestCalculationStrategy> strategies;
 
     public CreditStrategyFactory(
             PersonalCreditStrategy personal,
@@ -28,10 +27,10 @@ public class CreditStrategyFactory {
         );
     }
 
-    public InterestCalculationStrategy getStrategy(
+    public CreditInterestCalculationStrategy getStrategy(
             CreditType type) {
 
-        InterestCalculationStrategy strategy =
+        CreditInterestCalculationStrategy strategy =
                 strategies.get(type);
 
         if (strategy == null) {
