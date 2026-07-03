@@ -18,7 +18,7 @@ public class CreditOutputMapper {
         this.installmentMapper = installmentMapper;
     }
 
-    public RequestCreditOutput toRequestOutput(Credit credit) {
+    public RequestCreditOutput toCreditOutput(Credit credit) {
         return new RequestCreditOutput(
                 credit.getId().value(),
                 credit.getCustomerId().value(),
