@@ -2,6 +2,7 @@ package com.daniela.creditflow.application.customer.mapper;
 
 import com.daniela.creditflow.application.customer.dto.input.CreateCustomerInput;
 import com.daniela.creditflow.application.customer.dto.input.UpdateCustomerInput;
+import com.daniela.creditflow.domain.credit.valueObject.CreditScore;
 import com.daniela.creditflow.domain.customer.valueObject.CPF;
 import com.daniela.creditflow.domain.customer.model.CustomerData;
 import com.daniela.creditflow.domain.customer.valueObject.Email;
