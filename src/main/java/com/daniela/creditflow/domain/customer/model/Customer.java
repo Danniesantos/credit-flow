@@ -1,10 +1,8 @@
 package com.daniela.creditflow.domain.customer.model;
 
+import com.daniela.creditflow.domain.credit.valueObject.CreditScore;
 import com.daniela.creditflow.domain.customer.exception.CustomerAlreadyInactiveException;
-import com.daniela.creditflow.domain.customer.valueObject.CPF;
-import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
-import com.daniela.creditflow.domain.customer.valueObject.Email;
-import com.daniela.creditflow.domain.customer.valueObject.PhoneNumber;
+import com.daniela.creditflow.domain.customer.valueObject.*;
 import com.daniela.creditflow.domain.exceptions.DomainException;
 import com.daniela.creditflow.domain.valueObject.*;
 import lombok.Getter;
