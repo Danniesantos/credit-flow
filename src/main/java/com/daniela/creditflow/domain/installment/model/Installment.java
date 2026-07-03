@@ -1,5 +1,6 @@
 package com.daniela.creditflow.domain.installment.model;
 
+import com.daniela.creditflow.domain.credit.valueObject.CreditId;
 import com.daniela.creditflow.domain.exceptions.DomainException;
 import com.daniela.creditflow.domain.valueObject.InstallmentId;
 import com.daniela.creditflow.domain.valueObject.Money;
@@ -16,30 +17,36 @@ public class Installment {
     private final Money amount;
     private final LocalDate dueDate;
     private InstallmentStatus status;
+    private CreditId creditId;
 
     public Installment(Integer number,
                        Money amount,
-                       LocalDate dueDate) {
+                       LocalDate dueDate,
+                       CreditId creditId) {
 
         this(
                 new InstallmentId(),
                 number,
                 amount,
                 dueDate,
-                InstallmentStatus.PENDING);
+                InstallmentStatus.PENDING,
+                creditId
+        );
     }
 
     public Installment(InstallmentId id,
                        Integer number,
                        Money amount,
                        LocalDate dueDate,
-                       InstallmentStatus status) {
+                       InstallmentStatus status,
+                       CreditId creditId) {
 
         this.id = Objects.requireNonNull(id);
         this.number = Objects.requireNonNull(number);
         this.amount = Objects.requireNonNull(amount);
         this.dueDate = Objects.requireNonNull(dueDate);
         this.status = Objects.requireNonNull(status);
+        this.creditId = Objects.requireNonNull(creditId);
 
         validateNumber();
     }
