@@ -8,7 +8,6 @@ import com.daniela.creditflow.domain.valueObject.InterestRate;
 import com.daniela.creditflow.domain.valueObject.Money;
 import com.daniela.creditflow.infrastructure.persistence.credity.entity.CreditEntity;
 import com.daniela.creditflow.infrastructure.persistence.customer.entity.CustomerEntity;
-import com.daniela.creditflow.infrastructure.persistence.installment.entity.InstallmentEntity;
 import com.daniela.creditflow.infrastructure.persistence.installment.mapper.InstallmentMapper;
 import org.springframework.stereotype.Component;
 
@@ -28,24 +27,25 @@ public class CreditMapper {
                 new CustomerEntity(
                         credit.getCustomerId().value());
 
-        List<InstallmentEntity> installments =
-                credit.getInstallments()
-                        .stream()
-                        .map(installmentMapper::toEntity)
-                        .toList();
+        CreditEntity creditEntity =
+                new CreditEntity(
+                        credit.getId().value(),
+                        customer,
+                        credit.getRequestedAmount().value(),
+                        credit.getCreditType(),
+                        credit.getInterestRate().value(),
+                        credit.getPaymentMethod(),
+                        credit.getStatus(),
+                        credit.getCreatedAt(),
+                        credit.getUpdatedAt()
+                );
 
-        return new CreditEntity(
-                credit.getId().value(),
-                customer,
-                credit.getRequestedAmount().value(),
-                installments,
-                credit.getCreditType(),
-                credit.getInterestRate().value(),
-                credit.getPaymentMethod(),
-                credit.getStatus(),
-                credit.getCreatedAt(),
-                credit.getUpdatedAt()
-        );
+        credit.getInstallments()
+                .stream()
+                .map(i -> installmentMapper.toEntity(i, creditEntity))
+                .forEach(creditEntity::addInstallment);
+
+        return creditEntity;
     }
 
     public Credit toDomain(CreditEntity entity) {
