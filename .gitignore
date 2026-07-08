@@ -12,6 +12,9 @@
 # Generated files
 .idea/**/contentModel.xml
 
+# Environment
+.env
+
 # Sensitive or high-churn files
 .idea/**/dataSources/
 .idea/**/dataSources.ids
@@ -152,3 +155,4 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
