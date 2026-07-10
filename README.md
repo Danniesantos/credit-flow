@@ -320,4 +320,4 @@ Current endpoints:
 **Daniela Santos**
 
 - GitHub: https://github.com/Danniesantos
-- LinkedIn: https://www.linkedin.com/in/daniela-santos-49b434222/
+- LinkedIn: [https://www.linkedin.com/in/daniela-santos-49b434222/](https://www.linkedin.com/in/danielarobertasantos/)
