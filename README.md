@@ -7,7 +7,7 @@
 ![Flyway](https://img.shields.io/badge/Flyway-Database_Migrations-CC0200)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
-A backend application for credit request and analysis management built with Java and Spring Boot, following Clean Architecture principles and Domain-Driven Design (DDD).
+A backend application for credit request and management built with Java and Spring Boot, following Clean Architecture and Domain-Driven Design (DDD) principles.
 
 > 🚧 This project is currently under development.
 
@@ -15,11 +15,11 @@ A backend application for credit request and analysis management built with Java
 
 # About
 
-Credit Flow is a study project designed to simulate a real-world backend application for managing credit requests.
+Credit Flow is a study project that simulates a real-world credit management system.
 
-The project focuses on applying software engineering best practices rather than simply implementing CRUD operations.
+The main goal is to apply software engineering best practices while modeling business rules through a rich domain model instead of relying on an anemic architecture.
 
-Main concepts applied:
+Concepts applied in this project:
 
 - Clean Architecture
 - Domain-Driven Design (DDD)
@@ -67,14 +67,14 @@ Infrastructure (Persistence)
 
 Current architectural components include:
 
-- Use Cases
+- Domain Entities
 - Value Objects
+- Use Cases
 - Factories
 - Policies
+- Repository Interfaces
 - Mappers
 - DTOs
-- Domain Entities
-- Repository Interfaces
 - Persistence Layer
 
 ---
@@ -91,35 +91,66 @@ src
 
 ---
 
-# Features Implemented
+# Features
 
-## Credit
+## Customer Management
+
+The customer module supports:
+
+- Create a customer
+- Update customer information
+- Retrieve customer by ID
+- Retrieve all customers with pagination
+- Deactivate customer
+
+### Business Rules
+
+- Customer names must contain at least 3 characters.
+- Date of birth cannot be in the future.
+- Customers are created with **ACTIVE** status by default.
+- A customer cannot be deactivated twice.
+- A customer cannot be deactivated while having open credits.
+- Updates automatically refresh the last modification timestamp.
+- Domain validation is enforced through Value Objects and business rules.
+
+---
+
+## Credit Management
+
+The credit module currently supports:
 
 - Request a new credit
-- Simulate credit
-- Analyze credit
+- Simulate a credit
+- Analyze a credit
 - Retrieve credit details
 
-## Installments
+### Business Rules
+
+- Credit simulation calculates interest before approval.
+- Installments are automatically generated.
+- The last installment adjusts rounding differences.
+- Installment due dates are generated using a due date policy.
+- Credits are initially created with **UNDER_ANALYSIS** status.
+
+---
+
+## Installment Management
+
+Installments are automatically created when a credit request is submitted.
+
+Current implementation includes:
 
 - Automatic installment generation
-- Monthly due date policy
+- Monthly due date calculation
 - Installment status management
-
-## Domain
-
-- Rich domain model
-- Value Objects
-- Encapsulated business rules
-- Domain validation
-- Factory classes
-- Mapping between layers
+- Precise monetary calculation using BigDecimal
+- Rounding adjustment on the last installment
 
 ---
 
 # Database
 
-The project uses PostgreSQL as the relational database.
+The application uses PostgreSQL as the relational database.
 
 Database versioning is managed using Flyway migrations.
 
@@ -142,7 +173,7 @@ Sensitive information is managed using environment variables.
 ## 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/credit-flow.git
+git clone https://github.com/Danniesantos/credit-flow.git
 ```
 
 ---
@@ -165,71 +196,67 @@ POSTGRES_USER=admin
 POSTGRES_PASSWORD=admin123
 ```
 
-> The `.env` file is ignored by Git and should never be committed.
+The `.env` file is ignored by Git and should never be committed.
 
 ---
 
-## 3. Use the provided example
+## 3. Copy the example file
 
-Copy:
+The project provides a template:
 
 ```
 .env.example
 ```
 
-Rename it to:
+Copy it to:
 
 ```
 .env
 ```
 
-Then update the values according to your local environment.
+Then replace the placeholder values with your own local configuration.
 
 ---
 
-# IntelliJ Configuration (EnvFile Plugin)
+# IntelliJ IDEA Configuration (EnvFile Plugin)
 
-To allow Spring Boot to load environment variables automatically, install the **EnvFile** plugin.
+To automatically load environment variables, install the **EnvFile** plugin.
 
-## Install the plugin
+### Install
 
-Open:
-
-```
 Settings
-```
 
 ↓
 
-```
 Plugins
-```
 
 ↓
 
-```
 Marketplace
-```
 
-Search for:
+↓
+
+Search:
 
 ```
 EnvFile
 ```
 
-Install the plugin and restart IntelliJ IDEA.
+Install and restart IntelliJ IDEA.
 
 ---
 
-## Configure EnvFile
+### Configure
 
 Open:
 
 ```
 Run
+```
 
 ↓
 
+```
 Edit Configurations
 ```
 
@@ -251,7 +278,7 @@ Click:
 +
 ```
 
-Select the project's:
+Choose the project's:
 
 ```
 .env
@@ -269,13 +296,11 @@ Then:
 OK
 ```
 
-Now Spring Boot will automatically load all variables from the `.env` file.
-
 ---
 
 # Spring Configuration
 
-The application reads database settings from environment variables.
+The application loads database configuration from environment variables.
 
 ```yaml
 spring:
@@ -289,7 +314,7 @@ spring:
 
 # Docker Compose
 
-Docker Compose also uses the same environment variables.
+Docker Compose uses the same variables.
 
 ```yaml
 environment:
@@ -298,16 +323,28 @@ environment:
   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 ```
 
-This allows Docker and Spring Boot to share the same configuration.
+This keeps Docker and Spring Boot synchronized using a single configuration source.
 
 ---
 
 # API
 
-Current endpoints:
+## Customer
 
 | Method | Endpoint | Description |
-|----------|-------------------------|--------------------------|
+|----------|------------------------------|--------------------------------------|
+| POST | `/customers` | Create a new customer |
+| GET | `/customers` | Retrieve all customers |
+| GET | `/customers/{id}` | Retrieve customer details |
+| PUT | `/customers/{id}` | Update customer information |
+| PATCH | `/customers/{id}/status` | Deactivate a customer |
+
+---
+
+## Credit
+
+| Method | Endpoint | Description |
+|----------|---------------------------------|--------------------------------|
 | POST | `/credits` | Request a new credit |
 | POST | `/credits/simulate` | Simulate a credit |
 | POST | `/credits/{id}/analyze` | Analyze a credit |
@@ -320,4 +357,4 @@ Current endpoints:
 **Daniela Santos**
 
 - GitHub: https://github.com/Danniesantos
-- LinkedIn: [https://www.linkedin.com/in/daniela-santos-49b434222/](https://www.linkedin.com/in/danielarobertasantos/)
+- LinkedIn: https://www.linkedin.com/in/daniela-santos-49b434222/
