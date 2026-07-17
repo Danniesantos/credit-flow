@@ -1,4 +1,4 @@
-package com.daniela.creditflow.infrastructure.messaging.rabbitmq;
+package com.daniela.creditflow.application.notification;
 
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditMessage;
 import lombok.extern.slf4j.Slf4j;
