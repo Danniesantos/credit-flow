@@ -1,6 +1,6 @@
 package com.daniela.creditflow.infrastructure.messaging.rabbitmq.consumer;
 
-import com.daniela.creditflow.infrastructure.messaging.rabbitmq.NotificationService;
+import com.daniela.creditflow.application.notification.NotificationService;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.config.RabbitConstants;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditMessage;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +21,10 @@ public class CreditApprovedConsumer {
     public void consume(CreditMessage message) {
 
         log.info(
-                "[RABBITMQ] Received event={} credit={}",
+                "[RABBITMQ] Received event={} credit={} customer={}",
                 message.eventType(),
-                message.creditId()
+                message.creditId(),
+                message.customerId()
         );
 
         notificationService.notifyApproved(message);
