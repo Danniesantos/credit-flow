@@ -21,7 +21,6 @@ public class RabbitConfig {
 
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(messageConverter);
-        factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
 
         return factory;
     }
@@ -140,7 +139,7 @@ public class RabbitConfig {
         return binding(
                 contractedQueue,
                 creditExchange,
-                RabbitConstants.CREDIT_CONTRACTED_QUEUE
+                RabbitConstants.CREDIT_CONTRACTED_ROUTING_KEY
         );
     }
 
