@@ -49,3 +49,7 @@ jobs:
 
       - name: Build project
         run: ./mvnw clean verify
+        env:
+            DB_USERNAME: admin
+            DB_PASSWORD: admin123
+            DB_URL: jdbc:postgresql://localhost:5438/creditflow
