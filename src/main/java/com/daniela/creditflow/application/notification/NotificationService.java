@@ -9,7 +9,15 @@ import org.springframework.stereotype.Service;
 public class NotificationService {
 
     public void notifyApproved(CreditMessage message) {
-        throw new RuntimeException("Simulando falha na notificação");
+
+        log.info("""
+                        Sending approved notification
+                        
+                        Credit={}
+                        Customer={}
+                        """,
+                message.creditId(),
+                message.customerId());
 
     }
 
