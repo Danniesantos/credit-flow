@@ -11,6 +11,7 @@ import com.daniela.creditflow.domain.valueObject.Money;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,6 +24,7 @@ public class Credit {
     private List<Installment> installments;
     private final CreditType creditType;
     private final InterestRate interestRate;
+    private final Integer installmentsQuantity;
     private final PaymentMethod paymentMethod;
     private CreditStatus status;
     private final Instant createdAt;
@@ -31,9 +33,9 @@ public class Credit {
     public Credit(CreditId id,
                   CustomerId customerId,
                   Money requestedAmount,
-                  List<Installment> installments,
                   CreditType creditType,
                   InterestRate interestRate,
+                  Integer installmentsQuantity,
                   PaymentMethod paymentMethod,
                   CreditStatus status,
                   Instant createdAt,
@@ -42,18 +44,54 @@ public class Credit {
         this.id = Objects.requireNonNull(id);
         this.customerId = Objects.requireNonNull(customerId);
         this.requestedAmount = Objects.requireNonNull(requestedAmount);
-        this.installments = List.copyOf(
-                Objects.requireNonNull(installments));
+        this.installmentsQuantity = Objects.requireNonNull(installmentsQuantity);
+        this.installments = new ArrayList<>();
         this.creditType = Objects.requireNonNull(creditType);
         this.interestRate = Objects.requireNonNull(interestRate);
         this.paymentMethod = Objects.requireNonNull(paymentMethod);
         this.status = Objects.requireNonNull(status);
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.createdAt = createdAt != null ? createdAt : Instant.now();
+        this.updatedAt = updatedAt != null ? updatedAt : this.createdAt;
+        validateInstallmentsQuantity();
         validateRequestedAmount();
-        validateInstallments();
+
     }
 
+    public static Credit restore(
+            CreditId id,
+            CustomerId customerId,
+            Money requestedAmount,
+            CreditType creditType,
+            InterestRate interestRate,
+            Integer installmentsQuantity,
+            PaymentMethod paymentMethod,
+            CreditStatus status,
+            List<Installment> installments,
+            Instant createdAt,
+            Instant updatedAt
+    ) {
+
+        Credit credit = new Credit(
+                id,
+                customerId,
+                requestedAmount,
+                creditType,
+                interestRate,
+                installmentsQuantity,
+                paymentMethod,
+                status,
+                createdAt,
+                updatedAt
+        );
+
+        credit.installments = new ArrayList<>(installments);
+
+        return credit;
+    }
+
+    public boolean isUnderAnalysis() {
+        return status == CreditStatus.UNDER_ANALYSIS;
+    }
 
     public boolean isApproved() {
         return status == CreditStatus.APPROVED;
@@ -61,10 +99,6 @@ public class Credit {
 
     public boolean isRejected() {
         return status == CreditStatus.REJECTED;
-    }
-
-    public boolean isUnderAnalysis() {
-        return status == CreditStatus.UNDER_ANALYSIS;
     }
 
     public boolean isContracted() {
@@ -85,18 +119,21 @@ public class Credit {
         changeStatus(CreditStatus.REJECTED);
     }
 
-    public void contract() {
+    public void contract(List<Installment> installments) {
 
         if (!isApproved()) {
             throw new DomainException(
-                    "Credit must be approved first");
+                    "Only approved credits can be contracted");
         }
+
+        validateInstallmentList(installments);
+        this.installments = new ArrayList<>(installments);
+        validateTotalAmount();
 
         changeStatus(CreditStatus.CONTRACTED);
     }
 
-    public void markInstallmentAsPaid(
-            InstallmentId installmentId) {
+    public void markInstallmentAsPaid(InstallmentId installmentId) {
 
         if (isPaidOff()) {
             throw new DomainException(
@@ -113,9 +150,7 @@ public class Credit {
 
         installment.markAsPaid();
 
-        if (installments.stream()
-                .allMatch(Installment::isPaid)) {
-
+        if (areAllInstallmentsPaid()) {
             changeStatus(CreditStatus.PAID_OFF);
         }
     }
@@ -146,23 +181,32 @@ public class Credit {
         }
     }
 
-    private void validateInstallments() {
+    private void validateInstallmentsQuantity() {
+
+        if (installmentsQuantity <= 0) {
+            throw new DomainException(
+                    "Installments quantity must be greater than zero");
+        }
+
+        if (installmentsQuantity > 60) {
+            throw new DomainException(
+                    "Maximum number of installments is 60");
+        }
+
+    }
+
+    private void validateInstallmentList(List<Installment> installments) {
 
         if (installments.isEmpty()) {
             throw new DomainException(
                     "Credit must contain at least one installment");
         }
 
-        if (installments.size() > 60) {
-            throw new DomainException(
-                    "Maximum number of installments is 60");
-        }
     }
 
     private void validateTotalAmount() {
 
-        if (totalInstallmentsAmount()
-                .lessThan(requestedAmount)) {
+        if (totalInstallmentsAmount().lessThan(requestedAmount)) {
 
             throw new DomainException(
                     "Installments total cannot be lower than requested amount");
@@ -177,8 +221,15 @@ public class Credit {
         }
     }
 
+    private boolean areAllInstallmentsPaid() {
+
+        return installments.stream()
+                .allMatch(Installment::isPaid);
+    }
+
     private void changeStatus(CreditStatus newStatus) {
         this.status = newStatus;
+        this.updatedAt = Instant.now();
     }
 }
 
