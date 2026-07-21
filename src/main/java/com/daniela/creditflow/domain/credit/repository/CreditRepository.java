@@ -12,6 +12,8 @@ public interface CreditRepository {
 
     Optional<Credit> findById(CreditId id);
 
+    Optional<Credit>findByIdWithInstallments(CreditId id);
+
     boolean hasOpenCredits(CustomerId customerId);
 
 }

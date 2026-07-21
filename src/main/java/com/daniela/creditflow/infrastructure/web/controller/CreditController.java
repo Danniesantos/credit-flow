@@ -6,10 +6,8 @@ import com.daniela.creditflow.application.credit.dto.output.AnalyzeCreditOutput;
 import com.daniela.creditflow.application.credit.dto.output.CreditDetailsOutput;
 import com.daniela.creditflow.application.credit.dto.output.RequestCreditOutput;
 import com.daniela.creditflow.application.credit.dto.output.SimulateCreditOutput;
-import com.daniela.creditflow.application.credit.usecase.AnalyzeCreditUseCase;
-import com.daniela.creditflow.application.credit.usecase.FindCreditUseCase;
-import com.daniela.creditflow.application.credit.usecase.RequestCreditUseCase;
-import com.daniela.creditflow.application.credit.usecase.SimulateCreditUseCase;
+import com.daniela.creditflow.application.credit.usecase.*;
+import com.daniela.creditflow.domain.credit.valueObject.CreditId;
 import com.daniela.creditflow.infrastructure.web.mapper.CreditWebMapper;
 import com.daniela.creditflow.infrastructure.web.request.RequestCreditRequest;
 import com.daniela.creditflow.infrastructure.web.request.SimulateCreditRequest;
@@ -34,19 +32,22 @@ public class CreditController {
     private final RequestCreditUseCase requestCreditUseCase;
     private final AnalyzeCreditUseCase analyzeCreditUseCase;
     private final FindCreditUseCase findCreditUseCase;
+    private final ContractCreditUseCase contractCreditUseCase;
 
 
     public CreditController(CreditWebMapper creditWebMapper,
                             SimulateCreditUseCase simulateCreditUseCase,
                             RequestCreditUseCase requestCreditUseCase,
                             AnalyzeCreditUseCase analyzeCreditUseCase,
-                            FindCreditUseCase findCredit) {
+                            FindCreditUseCase findCredit,
+                            ContractCreditUseCase contractCreditUseCase) {
 
         this.creditWebMapper = creditWebMapper;
         this.simulateCreditUseCase = simulateCreditUseCase;
         this.requestCreditUseCase = requestCreditUseCase;
         this.analyzeCreditUseCase = analyzeCreditUseCase;
         this.findCreditUseCase = findCredit;
+        this.contractCreditUseCase = contractCreditUseCase;
     }
 
 
@@ -91,25 +92,30 @@ public class CreditController {
     @PostMapping("/{id}/analyze")
     public ResponseEntity<AnalyzeCreditResponse> analyze(@PathVariable
                                                          UUID id) {
-
         AnalyzeCreditOutput output =
-                analyzeCreditUseCase.execute(id);
+                analyzeCreditUseCase.execute(new CreditId(id));
 
         return ResponseEntity.ok(
                 creditWebMapper.toAnalyzeResponse(output));
     }
 
+    @PostMapping("/{id}/contract")
+    public ResponseEntity<Void> contract(@PathVariable
+                                         UUID id) {
+
+        contractCreditUseCase.execute(new CreditId(id));
+
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CreditDetailsResponse> findById(@PathVariable
                                                           UUID id) {
-
         CreditDetailsOutput output =
-                findCreditUseCase.execute(id);
+                findCreditUseCase.execute(new CreditId(id));
 
-        CreditDetailsResponse response =
-                creditWebMapper.toDetailsResponse(output);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                creditWebMapper.toDetailsResponse(output));
     }
 
 }

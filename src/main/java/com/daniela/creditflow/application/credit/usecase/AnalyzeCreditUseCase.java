@@ -3,45 +3,51 @@ package com.daniela.creditflow.application.credit.usecase;
 import com.daniela.creditflow.application.credit.analysis.CreditAnalysisChain;
 import com.daniela.creditflow.application.credit.dto.output.AnalysisResult;
 import com.daniela.creditflow.application.credit.dto.output.AnalyzeCreditOutput;
+import com.daniela.creditflow.application.credit.service.CreditService;
+import com.daniela.creditflow.application.customer.service.CustomerService;
+import com.daniela.creditflow.domain.credit.event.CreditApprovedEvent;
+import com.daniela.creditflow.domain.credit.event.CreditRejectedEvent;
 import com.daniela.creditflow.domain.credit.model.Credit;
 import com.daniela.creditflow.domain.credit.repository.CreditRepository;
 import com.daniela.creditflow.domain.credit.valueObject.CreditId;
-import com.daniela.creditflow.domain.customer.exception.CustomerNotFoundException;
 import com.daniela.creditflow.domain.customer.model.Customer;
-import com.daniela.creditflow.domain.customer.repository.CustomerRepository;
-import com.daniela.creditflow.domain.exceptions.CreditNotFoundException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import java.time.Instant;
 
 @Service
+@Transactional
 public class AnalyzeCreditUseCase {
 
     private final CreditRepository creditRepository;
-    private final CustomerRepository customerRepository;
+    private final CreditService creditService;
+    private final CustomerService customerService;
     private final CreditAnalysisChain creditAnalysisChain;
+    private final ApplicationEventPublisher eventPublisher;
 
     public AnalyzeCreditUseCase(CreditRepository creditRepository,
-                                CustomerRepository customerRepository,
-                                CreditAnalysisChain creditAnalysisChain) {
+                                CreditService creditService,
+                                CustomerService customerService,
+                                CreditAnalysisChain creditAnalysisChain,
+                                ApplicationEventPublisher eventPublisher) {
 
         this.creditRepository = creditRepository;
-        this.customerRepository = customerRepository;
+        this.creditService = creditService;
+        this.customerService = customerService;
         this.creditAnalysisChain = creditAnalysisChain;
+        this.eventPublisher = eventPublisher;
     }
 
-    public AnalyzeCreditOutput execute(UUID id) {
+    public AnalyzeCreditOutput execute(CreditId creditId) {
 
-        CreditId creditId = new CreditId(id);
         Credit credit =
-                creditRepository.findById(creditId)
-                        .orElseThrow(() -> new CreditNotFoundException(creditId));
+                creditService.findCredit(creditId);
 
         Customer customer =
-                customerRepository.findById(credit.getCustomerId())
-                        .orElseThrow(() -> new CustomerNotFoundException(
-                                credit.getCustomerId()
-                        ));
+                customerService
+                        .findCustomer(credit.getCustomerId());
 
         AnalysisResult result =
                 creditAnalysisChain.chain().handle(credit, customer);
@@ -54,10 +60,34 @@ public class AnalyzeCreditUseCase {
 
         creditRepository.save(credit);
 
+        publishAnalysisEvent(credit, result);
+
         return new AnalyzeCreditOutput(
                 credit.getId().value(),
                 credit.getStatus(),
                 result.reason()
         );
+    }
+
+    private void publishAnalysisEvent(
+            Credit credit,
+            AnalysisResult result) {
+
+        if (result.approved()) {
+
+            eventPublisher.publishEvent(
+                    new CreditApprovedEvent(
+                            credit.getId(),
+                            credit.getCustomerId(),
+                            Instant.now()));
+
+        } else {
+
+            eventPublisher.publishEvent(
+                    new CreditRejectedEvent(
+                            credit.getId(),
+                            credit.getCustomerId(),
+                            Instant.now()));
+        }
     }
 }

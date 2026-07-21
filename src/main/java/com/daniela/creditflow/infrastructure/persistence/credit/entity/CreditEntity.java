@@ -1,4 +1,4 @@
-package com.daniela.creditflow.infrastructure.persistence.credity.entity;
+package com.daniela.creditflow.infrastructure.persistence.credit.entity;
 
 import com.daniela.creditflow.domain.credit.model.CreditStatus;
 import com.daniela.creditflow.domain.credit.model.CreditType;
@@ -7,8 +7,6 @@ import com.daniela.creditflow.infrastructure.persistence.customer.entity.Custome
 import com.daniela.creditflow.infrastructure.persistence.installment.entity.InstallmentEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -53,6 +51,10 @@ public class CreditEntity {
             nullable = false)
     private BigDecimal interestRate;
 
+    @Column(name = "installments_quantity",
+            nullable = false)
+    private Integer installmentsQuantity;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method",
             nullable = false)
@@ -63,12 +65,10 @@ public class CreditEntity {
             nullable = false)
     private CreditStatus status;
 
-    @CreationTimestamp
     @Column(nullable = false,
             updatable = false)
     private Instant createdAt;
 
-    @UpdateTimestamp
     @Column(nullable = false)
     private Instant updatedAt;
 
@@ -80,6 +80,7 @@ public class CreditEntity {
                         BigDecimal requestedAmount,
                         CreditType creditType,
                         BigDecimal interestRate,
+                        Integer installmentsQuantity,
                         PaymentMethod paymentMethod,
                         CreditStatus status,
                         Instant createdAt,
@@ -90,6 +91,7 @@ public class CreditEntity {
         this.requestedAmount = requestedAmount;
         this.creditType = creditType;
         this.interestRate = interestRate;
+        this.installmentsQuantity = installmentsQuantity;
         this.paymentMethod = paymentMethod;
         this.status = status;
         this.createdAt = createdAt;

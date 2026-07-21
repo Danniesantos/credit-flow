@@ -1,12 +1,12 @@
-package com.daniela.creditflow.infrastructure.persistence.credity.repository;
+package com.daniela.creditflow.infrastructure.persistence.credit.repository;
 
 import com.daniela.creditflow.domain.credit.model.Credit;
 import com.daniela.creditflow.domain.credit.model.CreditStatus;
 import com.daniela.creditflow.domain.credit.repository.CreditRepository;
 import com.daniela.creditflow.domain.credit.valueObject.CreditId;
 import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
-import com.daniela.creditflow.infrastructure.persistence.credity.entity.CreditEntity;
-import com.daniela.creditflow.infrastructure.persistence.credity.mapper.CreditMapper;
+import com.daniela.creditflow.infrastructure.persistence.credit.entity.CreditEntity;
+import com.daniela.creditflow.infrastructure.persistence.credit.mapper.CreditMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -32,6 +32,13 @@ public class CreditRepositoryImpl implements CreditRepository {
 
     @Override
     public Optional<Credit> findById(CreditId id) {
+        return jpaRepository
+                .findById(id.value())
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public Optional<Credit> findByIdWithInstallments(CreditId id) {
         return jpaRepository
                 .findById(id.value())
                 .map(mapper::toDomain);
