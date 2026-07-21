@@ -4,7 +4,7 @@ import com.daniela.creditflow.domain.credit.valueObject.CreditId;
 import com.daniela.creditflow.domain.installment.model.Installment;
 import com.daniela.creditflow.domain.valueObject.InstallmentId;
 import com.daniela.creditflow.domain.valueObject.Money;
-import com.daniela.creditflow.infrastructure.persistence.credity.entity.CreditEntity;
+import com.daniela.creditflow.infrastructure.persistence.credit.entity.CreditEntity;
 import com.daniela.creditflow.infrastructure.persistence.installment.entity.InstallmentEntity;
 import org.springframework.stereotype.Component;
 
