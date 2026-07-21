@@ -1,5 +1,7 @@
-package com.daniela.creditflow.application.credit.calculation;
+package com.daniela.creditflow.application.credit.service;
 
+import com.daniela.creditflow.application.credit.calculation.CreditCalculationResult;
+import com.daniela.creditflow.application.credit.calculation.CreditStrategyFactory;
 import com.daniela.creditflow.domain.credit.model.CreditType;
 import com.daniela.creditflow.domain.valueObject.Money;
 import org.springframework.stereotype.Service;
