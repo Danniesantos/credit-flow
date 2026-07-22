@@ -35,7 +35,6 @@ public class CreditMapper {
                         credit.getCreditType(),
                         credit.getInterestRate().value(),
                         credit.getInstallmentsQuantity(),
-                        credit.getPaymentMethod(),
                         credit.getStatus(),
                         credit.getCreatedAt(),
                         credit.getUpdatedAt()
@@ -63,7 +62,6 @@ public class CreditMapper {
                 entity.getCreditType(),
                 new InterestRate(entity.getInterestRate()),
                 entity.getInstallmentsQuantity(),
-                entity.getPaymentMethod(),
                 entity.getStatus(),
                 installments,
                 entity.getCreatedAt(),
