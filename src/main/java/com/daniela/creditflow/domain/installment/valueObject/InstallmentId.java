@@ -1,4 +1,4 @@
-package com.daniela.creditflow.domain.valueObject;
+package com.daniela.creditflow.domain.installment.valueObject;
 
 import java.util.Objects;
 import java.util.UUID;
