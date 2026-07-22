@@ -1,4 +1,4 @@
-package com.daniela.creditflow.domain.credit.event;
+package com.daniela.creditflow.domain.event;
 
 import com.daniela.creditflow.domain.credit.valueObject.CreditId;
 import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
