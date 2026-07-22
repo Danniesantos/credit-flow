@@ -5,7 +5,8 @@ import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
 import com.daniela.creditflow.domain.exceptions.DomainException;
 import com.daniela.creditflow.domain.exceptions.InstallmentNotFoundException;
 import com.daniela.creditflow.domain.installment.model.Installment;
-import com.daniela.creditflow.domain.valueObject.InstallmentId;
+import com.daniela.creditflow.domain.installment.valueObject.InstallmentId;
+import com.daniela.creditflow.domain.installment.valueObject.PaymentMethod;
 import com.daniela.creditflow.domain.valueObject.InterestRate;
 import com.daniela.creditflow.domain.valueObject.Money;
 import lombok.Getter;
@@ -25,7 +26,6 @@ public class Credit {
     private final CreditType creditType;
     private final InterestRate interestRate;
     private final Integer installmentsQuantity;
-    private final PaymentMethod paymentMethod;
     private CreditStatus status;
     private final Instant createdAt;
     private Instant updatedAt;
@@ -36,7 +36,6 @@ public class Credit {
                   CreditType creditType,
                   InterestRate interestRate,
                   Integer installmentsQuantity,
-                  PaymentMethod paymentMethod,
                   CreditStatus status,
                   Instant createdAt,
                   Instant updatedAt) {
@@ -48,7 +47,6 @@ public class Credit {
         this.installments = new ArrayList<>();
         this.creditType = Objects.requireNonNull(creditType);
         this.interestRate = Objects.requireNonNull(interestRate);
-        this.paymentMethod = Objects.requireNonNull(paymentMethod);
         this.status = Objects.requireNonNull(status);
         this.createdAt = createdAt != null ? createdAt : Instant.now();
         this.updatedAt = updatedAt != null ? updatedAt : this.createdAt;
@@ -64,7 +62,6 @@ public class Credit {
             CreditType creditType,
             InterestRate interestRate,
             Integer installmentsQuantity,
-            PaymentMethod paymentMethod,
             CreditStatus status,
             List<Installment> installments,
             Instant createdAt,
@@ -78,7 +75,6 @@ public class Credit {
                 creditType,
                 interestRate,
                 installmentsQuantity,
-                paymentMethod,
                 status,
                 createdAt,
                 updatedAt
@@ -133,22 +129,29 @@ public class Credit {
         changeStatus(CreditStatus.CONTRACTED);
     }
 
-    public void markInstallmentAsPaid(InstallmentId installmentId) {
+    public void markInstallmentAsPaid(
+            InstallmentId installmentId,
+            PaymentMethod paymentMethod,
+            Instant paidAt) {
 
         if (isPaidOff()) {
             throw new DomainException(
-                    "Credit is already paid off");
+                    "Credit is already paid off"
+            );
         }
 
         if (!isContracted()) {
             throw new DomainException(
-                    "Credit must be contracted before payments");
+                    "Credit must be contracted before payments"
+            );
         }
 
         Installment installment =
                 findInstallment(installmentId);
 
-        installment.markAsPaid();
+        installment.pay(
+                paymentMethod,
+                paidAt);
 
         if (areAllInstallmentsPaid()) {
             changeStatus(CreditStatus.PAID_OFF);
@@ -193,6 +196,14 @@ public class Credit {
                     "Maximum number of installments is 60");
         }
 
+    }
+
+    public Money installmentAmount(
+            InstallmentId installmentId
+    ) {
+
+        return findInstallment(installmentId)
+                .getAmount();
     }
 
     private void validateInstallmentList(List<Installment> installments) {

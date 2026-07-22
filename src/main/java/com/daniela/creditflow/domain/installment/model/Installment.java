@@ -2,10 +2,12 @@ package com.daniela.creditflow.domain.installment.model;
 
 import com.daniela.creditflow.domain.credit.valueObject.CreditId;
 import com.daniela.creditflow.domain.exceptions.DomainException;
-import com.daniela.creditflow.domain.valueObject.InstallmentId;
+import com.daniela.creditflow.domain.installment.valueObject.InstallmentId;
+import com.daniela.creditflow.domain.installment.valueObject.PaymentMethod;
 import com.daniela.creditflow.domain.valueObject.Money;
 import lombok.Getter;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -16,8 +18,10 @@ public class Installment {
     private final Integer number;
     private final Money amount;
     private final LocalDate dueDate;
+    private PaymentMethod paymentMethod;
     private InstallmentStatus status;
-    private CreditId creditId;
+    private final CreditId creditId;
+    private Instant paidAt;
 
     public Installment(Integer number,
                        Money amount,
@@ -51,19 +55,6 @@ public class Installment {
         validateNumber();
     }
 
-    public void markAsPaid() {
-
-        if (isPaid()) {
-            throw new DomainException("Installment already paid");
-        }
-
-        if (!isPending()) {
-            throw new DomainException("Only pending installments can be paid");
-        }
-
-        this.status = InstallmentStatus.PAID;
-    }
-
     public boolean isPaid() {
         return status == InstallmentStatus.PAID;
     }
@@ -83,5 +74,26 @@ public class Installment {
                     "Installment number must be greater than zero");
         }
     }
+
+    public void pay(PaymentMethod paymentMethod,
+                    Instant paidAt) {
+
+        if (isPaid()) {
+            throw new DomainException(
+                    "Installment already paid"
+            );
+        }
+
+        if (!isPending()) {
+            throw new DomainException(
+                    "Only pending installments can be paid"
+            );
+        }
+
+        this.status = InstallmentStatus.PAID;
+        this.paymentMethod = Objects.requireNonNull(paymentMethod);
+        this.paidAt = Objects.requireNonNull(paidAt);
+    }
+
 }
 
