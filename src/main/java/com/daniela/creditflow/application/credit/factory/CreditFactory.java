@@ -1,8 +1,8 @@
 package com.daniela.creditflow.application.credit.factory;
 
 import com.daniela.creditflow.application.credit.calculation.CreditCalculationResult;
-import com.daniela.creditflow.application.credit.service.CreditCalculationService;
 import com.daniela.creditflow.application.credit.dto.input.RequestCreditInput;
+import com.daniela.creditflow.application.credit.service.CreditCalculationService;
 import com.daniela.creditflow.domain.credit.model.Credit;
 import com.daniela.creditflow.domain.credit.model.CreditStatus;
 import com.daniela.creditflow.domain.credit.valueObject.CreditId;
@@ -43,7 +43,6 @@ public class CreditFactory {
                 input.creditType(),
                 calculation.interestRate(),
                 input.installments(),
-                input.paymentMethod(),
                 CreditStatus.UNDER_ANALYSIS,
                 null,
                 null
