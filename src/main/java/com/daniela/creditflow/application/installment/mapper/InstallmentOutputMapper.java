@@ -14,6 +14,7 @@ public class InstallmentOutputMapper {
                 installment.getNumber(),
                 installment.getAmount().value(),
                 installment.getDueDate(),
+                installment.getPaymentMethod(),
                 installment.getStatus()
         );
     }

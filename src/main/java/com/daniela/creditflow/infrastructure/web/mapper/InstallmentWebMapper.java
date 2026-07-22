@@ -23,6 +23,7 @@ public class InstallmentWebMapper {
                 output.number(),
                 output.amount(),
                 output.dueDate(),
+                output.paymentMethod(),
                 output.status()
         );
     }

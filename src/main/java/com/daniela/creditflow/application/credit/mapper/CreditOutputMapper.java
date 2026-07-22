@@ -29,7 +29,6 @@ public class CreditOutputMapper {
                 credit.getInstallments().size(),
                 formatRate(credit.getInterestRate()),
                 credit.getCreditType(),
-                credit.getPaymentMethod(),
                 credit.getStatus(),
                 credit.getCreatedAt(),
                 credit.getUpdatedAt());
@@ -50,7 +49,6 @@ public class CreditOutputMapper {
                 credit.getRequestedAmount().value(),
                 formatRate(credit.getInterestRate()),
                 credit.getCreditType(),
-                credit.getPaymentMethod(),
                 credit.getStatus(),
                 installments,
                 credit.getCreatedAt(),
