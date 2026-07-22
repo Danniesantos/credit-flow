@@ -1,5 +1,6 @@
 package com.daniela.creditflow.infrastructure.web.exceptionhandler;
 
+import com.daniela.creditflow.application.exception.UnsupportedPaymentMethodException;
 import com.daniela.creditflow.domain.customer.exception.*;
 import com.daniela.creditflow.domain.exceptions.CreditNotFoundException;
 import com.daniela.creditflow.domain.exceptions.DomainException;
@@ -30,6 +31,19 @@ public class GlobalExceptionHandler {
         return buildProblem(
                 HttpStatus.UNPROCESSABLE_ENTITY,
                 "Business Rule Violation",
+                ex.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(UnsupportedPaymentMethodException.class)
+    public ProblemDetail handleUnsupportedPaymentMethod(
+            UnsupportedPaymentMethodException ex,
+            HttpServletRequest request) {
+
+        return buildProblem(
+                HttpStatus.BAD_REQUEST,
+                "Unsupported payment method",
                 ex.getMessage(),
                 request
         );
