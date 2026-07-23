@@ -5,11 +5,11 @@ import com.daniela.creditflow.application.installment.dto.input.PaymentInstallme
 import com.daniela.creditflow.application.installment.payment.PaymentInput;
 import com.daniela.creditflow.application.installment.payment.PaymentResult;
 import com.daniela.creditflow.application.installment.payment.PaymentService;
+import com.daniela.creditflow.domain.event.InstallmentPaidEvent;
 import com.daniela.creditflow.domain.model.Credit;
+import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.repository.CreditRepository;
 import com.daniela.creditflow.domain.valueObject.CreditId;
-import com.daniela.creditflow.domain.event.InstallmentPaidEvent;
-import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.valueObject.InstallmentId;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
