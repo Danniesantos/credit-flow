@@ -1,6 +1,6 @@
 package com.daniela.creditflow.application.credit.dto.input;
 
-import com.daniela.creditflow.domain.credit.model.CreditType;
+import com.daniela.creditflow.domain.model.CreditType;
 
 import java.math.BigDecimal;
 import java.util.UUID;

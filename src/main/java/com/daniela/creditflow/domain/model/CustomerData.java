@@ -1,9 +1,9 @@
-package com.daniela.creditflow.domain.customer.model;
+package com.daniela.creditflow.domain.model;
 
-import com.daniela.creditflow.domain.credit.valueObject.CreditScore;
-import com.daniela.creditflow.domain.customer.valueObject.CPF;
-import com.daniela.creditflow.domain.customer.valueObject.Email;
-import com.daniela.creditflow.domain.customer.valueObject.PhoneNumber;
+import com.daniela.creditflow.domain.valueObject.CreditScore;
+import com.daniela.creditflow.domain.valueObject.CPF;
+import com.daniela.creditflow.domain.valueObject.Email;
+import com.daniela.creditflow.domain.valueObject.PhoneNumber;
 import com.daniela.creditflow.domain.valueObject.*;
 
 import java.time.LocalDate;

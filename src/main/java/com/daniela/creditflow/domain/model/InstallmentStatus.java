@@ -1,4 +1,4 @@
-package com.daniela.creditflow.domain.installment.model;
+package com.daniela.creditflow.domain.model;
 
 public enum InstallmentStatus {
     PENDING,

@@ -1,8 +1,8 @@
-package com.daniela.creditflow.domain.credit.repository;
+package com.daniela.creditflow.domain.repository;
 
-import com.daniela.creditflow.domain.credit.model.Credit;
-import com.daniela.creditflow.domain.credit.valueObject.CreditId;
-import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
+import com.daniela.creditflow.domain.model.Credit;
+import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueObject.CustomerId;
 
 import java.util.Optional;
 

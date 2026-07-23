@@ -1,4 +1,4 @@
-package com.daniela.creditflow.domain.installment.valueObject;
+package com.daniela.creditflow.domain.model;
 
 public enum PaymentMethod {
     PIX,

@@ -1,10 +1,10 @@
 package com.daniela.creditflow.infrastructure.persistence.credit.repository;
 
-import com.daniela.creditflow.domain.credit.model.Credit;
-import com.daniela.creditflow.domain.credit.model.CreditStatus;
-import com.daniela.creditflow.domain.credit.repository.CreditRepository;
-import com.daniela.creditflow.domain.credit.valueObject.CreditId;
-import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
+import com.daniela.creditflow.domain.model.Credit;
+import com.daniela.creditflow.domain.model.CreditStatus;
+import com.daniela.creditflow.domain.repository.CreditRepository;
+import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueObject.CustomerId;
 import com.daniela.creditflow.infrastructure.persistence.credit.entity.CreditEntity;
 import com.daniela.creditflow.infrastructure.persistence.credit.mapper.CreditMapper;
 import org.springframework.stereotype.Repository;

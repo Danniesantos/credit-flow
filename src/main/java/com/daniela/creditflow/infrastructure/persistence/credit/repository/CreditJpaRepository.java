@@ -1,6 +1,6 @@
 package com.daniela.creditflow.infrastructure.persistence.credit.repository;
 
-import com.daniela.creditflow.domain.credit.model.CreditStatus;
+import com.daniela.creditflow.domain.model.CreditStatus;
 import com.daniela.creditflow.infrastructure.persistence.credit.entity.CreditEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

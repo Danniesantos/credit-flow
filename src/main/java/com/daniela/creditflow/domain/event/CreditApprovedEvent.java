@@ -1,7 +1,7 @@
 package com.daniela.creditflow.domain.event;
 
-import com.daniela.creditflow.domain.credit.valueObject.CreditId;
-import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
+import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueObject.CustomerId;
 
 import java.time.Instant;
 

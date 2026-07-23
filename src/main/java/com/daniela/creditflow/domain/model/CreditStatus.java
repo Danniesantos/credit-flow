@@ -1,4 +1,4 @@
-package com.daniela.creditflow.domain.credit.model;
+package com.daniela.creditflow.domain.model;
 
 import java.util.EnumSet;
 import java.util.Set;

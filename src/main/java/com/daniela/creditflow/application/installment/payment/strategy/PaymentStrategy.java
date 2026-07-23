@@ -2,7 +2,7 @@ package com.daniela.creditflow.application.installment.payment.strategy;
 
 import com.daniela.creditflow.application.installment.payment.PaymentInput;
 import com.daniela.creditflow.application.installment.payment.PaymentResult;
-import com.daniela.creditflow.domain.installment.valueObject.PaymentMethod;
+import com.daniela.creditflow.domain.model.PaymentMethod;
 
 public interface PaymentStrategy {
 

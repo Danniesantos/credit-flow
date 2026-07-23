@@ -1,6 +1,6 @@
 package com.daniela.creditflow.application.installment.dto.input;
 
-import com.daniela.creditflow.domain.installment.valueObject.PaymentMethod;
+import com.daniela.creditflow.domain.model.PaymentMethod;
 
 import java.util.UUID;
 

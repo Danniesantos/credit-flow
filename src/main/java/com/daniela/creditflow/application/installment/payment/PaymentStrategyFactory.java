@@ -1,8 +1,8 @@
 package com.daniela.creditflow.application.installment.payment;
 
-import com.daniela.creditflow.application.exception.UnsupportedPaymentMethodException;
+import com.daniela.creditflow.domain.exceptions.UnsupportedPaymentMethodException;
 import com.daniela.creditflow.application.installment.payment.strategy.PaymentStrategy;
-import com.daniela.creditflow.domain.installment.valueObject.PaymentMethod;
+import com.daniela.creditflow.domain.model.PaymentMethod;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

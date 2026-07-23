@@ -1,7 +1,7 @@
 package com.daniela.creditflow.infrastructure.persistence.credit.entity;
 
-import com.daniela.creditflow.domain.credit.model.CreditStatus;
-import com.daniela.creditflow.domain.credit.model.CreditType;
+import com.daniela.creditflow.domain.model.CreditStatus;
+import com.daniela.creditflow.domain.model.CreditType;
 import com.daniela.creditflow.infrastructure.persistence.customer.entity.CustomerEntity;
 import com.daniela.creditflow.infrastructure.persistence.installment.entity.InstallmentEntity;
 import jakarta.persistence.*;

@@ -3,10 +3,10 @@ package com.daniela.creditflow.application.credit.factory;
 import com.daniela.creditflow.application.credit.calculation.CreditCalculationResult;
 import com.daniela.creditflow.application.credit.dto.input.RequestCreditInput;
 import com.daniela.creditflow.application.credit.service.CreditCalculationService;
-import com.daniela.creditflow.domain.credit.model.Credit;
-import com.daniela.creditflow.domain.credit.model.CreditStatus;
-import com.daniela.creditflow.domain.credit.valueObject.CreditId;
-import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
+import com.daniela.creditflow.domain.model.Credit;
+import com.daniela.creditflow.domain.model.CreditStatus;
+import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueObject.CustomerId;
 import com.daniela.creditflow.domain.valueObject.Money;
 import org.springframework.stereotype.Component;
 

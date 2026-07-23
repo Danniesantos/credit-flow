@@ -1,9 +1,9 @@
 package com.daniela.creditflow.infrastructure.persistence.credit.mapper;
 
-import com.daniela.creditflow.domain.credit.model.Credit;
-import com.daniela.creditflow.domain.credit.valueObject.CreditId;
-import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
-import com.daniela.creditflow.domain.installment.model.Installment;
+import com.daniela.creditflow.domain.model.Credit;
+import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueObject.CustomerId;
+import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.valueObject.InterestRate;
 import com.daniela.creditflow.domain.valueObject.Money;
 import com.daniela.creditflow.infrastructure.persistence.credit.entity.CreditEntity;

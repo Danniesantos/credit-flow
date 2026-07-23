@@ -1,6 +1,6 @@
 package com.daniela.creditflow.application.customer.dto.output;
 
-import com.daniela.creditflow.domain.customer.model.CustomerStatus;
+import com.daniela.creditflow.domain.model.CustomerStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;

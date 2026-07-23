@@ -4,7 +4,7 @@ import com.daniela.creditflow.application.customer.dto.input.CreateCustomerInput
 import com.daniela.creditflow.application.customer.dto.input.UpdateCustomerInput;
 import com.daniela.creditflow.application.customer.dto.output.CustomerOutput;
 import com.daniela.creditflow.application.customer.usecase.*;
-import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
+import com.daniela.creditflow.domain.valueObject.CustomerId;
 import com.daniela.creditflow.infrastructure.web.mapper.CustomerWebMapper;
 import com.daniela.creditflow.infrastructure.web.request.CustomerRequest;
 import com.daniela.creditflow.infrastructure.web.response.CustomerResponse;
