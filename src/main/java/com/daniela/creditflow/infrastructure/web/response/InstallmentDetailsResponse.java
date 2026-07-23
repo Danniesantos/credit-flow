@@ -1,9 +1,10 @@
 package com.daniela.creditflow.infrastructure.web.response;
 
-import com.daniela.creditflow.domain.installment.model.InstallmentStatus;
-import com.daniela.creditflow.domain.installment.valueObject.PaymentMethod;
+import com.daniela.creditflow.domain.model.InstallmentStatus;
+import com.daniela.creditflow.domain.model.PaymentMethod;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -12,7 +13,8 @@ public record InstallmentDetailsResponse(UUID installmentId,
                                          BigDecimal amount,
                                          LocalDate dueDate,
                                          PaymentMethod paymentMethod,
-                                         InstallmentStatus status) {
+                                         InstallmentStatus status,
+                                         Instant paidAt) {
 
 
 }
