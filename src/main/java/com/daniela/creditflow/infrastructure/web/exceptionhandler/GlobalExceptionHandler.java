@@ -1,13 +1,12 @@
 package com.daniela.creditflow.infrastructure.web.exceptionhandler;
 
-import com.daniela.creditflow.application.exception.UnsupportedPaymentMethodException;
-import com.daniela.creditflow.domain.customer.exception.*;
-import com.daniela.creditflow.domain.exceptions.CreditNotFoundException;
-import com.daniela.creditflow.domain.exceptions.DomainException;
+import com.daniela.creditflow.domain.exceptions.BusinessRuleException;
+import com.daniela.creditflow.domain.exceptions.ConflictException;
+import com.daniela.creditflow.domain.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,9 +22,9 @@ public class GlobalExceptionHandler {
     private static final String PATH = "path";
     private static final String TIMESTAMP = "timestamp";
 
-    @ExceptionHandler(DomainException.class)
-    public ProblemDetail handleDomainException(
-            DomainException ex,
+    @ExceptionHandler(BusinessRuleException.class)
+    public ProblemDetail handleBusinessRule(
+            BusinessRuleException ex,
             HttpServletRequest request) {
 
         return buildProblem(
@@ -36,73 +35,48 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(UnsupportedPaymentMethodException.class)
-    public ProblemDetail handleUnsupportedPaymentMethod(
-            UnsupportedPaymentMethodException ex,
+    @ExceptionHandler(ConflictException.class)
+    public ProblemDetail handleConflictExceptions(
+            ConflictException ex,
+            HttpServletRequest request) {
+
+        return buildProblem(
+                HttpStatus.CONFLICT,
+                "Resource conflict",
+                ex.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ProblemDetail handleNotFound(
+            ResourceNotFoundException ex,
+            HttpServletRequest request) {
+
+        return buildProblem(
+                HttpStatus.NOT_FOUND,
+                "Resource not found",
+                ex.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex,
             HttpServletRequest request) {
 
         return buildProblem(
                 HttpStatus.BAD_REQUEST,
-                "Unsupported payment method",
-                ex.getMessage(),
+                "Invalid request body",
+                "Request body contains invalid data.",
                 request
         );
     }
-    
-    @ExceptionHandler({
-            CpfAlreadyExistsException.class,
-            EmailAlreadyExistsException.class,
-            CustomerAlreadyInactiveException.class,
-            CustomerHasOpenCreditsException.class,
-            DataIntegrityViolationException.class
-    })
-    public ProblemDetail handleConflictExceptions(
-            Exception ex,
-            HttpServletRequest request) {
 
-        String title = switch (ex.getClass().getSimpleName()) {
-            case "CpfAlreadyExistsException" -> "CPF already registered";
-            case "EmailAlreadyExistsException" -> "Email already registered";
-            case "CustomerAlreadyInactiveException" -> "Customer already inactive";
-            case "CustomerHasOpenCreditsException" -> "Customer has open credits";
-            default -> "Data integrity violation";
-        };
-
-        String detail = (ex instanceof DataIntegrityViolationException)
-                ? "A unique field already exists."
-                : ex.getMessage();
-
-        return buildProblem(
-                HttpStatus.CONFLICT,
-                title,
-                detail,
-                request
-        );
-    }
-    
-    @ExceptionHandler({
-            CustomerNotFoundException.class,
-            CreditNotFoundException.class
-    })
-    public ProblemDetail handleNotFound(
-            RuntimeException ex,
-            HttpServletRequest request) {
-
-        String title = switch (ex.getClass().getSimpleName()) {
-            case "CustomerNotFoundException" -> "Customer Not Found";
-            default -> "Credit Not Found";
-        };
-
-        return buildProblem(
-                HttpStatus.NOT_FOUND,
-                title,
-                ex.getMessage(),
-                request
-        );
-    }
-    
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
+    public ProblemDetail handleValidation(MethodArgumentNotValidException ex,
+                                          HttpServletRequest request) {
 
         String errors = ex.getBindingResult()
                 .getFieldErrors()
@@ -114,7 +88,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 "Validation failed",
                 errors,
-                null
+                request
         );
     }
 
@@ -122,7 +96,8 @@ public class GlobalExceptionHandler {
             IllegalArgumentException.class,
             MethodArgumentTypeMismatchException.class
     })
-    public ProblemDetail handleBadRequest(Exception ex, HttpServletRequest request) {
+    public ProblemDetail handleBadRequest(Exception ex,
+                                          HttpServletRequest request) {
 
         String detail = (ex instanceof MethodArgumentTypeMismatchException)
                 ? "Invalid UUID format."
@@ -139,7 +114,7 @@ public class GlobalExceptionHandler {
                 request
         );
     }
-    
+
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ProblemDetail handleMethodNotAllowed(
             HttpRequestMethodNotSupportedException ex,
@@ -152,9 +127,10 @@ public class GlobalExceptionHandler {
                 request
         );
     }
-    
+
     @ExceptionHandler(Exception.class)
-    public ProblemDetail handleGeneric(Exception ex, HttpServletRequest request) {
+    public ProblemDetail handleGeneric(Exception ex,
+                                       HttpServletRequest request) {
 
         return buildProblem(
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -163,7 +139,7 @@ public class GlobalExceptionHandler {
                 request
         );
     }
-    
+
     private ProblemDetail buildProblem(
             HttpStatus status,
             String title,
