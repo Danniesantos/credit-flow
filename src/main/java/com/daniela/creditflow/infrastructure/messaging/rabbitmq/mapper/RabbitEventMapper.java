@@ -7,6 +7,7 @@ import com.daniela.creditflow.domain.event.InstallmentPaidEvent;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditEventType;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditMessage;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.PaidMessage;
+import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.PaymentEventType;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -48,7 +49,7 @@ public class RabbitEventMapper {
                 event.installmentId().value(),
                 event.customerId().value(),
                 event.paidAt(),
-                CreditEventType.INSTALLMENT_PAID
+                PaymentEventType.INSTALLMENT_PAID
         );
     }
 
@@ -71,14 +72,14 @@ public class RabbitEventMapper {
             UUID installmentId,
             UUID customerId,
             Instant paidAt,
-            CreditEventType eventType
+            PaymentEventType paymentType
     ) {
         return new PaidMessage(
                 creditId,
                 installmentId,
                 customerId,
                 paidAt,
-                eventType
+                paymentType
         );
     }
 }
