@@ -7,7 +7,7 @@ import com.daniela.creditflow.application.credit.dto.output.CreditDetailsOutput;
 import com.daniela.creditflow.application.credit.dto.output.RequestCreditOutput;
 import com.daniela.creditflow.application.credit.dto.output.SimulateCreditOutput;
 import com.daniela.creditflow.application.credit.usecase.*;
-import com.daniela.creditflow.domain.credit.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueObject.CreditId;
 import com.daniela.creditflow.infrastructure.web.mapper.CreditWebMapper;
 import com.daniela.creditflow.infrastructure.web.request.RequestCreditRequest;
 import com.daniela.creditflow.infrastructure.web.request.SimulateCreditRequest;

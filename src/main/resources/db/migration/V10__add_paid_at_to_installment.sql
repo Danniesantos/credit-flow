@@ -1,0 +1,2 @@
+ALTER TABLE installments
+ADD COLUMN paid_at TIMESTAMP;

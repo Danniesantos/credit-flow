@@ -1,10 +1,8 @@
 package com.daniela.creditflow.domain.exceptions;
 
-import com.daniela.creditflow.domain.valueObject.InstallmentId;
+public class InstallmentNotFoundException extends ResourceNotFoundException {
 
-public class InstallmentNotFoundException extends RuntimeException {
-    public InstallmentNotFoundException(InstallmentId installmentId) {
-        super("Installment with id %s not found"
-                .formatted(installmentId.value()));
+    public InstallmentNotFoundException() {
+        super("Installment not found");
     }
 }

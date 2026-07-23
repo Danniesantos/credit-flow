@@ -1,8 +1,7 @@
 package com.daniela.creditflow.infrastructure.persistence.credit.entity;
 
-import com.daniela.creditflow.domain.credit.model.CreditStatus;
-import com.daniela.creditflow.domain.credit.model.CreditType;
-import com.daniela.creditflow.domain.credit.model.PaymentMethod;
+import com.daniela.creditflow.domain.model.CreditStatus;
+import com.daniela.creditflow.domain.model.CreditType;
 import com.daniela.creditflow.infrastructure.persistence.customer.entity.CustomerEntity;
 import com.daniela.creditflow.infrastructure.persistence.installment.entity.InstallmentEntity;
 import jakarta.persistence.*;
@@ -56,11 +55,6 @@ public class CreditEntity {
     private Integer installmentsQuantity;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method",
-            nullable = false)
-    private PaymentMethod paymentMethod;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "status",
             nullable = false)
     private CreditStatus status;
@@ -81,7 +75,6 @@ public class CreditEntity {
                         CreditType creditType,
                         BigDecimal interestRate,
                         Integer installmentsQuantity,
-                        PaymentMethod paymentMethod,
                         CreditStatus status,
                         Instant createdAt,
                         Instant updatedAt) {
@@ -92,7 +85,6 @@ public class CreditEntity {
         this.creditType = creditType;
         this.interestRate = interestRate;
         this.installmentsQuantity = installmentsQuantity;
-        this.paymentMethod = paymentMethod;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;

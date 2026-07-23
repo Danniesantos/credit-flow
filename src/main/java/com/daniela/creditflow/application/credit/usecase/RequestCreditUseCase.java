@@ -4,8 +4,8 @@ import com.daniela.creditflow.application.credit.dto.input.RequestCreditInput;
 import com.daniela.creditflow.application.credit.dto.output.RequestCreditOutput;
 import com.daniela.creditflow.application.credit.factory.CreditFactory;
 import com.daniela.creditflow.application.credit.mapper.CreditOutputMapper;
-import com.daniela.creditflow.domain.credit.model.Credit;
-import com.daniela.creditflow.domain.credit.repository.CreditRepository;
+import com.daniela.creditflow.domain.model.Credit;
+import com.daniela.creditflow.domain.repository.CreditRepository;
 import org.springframework.stereotype.Service;
 
 @Service

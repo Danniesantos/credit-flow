@@ -82,6 +82,31 @@ public class RabbitQueueConfig {
         );
     }
 
+    @Bean
+    public Queue paymentQueue() {
+
+        return queue(
+                RabbitConstants.CREDIT_PAYMENT_QUEUE
+        );
+    }
+
+    @Bean
+    public Queue paymentRetryQueue() {
+
+        return retryQueue(
+                RabbitConstants.CREDIT_PAYMENT_RETRY_QUEUE,
+                RabbitConstants.CREDIT_PAYMENT_ROUTING_KEY
+        );
+    }
+
+    @Bean
+    public Queue paymentDlq() {
+
+        return dlq(
+                RabbitConstants.CREDIT_PAYMENT_DLQ
+        );
+    }
+
     private Queue queue(String queueName) {
         return QueueBuilder
                 .durable(queueName)

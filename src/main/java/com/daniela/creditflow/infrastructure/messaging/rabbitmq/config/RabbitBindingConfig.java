@@ -118,4 +118,39 @@ public class RabbitBindingConfig {
                 .to(creditDlqExchange)
                 .with(RabbitConstants.CREDIT_CONTRACTED_ROUTING_KEY);
     }
+
+    @Bean
+    public Binding paymentBinding(
+            Queue paymentQueue,
+            TopicExchange creditExchange) {
+
+        return BindingBuilder
+                .bind(paymentQueue)
+                .to(creditExchange)
+                .with(
+                        RabbitConstants.CREDIT_PAYMENT_ROUTING_KEY
+                );
+    }
+
+    @Bean
+    public Binding paymentRetryBinding(
+            Queue paymentRetryQueue,
+            TopicExchange creditRetryExchange
+    ) {
+
+        return BindingBuilder
+                .bind(paymentRetryQueue)
+                .to(creditRetryExchange)
+                .with(RabbitConstants.CREDIT_PAYMENT_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding paymentDlqBinding(
+            Queue paymentDlq,
+            TopicExchange creditDlqExchange) {
+
+        return BindingBuilder.bind(paymentDlq)
+                .to(creditDlqExchange)
+                .with(RabbitConstants.CREDIT_PAYMENT_ROUTING_KEY);
+    }
 }

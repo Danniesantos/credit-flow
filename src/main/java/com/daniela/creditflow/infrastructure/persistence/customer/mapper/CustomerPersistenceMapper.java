@@ -1,8 +1,8 @@
 package com.daniela.creditflow.infrastructure.persistence.customer.mapper;
 
-import com.daniela.creditflow.domain.credit.valueObject.CreditScore;
-import com.daniela.creditflow.domain.customer.model.*;
-import com.daniela.creditflow.domain.customer.valueObject.*;
+import com.daniela.creditflow.domain.valueObject.CreditScore;
+import com.daniela.creditflow.domain.model.Customer;
+import com.daniela.creditflow.domain.model.CustomerData;
 import com.daniela.creditflow.domain.valueObject.*;
 import com.daniela.creditflow.infrastructure.persistence.customer.entity.CustomerEntity;
 import org.springframework.stereotype.Component;

@@ -1,15 +1,15 @@
 package com.daniela.creditflow.application.customer.service;
 
-import com.daniela.creditflow.domain.customer.exception.CpfAlreadyExistsException;
-import com.daniela.creditflow.domain.customer.exception.CustomerHasOpenCreditsException;
-import com.daniela.creditflow.domain.customer.exception.CustomerNotFoundException;
-import com.daniela.creditflow.domain.credit.repository.CreditRepository;
-import com.daniela.creditflow.domain.customer.exception.EmailAlreadyExistsException;
-import com.daniela.creditflow.domain.customer.model.Customer;
-import com.daniela.creditflow.domain.customer.repository.CustomerRepository;
-import com.daniela.creditflow.domain.customer.valueObject.CPF;
-import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
-import com.daniela.creditflow.domain.customer.valueObject.Email;
+import com.daniela.creditflow.domain.exceptions.CpfAlreadyExistsException;
+import com.daniela.creditflow.domain.exceptions.CustomerHasOpenCreditsException;
+import com.daniela.creditflow.domain.exceptions.CustomerNotFoundException;
+import com.daniela.creditflow.domain.repository.CreditRepository;
+import com.daniela.creditflow.domain.exceptions.EmailAlreadyExistsException;
+import com.daniela.creditflow.domain.model.Customer;
+import com.daniela.creditflow.domain.repository.CustomerRepository;
+import com.daniela.creditflow.domain.valueObject.CPF;
+import com.daniela.creditflow.domain.valueObject.CustomerId;
+import com.daniela.creditflow.domain.valueObject.Email;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,10 +28,10 @@ public class CustomerService {
                                    Email email) {
 
         if (customerRepository.existsByCpf(cpf)) {
-            throw new CpfAlreadyExistsException(cpf.value());
+            throw new CpfAlreadyExistsException();
         }
         if (customerRepository.existsByEmail(email)) {
-            throw new EmailAlreadyExistsException(email.value());
+            throw new EmailAlreadyExistsException();
         }
     }
 
@@ -40,22 +40,22 @@ public class CustomerService {
                                    Email email) {
 
         if (customerRepository.existsByCpfAndIdNot(cpf, id)) {
-            throw new CpfAlreadyExistsException(cpf.value());
+            throw new CpfAlreadyExistsException();
         }
 
         if (customerRepository.existsByEmailAndIdNot(email, id)) {
-            throw new EmailAlreadyExistsException(email.value());
+            throw new EmailAlreadyExistsException();
         }
     }
 
     public Customer findCustomer(CustomerId customerId) {
         return customerRepository.findById(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException(customerId));
+                .orElseThrow(CustomerNotFoundException::new);
     }
 
     public void validateNoOpenCredits(CustomerId customerId) {
         if (creditRepository.hasOpenCredits(customerId)) {
-            throw new CustomerHasOpenCreditsException(customerId);
+            throw new CustomerHasOpenCreditsException();
         }
     }
 }

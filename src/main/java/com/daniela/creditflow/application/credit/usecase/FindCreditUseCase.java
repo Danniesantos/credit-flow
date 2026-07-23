@@ -3,8 +3,8 @@ package com.daniela.creditflow.application.credit.usecase;
 import com.daniela.creditflow.application.credit.dto.output.CreditDetailsOutput;
 import com.daniela.creditflow.application.credit.mapper.CreditOutputMapper;
 import com.daniela.creditflow.application.credit.service.CreditService;
-import com.daniela.creditflow.domain.credit.model.Credit;
-import com.daniela.creditflow.domain.credit.valueObject.CreditId;
+import com.daniela.creditflow.domain.model.Credit;
+import com.daniela.creditflow.domain.valueObject.CreditId;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,6 +1,6 @@
 package com.daniela.creditflow.infrastructure.web.response;
 
-import com.daniela.creditflow.domain.credit.model.CreditStatus;
+import com.daniela.creditflow.domain.model.CreditStatus;
 
 import java.util.UUID;
 

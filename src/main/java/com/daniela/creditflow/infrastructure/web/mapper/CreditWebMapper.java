@@ -27,8 +27,7 @@ public class CreditWebMapper {
                 request.getCustomerId(),
                 request.getRequestedAmount(),
                 request.getInstallments(),
-                request.getCreditType(),
-                request.getPaymentMethod());
+                request.getCreditType());
     }
 
     public SimulateCreditInput toSimulateInput(SimulateCreditRequest request) {
@@ -47,7 +46,6 @@ public class CreditWebMapper {
                 output.installments(),
                 output.interestRate(),
                 output.creditType(),
-                output.paymentMethod(),
                 output.status(),
                 output.createdAt(),
                 output.updatedAt()
@@ -88,7 +86,6 @@ public class CreditWebMapper {
                 output.requestedAmount(),
                 output.interestRate(),
                 output.creditType(),
-                output.paymentMethod(),
                 output.status(),
                 installments,
                 output.createdAt(),

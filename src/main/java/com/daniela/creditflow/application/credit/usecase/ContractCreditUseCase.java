@@ -5,11 +5,11 @@ import com.daniela.creditflow.application.credit.service.CreditCalculationServic
 import com.daniela.creditflow.application.credit.service.CreditService;
 import com.daniela.creditflow.application.installment.factory.InstallmentFactory;
 import com.daniela.creditflow.application.installment.policy.DueDatePolicy;
-import com.daniela.creditflow.domain.credit.event.CreditContractedEvent;
-import com.daniela.creditflow.domain.credit.model.Credit;
-import com.daniela.creditflow.domain.credit.repository.CreditRepository;
-import com.daniela.creditflow.domain.credit.valueObject.CreditId;
-import com.daniela.creditflow.domain.installment.model.Installment;
+import com.daniela.creditflow.domain.event.CreditContractedEvent;
+import com.daniela.creditflow.domain.model.Credit;
+import com.daniela.creditflow.domain.repository.CreditRepository;
+import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.model.Installment;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

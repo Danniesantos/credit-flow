@@ -1,6 +1,7 @@
 package com.daniela.creditflow.application.notification;
 
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditMessage;
+import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.PaidMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,19 @@ public class NotificationService {
 
         log.info("""
                         Sending contracted notification
+                        
+                        Credit={}
+                        Customer={}
+                        """,
+                message.creditId(),
+                message.customerId());
+
+    }
+
+    public void notifyPayment(PaidMessage message) {
+
+        log.info("""
+                        Sending Payment notification
                         
                         Credit={}
                         Customer={}

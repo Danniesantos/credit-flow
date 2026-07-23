@@ -4,7 +4,7 @@ import com.daniela.creditflow.application.credit.calculation.strategy.BusinessCr
 import com.daniela.creditflow.application.credit.calculation.strategy.CreditInterestCalculationStrategy;
 import com.daniela.creditflow.application.credit.calculation.strategy.PayrollCreditStrategy;
 import com.daniela.creditflow.application.credit.calculation.strategy.PersonalCreditStrategy;
-import com.daniela.creditflow.domain.credit.model.CreditType;
+import com.daniela.creditflow.domain.model.CreditType;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

@@ -2,9 +2,9 @@ package com.daniela.creditflow.application.credit.mapper;
 
 import com.daniela.creditflow.application.credit.dto.output.CreditDetailsOutput;
 import com.daniela.creditflow.application.credit.dto.output.RequestCreditOutput;
-import com.daniela.creditflow.application.installment.dto.output.InstallmentOutput;
+import com.daniela.creditflow.application.installment.dto.output.InstallmentDetailsOutput;
 import com.daniela.creditflow.application.installment.mapper.InstallmentOutputMapper;
-import com.daniela.creditflow.domain.credit.model.Credit;
+import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.valueObject.InterestRate;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +29,6 @@ public class CreditOutputMapper {
                 credit.getInstallments().size(),
                 formatRate(credit.getInterestRate()),
                 credit.getCreditType(),
-                credit.getPaymentMethod(),
                 credit.getStatus(),
                 credit.getCreatedAt(),
                 credit.getUpdatedAt());
@@ -38,7 +37,7 @@ public class CreditOutputMapper {
 
     public CreditDetailsOutput toDetailsOutput(Credit credit) {
 
-        List<InstallmentOutput> installments =
+        List<InstallmentDetailsOutput> installments =
                 credit.getInstallments()
                         .stream()
                         .map(installmentMapper::toOutput)
@@ -50,7 +49,6 @@ public class CreditOutputMapper {
                 credit.getRequestedAmount().value(),
                 formatRate(credit.getInterestRate()),
                 credit.getCreditType(),
-                credit.getPaymentMethod(),
                 credit.getStatus(),
                 installments,
                 credit.getCreatedAt(),

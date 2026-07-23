@@ -1,7 +1,6 @@
 package com.daniela.creditflow.infrastructure.web.request;
 
-import com.daniela.creditflow.domain.credit.model.CreditType;
-import com.daniela.creditflow.domain.credit.model.PaymentMethod;
+import com.daniela.creditflow.domain.model.CreditType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -31,6 +30,4 @@ public class RequestCreditRequest {
     @NotNull(message = "credit type is required")
     private CreditType creditType;
 
-    @NotNull(message = "Payment method is required")
-    private PaymentMethod paymentMethod;
 }
