@@ -1,12 +1,13 @@
 package com.daniela.creditflow.infrastructure.persistence.installment.entity;
 
-import com.daniela.creditflow.domain.installment.model.InstallmentStatus;
-import com.daniela.creditflow.domain.installment.valueObject.PaymentMethod;
+import com.daniela.creditflow.domain.model.InstallmentStatus;
+import com.daniela.creditflow.domain.model.PaymentMethod;
 import com.daniela.creditflow.infrastructure.persistence.credit.entity.CreditEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
@@ -38,6 +39,9 @@ public class InstallmentEntity {
     @Column(name = "status", nullable = false)
     private InstallmentStatus status;
 
+    @Column(name = "paid_at")
+    private Instant paidAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "credit_id",
             nullable = false)
@@ -52,6 +56,7 @@ public class InstallmentEntity {
                              LocalDate dueDate,
                              PaymentMethod paymentMethod,
                              InstallmentStatus status,
+                             Instant paidAt,
                              CreditEntity credit) {
 
         this.id = id;
@@ -60,6 +65,7 @@ public class InstallmentEntity {
         this.dueDate = dueDate;
         this.paymentMethod = paymentMethod;
         this.status = status;
+        this.paidAt = paidAt;
         this.credit = credit;
     }
 
