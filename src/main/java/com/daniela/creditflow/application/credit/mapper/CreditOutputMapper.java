@@ -26,7 +26,7 @@ public class CreditOutputMapper {
                 credit.getId().value(),
                 credit.getCustomerId().value(),
                 credit.getRequestedAmount().value(),
-                credit.getInstallments().size(),
+                credit.getInstallmentsQuantity(),
                 formatRate(credit.getInterestRate()),
                 credit.getCreditType(),
                 credit.getStatus(),
