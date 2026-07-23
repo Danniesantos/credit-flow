@@ -198,14 +198,6 @@ public class Credit {
 
     }
 
-    public Money installmentAmount(
-            InstallmentId installmentId
-    ) {
-
-        return findInstallment(installmentId)
-                .getAmount();
-    }
-
     private void validateInstallmentList(List<Installment> installments) {
 
         if (installments.isEmpty()) {
