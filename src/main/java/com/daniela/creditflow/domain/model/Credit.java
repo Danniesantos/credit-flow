@@ -1,12 +1,8 @@
 package com.daniela.creditflow.domain.model;
 
-import com.daniela.creditflow.domain.valueObject.CreditId;
-import com.daniela.creditflow.domain.valueObject.CustomerId;
 import com.daniela.creditflow.domain.exceptions.InstallmentNotFoundException;
 import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
-import com.daniela.creditflow.domain.valueObject.InstallmentId;
-import com.daniela.creditflow.domain.valueObject.InterestRate;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueObject.*;
 import lombok.Getter;
 
 import java.time.Instant;
@@ -115,13 +111,20 @@ public class Credit {
 
     public void contract(List<Installment> installments) {
 
+        if (isContracted()) {
+            throw new InvalidDomainStateException(
+                    "Credit is already contracted");
+        }
+
         if (!isApproved()) {
             throw new InvalidDomainStateException(
                     "Only approved credits can be contracted");
         }
 
         validateInstallmentList(installments);
+
         this.installments = new ArrayList<>(installments);
+
         validateTotalAmount();
 
         changeStatus(CreditStatus.CONTRACTED);
