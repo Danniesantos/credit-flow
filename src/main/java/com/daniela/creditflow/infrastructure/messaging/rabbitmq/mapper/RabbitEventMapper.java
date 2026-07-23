@@ -1,17 +1,19 @@
 package com.daniela.creditflow.infrastructure.messaging.rabbitmq.mapper;
 
-import com.daniela.creditflow.domain.credit.event.CreditApprovedEvent;
-import com.daniela.creditflow.domain.credit.event.CreditContractedEvent;
-import com.daniela.creditflow.domain.credit.event.CreditRejectedEvent;
+import com.daniela.creditflow.domain.event.CreditApprovedEvent;
+import com.daniela.creditflow.domain.event.CreditContractedEvent;
+import com.daniela.creditflow.domain.event.CreditRejectedEvent;
+import com.daniela.creditflow.domain.event.InstallmentPaidEvent;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditEventType;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditMessage;
+import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.PaidMessage;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Component
-public class CreditEventMapper {
+public class RabbitEventMapper {
 
     public CreditMessage toMessage(CreditApprovedEvent event) {
         return toMessage(
@@ -40,6 +42,16 @@ public class CreditEventMapper {
         );
     }
 
+    public PaidMessage toMessage(InstallmentPaidEvent event) {
+        return toMessage(
+                event.creditId().value(),
+                event.installmentId().value(),
+                event.customerId().value(),
+                event.paidAt(),
+                CreditEventType.INSTALLMENT_PAID
+        );
+    }
+
     private CreditMessage toMessage(
             UUID creditId,
             UUID customerId,
@@ -50,6 +62,22 @@ public class CreditEventMapper {
                 creditId,
                 customerId,
                 occurredAt,
+                eventType
+        );
+    }
+
+    private PaidMessage toMessage(
+            UUID creditId,
+            UUID installmentId,
+            UUID customerId,
+            Instant paidAt,
+            CreditEventType eventType
+    ) {
+        return new PaidMessage(
+                creditId,
+                installmentId,
+                customerId,
+                paidAt,
                 eventType
         );
     }
