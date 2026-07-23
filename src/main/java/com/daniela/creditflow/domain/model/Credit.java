@@ -1,12 +1,10 @@
-package com.daniela.creditflow.domain.credit.model;
+package com.daniela.creditflow.domain.model;
 
-import com.daniela.creditflow.domain.credit.valueObject.CreditId;
-import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
-import com.daniela.creditflow.domain.exceptions.DomainException;
+import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueObject.CustomerId;
 import com.daniela.creditflow.domain.exceptions.InstallmentNotFoundException;
-import com.daniela.creditflow.domain.installment.model.Installment;
-import com.daniela.creditflow.domain.installment.valueObject.InstallmentId;
-import com.daniela.creditflow.domain.installment.valueObject.PaymentMethod;
+import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
+import com.daniela.creditflow.domain.valueObject.InstallmentId;
 import com.daniela.creditflow.domain.valueObject.InterestRate;
 import com.daniela.creditflow.domain.valueObject.Money;
 import lombok.Getter;
@@ -118,7 +116,7 @@ public class Credit {
     public void contract(List<Installment> installments) {
 
         if (!isApproved()) {
-            throw new DomainException(
+            throw new InvalidDomainStateException(
                     "Only approved credits can be contracted");
         }
 
@@ -135,13 +133,13 @@ public class Credit {
             Instant paidAt) {
 
         if (isPaidOff()) {
-            throw new DomainException(
+            throw new InvalidDomainStateException(
                     "Credit is already paid off"
             );
         }
 
         if (!isContracted()) {
-            throw new DomainException(
+            throw new InvalidDomainStateException(
                     "Credit must be contracted before payments"
             );
         }
@@ -166,20 +164,19 @@ public class Credit {
 
     }
 
-    private Installment findInstallment(
+    public Installment findInstallment(
             InstallmentId installmentId) {
 
         return installments.stream()
                 .filter(i -> i.getId().equals(installmentId))
                 .findFirst()
-                .orElseThrow(() ->
-                        new InstallmentNotFoundException(installmentId));
+                .orElseThrow(InstallmentNotFoundException::new);
     }
 
     private void validateRequestedAmount() {
 
         if (requestedAmount.isZero()) {
-            throw new DomainException(
+            throw new InvalidDomainStateException(
                     "Requested amount must be greater than zero");
         }
     }
@@ -187,12 +184,12 @@ public class Credit {
     private void validateInstallmentsQuantity() {
 
         if (installmentsQuantity <= 0) {
-            throw new DomainException(
+            throw new InvalidDomainStateException(
                     "Installments quantity must be greater than zero");
         }
 
         if (installmentsQuantity > 60) {
-            throw new DomainException(
+            throw new InvalidDomainStateException(
                     "Maximum number of installments is 60");
         }
 
@@ -209,7 +206,7 @@ public class Credit {
     private void validateInstallmentList(List<Installment> installments) {
 
         if (installments.isEmpty()) {
-            throw new DomainException(
+            throw new InvalidDomainStateException(
                     "Credit must contain at least one installment");
         }
 
@@ -219,7 +216,7 @@ public class Credit {
 
         if (totalInstallmentsAmount().lessThan(requestedAmount)) {
 
-            throw new DomainException(
+            throw new InvalidDomainStateException(
                     "Installments total cannot be lower than requested amount");
         }
     }
@@ -227,7 +224,7 @@ public class Credit {
     private void ensureUnderAnalysis() {
 
         if (!isUnderAnalysis()) {
-            throw new DomainException(
+            throw new InvalidDomainStateException(
                     "Credit is not under analysis");
         }
     }

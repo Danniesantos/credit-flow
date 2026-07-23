@@ -1,9 +1,10 @@
-package com.daniela.creditflow.domain.installment.model;
+package com.daniela.creditflow.domain.model;
 
-import com.daniela.creditflow.domain.credit.valueObject.CreditId;
-import com.daniela.creditflow.domain.exceptions.DomainException;
-import com.daniela.creditflow.domain.installment.valueObject.InstallmentId;
-import com.daniela.creditflow.domain.installment.valueObject.PaymentMethod;
+import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.exceptions.InstallmentAlreadyPaidException;
+import com.daniela.creditflow.domain.exceptions.InstallmentCannotBePaidException;
+import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
+import com.daniela.creditflow.domain.valueObject.InstallmentId;
 import com.daniela.creditflow.domain.valueObject.Money;
 import lombok.Getter;
 
@@ -23,34 +24,42 @@ public class Installment {
     private final CreditId creditId;
     private Instant paidAt;
 
-    public Installment(Integer number,
-                       Money amount,
-                       LocalDate dueDate,
-                       CreditId creditId) {
+    public Installment(
+            Integer number,
+            Money amount,
+            LocalDate dueDate,
+            CreditId creditId) {
 
         this(
                 new InstallmentId(),
                 number,
                 amount,
                 dueDate,
+                null,
                 InstallmentStatus.PENDING,
-                creditId
+                creditId,
+                null
         );
     }
 
-    public Installment(InstallmentId id,
-                       Integer number,
-                       Money amount,
-                       LocalDate dueDate,
-                       InstallmentStatus status,
-                       CreditId creditId) {
+    public Installment(
+            InstallmentId id,
+            Integer number,
+            Money amount,
+            LocalDate dueDate,
+            PaymentMethod paymentMethod,
+            InstallmentStatus status,
+            CreditId creditId,
+            Instant paidAt) {
 
         this.id = Objects.requireNonNull(id);
         this.number = Objects.requireNonNull(number);
         this.amount = Objects.requireNonNull(amount);
         this.dueDate = Objects.requireNonNull(dueDate);
+        this.paymentMethod = paymentMethod;
         this.status = Objects.requireNonNull(status);
         this.creditId = Objects.requireNonNull(creditId);
+        this.paidAt = paidAt;
 
         validateNumber();
     }
@@ -70,7 +79,7 @@ public class Installment {
     private void validateNumber() {
 
         if (number <= 0) {
-            throw new DomainException(
+            throw new InvalidDomainStateException(
                     "Installment number must be greater than zero");
         }
     }
@@ -79,20 +88,17 @@ public class Installment {
                     Instant paidAt) {
 
         if (isPaid()) {
-            throw new DomainException(
-                    "Installment already paid"
+            throw new InstallmentAlreadyPaidException(
             );
         }
 
         if (!isPending()) {
-            throw new DomainException(
-                    "Only pending installments can be paid"
+            throw new InstallmentCannotBePaidException(
             );
         }
-
-        this.status = InstallmentStatus.PAID;
         this.paymentMethod = Objects.requireNonNull(paymentMethod);
         this.paidAt = Objects.requireNonNull(paidAt);
+        this.status = InstallmentStatus.PAID;
     }
 
 }

@@ -1,8 +1,8 @@
 package com.daniela.creditflow.application.credit.service;
 
-import com.daniela.creditflow.domain.credit.model.Credit;
-import com.daniela.creditflow.domain.credit.repository.CreditRepository;
-import com.daniela.creditflow.domain.credit.valueObject.CreditId;
+import com.daniela.creditflow.domain.model.Credit;
+import com.daniela.creditflow.domain.repository.CreditRepository;
+import com.daniela.creditflow.domain.valueObject.CreditId;
 import com.daniela.creditflow.domain.exceptions.CreditNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ public class CreditService {
 
     public Credit findCredit(CreditId id) {
         return creditRepository.findByIdWithInstallments(id)
-                .orElseThrow(() ->
-                        new CreditNotFoundException(id));
+                .orElseThrow(
+                        CreditNotFoundException::new);
     }
 }

@@ -5,10 +5,10 @@ import com.daniela.creditflow.application.customer.dto.input.UpdateCustomerInput
 import com.daniela.creditflow.application.customer.dto.output.CustomerOutput;
 import com.daniela.creditflow.application.customer.mapper.CustomerDataMapper;
 import com.daniela.creditflow.application.customer.mapper.CustomerOutputMapper;
-import com.daniela.creditflow.domain.customer.model.Customer;
-import com.daniela.creditflow.domain.customer.model.CustomerData;
-import com.daniela.creditflow.domain.customer.repository.CustomerRepository;
-import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
+import com.daniela.creditflow.domain.model.Customer;
+import com.daniela.creditflow.domain.model.CustomerData;
+import com.daniela.creditflow.domain.repository.CustomerRepository;
+import com.daniela.creditflow.domain.valueObject.CustomerId;
 import org.springframework.stereotype.Service;
 
 @Service

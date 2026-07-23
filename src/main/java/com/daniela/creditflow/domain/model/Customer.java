@@ -1,10 +1,13 @@
-package com.daniela.creditflow.domain.customer.model;
+package com.daniela.creditflow.domain.model;
 
-import com.daniela.creditflow.domain.credit.valueObject.CreditScore;
-import com.daniela.creditflow.domain.customer.exception.CustomerAlreadyInactiveException;
-import com.daniela.creditflow.domain.customer.valueObject.*;
-import com.daniela.creditflow.domain.exceptions.DomainException;
-import com.daniela.creditflow.domain.valueObject.*;
+import com.daniela.creditflow.domain.valueObject.CreditScore;
+import com.daniela.creditflow.domain.valueObject.CPF;
+import com.daniela.creditflow.domain.valueObject.CustomerId;
+import com.daniela.creditflow.domain.valueObject.Email;
+import com.daniela.creditflow.domain.valueObject.PhoneNumber;
+import com.daniela.creditflow.domain.exceptions.CustomerAlreadyInactiveException;
+import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
+import com.daniela.creditflow.domain.valueObject.Money;
 import lombok.Getter;
 
 import java.time.Instant;
@@ -41,6 +44,7 @@ public class Customer {
 
         changeData(data);
     }
+
     public Customer(CustomerData data) {
 
         this(
@@ -60,28 +64,31 @@ public class Customer {
     private void validateName() {
 
         if (name.isBlank()) {
-            throw new DomainException(
-                    "Name cannot be blank");
+            throw new InvalidDomainStateException(
+                    "Name cannot be blank"
+            );
         }
 
         if (name.length() < 3) {
-            throw new DomainException(
-                    "Name must have at least 3 characters");
+            throw new InvalidDomainStateException(
+                    "Name must have at least 3 characters"
+            );
         }
     }
 
     private void validateAge() {
 
         if (dateOfBirth.isAfter(java.time.LocalDate.now())) {
-            throw new DomainException(
-                    "Date of birth cannot be in the future");
+            throw new InvalidDomainStateException(
+                    "Date of birth cannot be in the future"
+            );
         }
     }
 
     public void deactivate() {
 
         if (isInactive()) {
-            throw new CustomerAlreadyInactiveException(id);
+            throw new CustomerAlreadyInactiveException();
         }
 
         this.status = CustomerStatus.INACTIVE;
