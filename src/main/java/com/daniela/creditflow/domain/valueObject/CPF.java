@@ -1,13 +1,16 @@
-package com.daniela.creditflow.domain.customer.valueObject;
+package com.daniela.creditflow.domain.valueObject;
 
-import com.daniela.creditflow.domain.exceptions.DomainException;
-
-import java.util.Objects;
+import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
 
 public record CPF(String value) {
 
     public CPF {
-        Objects.requireNonNull(value, "CPF cannot be null");
+
+        if (value == null) {
+            throw new InvalidDomainStateException(
+                    "CPF cannot be null"
+            );
+        }
 
         String normalizedValue = normalize(value);
 
@@ -23,15 +26,15 @@ public record CPF(String value) {
     private static void validate(String value) {
 
         if (value.length() != 11) {
-            throw new DomainException("CPF must have 11 digits");
+            throw new InvalidDomainStateException("CPF must have 11 digits");
         }
 
         if (value.matches("(\\d)\\1{10}")) {
-            throw new DomainException("Invalid CPF");
+            throw new InvalidDomainStateException("Invalid CPF format");
         }
 
         if (!isValid(value)) {
-            throw new DomainException("Invalid CPF");
+            throw new InvalidDomainStateException("Invalid CPF format");
         }
     }
 

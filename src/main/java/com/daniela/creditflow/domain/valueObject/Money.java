@@ -1,18 +1,22 @@
 package com.daniela.creditflow.domain.valueObject;
 
-import com.daniela.creditflow.domain.exceptions.DomainException;
+import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Objects;
 
 public record Money(BigDecimal value) {
 
     public Money {
-        Objects.requireNonNull(value, "Money cannot be null");
+
+        if (value == null) {
+            throw new InvalidDomainStateException(
+                    "Money cannot be null"
+            );
+        }
 
         if (value.compareTo(BigDecimal.ZERO) < 0) {
-            throw new DomainException("Money cannot be negative");
+            throw new InvalidDomainStateException("Money cannot be negative");
         }
     }
 
@@ -23,6 +27,7 @@ public record Money(BigDecimal value) {
     public boolean isZero() {
         return value.compareTo(BigDecimal.ZERO) == 0;
     }
+
     public Money add(Money other) {
         return new Money(value.add(other.value()));
     }
@@ -38,6 +43,7 @@ public record Money(BigDecimal value) {
     public boolean greaterThan(Money other) {
         return value.compareTo(other.value()) > 0;
     }
+
     public boolean lessThan(Money other) {
         return value.compareTo(other.value()) < 0;
     }
