@@ -7,6 +7,7 @@ public enum CreditStatus {
     UNDER_ANALYSIS,
     APPROVED,
     REJECTED,
+    CANCELED,
     CONTRACTED,
     PAID_OFF;
 

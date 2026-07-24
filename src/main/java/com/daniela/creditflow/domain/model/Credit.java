@@ -91,6 +91,10 @@ public class Credit {
         return status == CreditStatus.REJECTED;
     }
 
+    public boolean isCanceled() {
+        return status == CreditStatus.CANCELED;
+    }
+
     public boolean isContracted() {
         return status == CreditStatus.CONTRACTED;
     }
@@ -107,6 +111,11 @@ public class Credit {
     public void reject() {
         ensureUnderAnalysis();
         changeStatus(CreditStatus.REJECTED);
+    }
+
+    public void cancel() {
+        ensureCancelable();
+        changeStatus(CreditStatus.CANCELED);
     }
 
     public void contract(List<Installment> installments) {
@@ -255,6 +264,29 @@ public class Credit {
 
         return installments.stream()
                 .allMatch(Installment::isPaid);
+    }
+
+    private void ensureCancelable() {
+
+        if (isCanceled()) {
+            throw new InvalidDomainStateException(
+                    "Credit is already canceled");
+        }
+
+        if (isRejected()) {
+            throw new InvalidDomainStateException(
+                    "Rejected credits cannot be canceled");
+        }
+
+        if (isContracted()) {
+            throw new InvalidDomainStateException(
+                    "Contracted credits cannot be canceled");
+        }
+
+        if (isPaidOff()) {
+            throw new InvalidDomainStateException(
+                    "Paid off credits cannot be canceled");
+        }
     }
 
     private void changeStatus(CreditStatus newStatus) {
