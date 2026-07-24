@@ -167,6 +167,33 @@ public class Credit {
 
     }
 
+    public Money totalPaidAmount() {
+
+        return installments.stream()
+                .filter(Installment::isPaid)
+                .map(Installment::getAmount)
+                .reduce(Money.zero(), Money::add);
+    }
+
+    public Money remainingAmount() {
+
+        return totalInstallmentsAmount()
+                .subtract(totalPaidAmount());
+    }
+
+    public long paidInstallmentsQuantity() {
+
+        return installments.stream()
+                .filter(Installment::isPaid)
+                .count();
+    }
+
+    public int remainingInstallments() {
+
+        return installments.size()
+                - (int) paidInstallmentsQuantity();
+    }
+
     public Installment findInstallment(
             InstallmentId installmentId) {
 
