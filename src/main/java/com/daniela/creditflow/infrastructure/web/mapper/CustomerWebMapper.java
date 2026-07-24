@@ -41,7 +41,7 @@ public class CustomerWebMapper {
         );
     }
 
-    public UpdateCustomerInput updateToInput(UUID id,
+    public UpdateCustomerInput toUpdateInput(UUID id,
                                              CustomerRequest request) {
 
         return new UpdateCustomerInput(
