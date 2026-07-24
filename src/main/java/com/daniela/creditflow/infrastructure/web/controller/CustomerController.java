@@ -96,7 +96,7 @@ public class CustomerController {
                                                    CustomerRequest request) {
 
         UpdateCustomerInput input =
-                customerMapper.updateToInput(id, request);
+                customerMapper.toUpdateInput(id, request);
 
         CustomerOutput output =
                 updateCustomerUseCase.execute(input);
