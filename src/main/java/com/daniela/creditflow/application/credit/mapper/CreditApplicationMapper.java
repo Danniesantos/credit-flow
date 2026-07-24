@@ -6,6 +6,7 @@ import com.daniela.creditflow.application.installment.dto.output.InstallmentDeta
 import com.daniela.creditflow.application.installment.mapper.InstallmentOutputMapper;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.valueObject.InterestRate;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -13,13 +14,10 @@ import java.math.RoundingMode;
 import java.util.List;
 
 @Component
-public class CreditOutputMapper {
+@RequiredArgsConstructor
+public class CreditApplicationMapper {
 
     private final InstallmentOutputMapper installmentMapper;
-
-    public CreditOutputMapper(InstallmentOutputMapper installmentMapper) {
-        this.installmentMapper = installmentMapper;
-    }
 
     public RequestCreditOutput toCreditOutput(Credit credit) {
         return new RequestCreditOutput(
