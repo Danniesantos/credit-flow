@@ -1,9 +1,6 @@
 package com.daniela.creditflow.infrastructure.messaging.rabbitmq.publisher;
 
-import com.daniela.creditflow.domain.event.CreditApprovedEvent;
-import com.daniela.creditflow.domain.event.CreditContractedEvent;
-import com.daniela.creditflow.domain.event.CreditRejectedEvent;
-import com.daniela.creditflow.domain.event.InstallmentPaidEvent;
+import com.daniela.creditflow.domain.event.*;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.config.RabbitConstants;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.mapper.RabbitEventMapper;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +26,14 @@ public class RabbitCreditEventPublisher implements RabbitEventPublisher {
     public void publishRejected(CreditRejectedEvent event) {
         publish(
                 RabbitConstants.CREDIT_REJECTED_ROUTING_KEY,
+                mapper.toMessage(event)
+        );
+    }
+
+    @Override
+    public void publishCanceled(CreditCanceledEvent event) {
+        publish(
+                RabbitConstants.CREDIT_CANCELED_ROUTING_KEY,
                 mapper.toMessage(event)
         );
     }

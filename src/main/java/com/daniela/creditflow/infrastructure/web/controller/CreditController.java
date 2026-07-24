@@ -2,20 +2,15 @@ package com.daniela.creditflow.infrastructure.web.controller;
 
 import com.daniela.creditflow.application.credit.dto.input.RequestCreditInput;
 import com.daniela.creditflow.application.credit.dto.input.SimulateCreditInput;
-import com.daniela.creditflow.application.credit.dto.output.AnalyzeCreditOutput;
-import com.daniela.creditflow.application.credit.dto.output.CreditDetailsOutput;
-import com.daniela.creditflow.application.credit.dto.output.RequestCreditOutput;
-import com.daniela.creditflow.application.credit.dto.output.SimulateCreditOutput;
+import com.daniela.creditflow.application.credit.dto.output.*;
 import com.daniela.creditflow.application.credit.usecase.*;
 import com.daniela.creditflow.domain.valueObject.CreditId;
 import com.daniela.creditflow.infrastructure.web.mapper.CreditWebMapper;
 import com.daniela.creditflow.infrastructure.web.request.RequestCreditRequest;
 import com.daniela.creditflow.infrastructure.web.request.SimulateCreditRequest;
-import com.daniela.creditflow.infrastructure.web.response.AnalyzeCreditResponse;
-import com.daniela.creditflow.infrastructure.web.response.CreditDetailsResponse;
-import com.daniela.creditflow.infrastructure.web.response.RequestCreditResponse;
-import com.daniela.creditflow.infrastructure.web.response.SimulateCreditResponse;
+import com.daniela.creditflow.infrastructure.web.response.*;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -24,6 +19,7 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/credits")
 public class CreditController {
 
@@ -32,29 +28,13 @@ public class CreditController {
     private final RequestCreditUseCase requestCreditUseCase;
     private final AnalyzeCreditUseCase analyzeCreditUseCase;
     private final FindCreditUseCase findCreditUseCase;
-    private final ContractCreditUseCase contractCreditUseCase;
-
-
-    public CreditController(CreditWebMapper creditWebMapper,
-                            SimulateCreditUseCase simulateCreditUseCase,
-                            RequestCreditUseCase requestCreditUseCase,
-                            AnalyzeCreditUseCase analyzeCreditUseCase,
-                            FindCreditUseCase findCredit,
-                            ContractCreditUseCase contractCreditUseCase) {
-
-        this.creditWebMapper = creditWebMapper;
-        this.simulateCreditUseCase = simulateCreditUseCase;
-        this.requestCreditUseCase = requestCreditUseCase;
-        this.analyzeCreditUseCase = analyzeCreditUseCase;
-        this.findCreditUseCase = findCredit;
-        this.contractCreditUseCase = contractCreditUseCase;
-    }
-
+    private final FindCreditBalanceUseCase balanceUseCase;
+    private final ContractCreditUseCase contractUseCase;
+    private final CancelCreditUseCase cancelUseCase;
 
     @PostMapping
     public ResponseEntity<RequestCreditResponse> request(@RequestBody @Valid
                                                          RequestCreditRequest request) {
-
         RequestCreditInput input =
                 creditWebMapper.toInput(request);
 
@@ -78,7 +58,6 @@ public class CreditController {
     @PostMapping("/simulate")
     public ResponseEntity<SimulateCreditResponse> simulate(@RequestBody @Valid
                                                            SimulateCreditRequest request) {
-
         SimulateCreditInput input =
                 creditWebMapper.toSimulateInput(request);
 
@@ -93,7 +72,8 @@ public class CreditController {
     public ResponseEntity<AnalyzeCreditResponse> analyze(@PathVariable
                                                          UUID id) {
         AnalyzeCreditOutput output =
-                analyzeCreditUseCase.execute(new CreditId(id));
+                analyzeCreditUseCase.execute(
+                        creditWebMapper.toCreditId(id));
 
         return ResponseEntity.ok(
                 creditWebMapper.toAnalyzeResponse(output));
@@ -103,7 +83,10 @@ public class CreditController {
     public ResponseEntity<Void> contract(@PathVariable
                                          UUID id) {
 
-        contractCreditUseCase.execute(new CreditId(id));
+        CreditId creditId =
+                creditWebMapper.toCreditId(id);
+
+        contractUseCase.execute(creditId);
 
         return ResponseEntity.noContent().build();
     }
@@ -111,11 +94,41 @@ public class CreditController {
     @GetMapping("/{id}")
     public ResponseEntity<CreditDetailsResponse> findById(@PathVariable
                                                           UUID id) {
+
         CreditDetailsOutput output =
-                findCreditUseCase.execute(new CreditId(id));
+                findCreditUseCase.execute(
+                        creditWebMapper.toCreditId(id));
 
         return ResponseEntity.ok(
                 creditWebMapper.toDetailsResponse(output));
+    }
+
+    @GetMapping("/{id}/balance")
+    public ResponseEntity<BalanceResponse> findBalance(@PathVariable
+                                                       UUID id) {
+
+        CreditId creditId =
+                creditWebMapper.toCreditId(id);
+
+        BalanceOutput output =
+                balanceUseCase.execute(creditId);
+
+        return ResponseEntity.ok(
+                creditWebMapper.toBalanceResponse(output));
+
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancel(@PathVariable
+                                       UUID id) {
+
+        CreditId creditId =
+                creditWebMapper.toCreditId(id);
+
+        cancelUseCase.execute(creditId);
+
+        return ResponseEntity
+                .noContent().build();
     }
 
 }

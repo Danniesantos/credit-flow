@@ -1,9 +1,6 @@
 package com.daniela.creditflow.infrastructure.messaging.rabbitmq.mapper;
 
-import com.daniela.creditflow.domain.event.CreditApprovedEvent;
-import com.daniela.creditflow.domain.event.CreditContractedEvent;
-import com.daniela.creditflow.domain.event.CreditRejectedEvent;
-import com.daniela.creditflow.domain.event.InstallmentPaidEvent;
+import com.daniela.creditflow.domain.event.*;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditEventType;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditMessage;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.PaidMessage;
@@ -31,6 +28,15 @@ public class RabbitEventMapper {
                 event.customerId().value(),
                 event.occurredAt(),
                 CreditEventType.REJECTED
+        );
+    }
+
+    public CreditMessage toMessage(CreditCanceledEvent event) {
+        return toMessage(
+                event.creditId().value(),
+                event.customerId().value(),
+                event.occurredAt(),
+                CreditEventType.CANCELED
         );
     }
 

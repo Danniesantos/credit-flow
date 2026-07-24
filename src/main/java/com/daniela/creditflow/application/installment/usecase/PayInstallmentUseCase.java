@@ -11,10 +11,13 @@ import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.repository.CreditRepository;
 import com.daniela.creditflow.domain.valueObject.CreditId;
 import com.daniela.creditflow.domain.valueObject.InstallmentId;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class PayInstallmentUseCase {
 
     private final CreditRepository creditRepository;
@@ -22,18 +25,7 @@ public class PayInstallmentUseCase {
     private final PaymentService paymentService;
     private final ApplicationEventPublisher eventPublisher;
 
-    public PayInstallmentUseCase(
-            CreditRepository creditRepository,
-            CreditService service,
-            PaymentService paymentService,
-            ApplicationEventPublisher eventPublisher) {
-
-        this.creditRepository = creditRepository;
-        this.creditService = service;
-        this.paymentService = paymentService;
-        this.eventPublisher = eventPublisher;
-    }
-
+    @Transactional
     public void execute(PaymentInstallmentInput input) {
 
         Credit credit =

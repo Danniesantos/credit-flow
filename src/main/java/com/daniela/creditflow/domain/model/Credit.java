@@ -91,6 +91,10 @@ public class Credit {
         return status == CreditStatus.REJECTED;
     }
 
+    public boolean isCanceled() {
+        return status == CreditStatus.CANCELED;
+    }
+
     public boolean isContracted() {
         return status == CreditStatus.CONTRACTED;
     }
@@ -107,6 +111,11 @@ public class Credit {
     public void reject() {
         ensureUnderAnalysis();
         changeStatus(CreditStatus.REJECTED);
+    }
+
+    public void cancel() {
+        ensureCancelable();
+        changeStatus(CreditStatus.CANCELED);
     }
 
     public void contract(List<Installment> installments) {
@@ -167,6 +176,33 @@ public class Credit {
 
     }
 
+    public Money totalPaidAmount() {
+
+        return installments.stream()
+                .filter(Installment::isPaid)
+                .map(Installment::getAmount)
+                .reduce(Money.zero(), Money::add);
+    }
+
+    public Money remainingAmount() {
+
+        return totalInstallmentsAmount()
+                .subtract(totalPaidAmount());
+    }
+
+    public long paidInstallmentsQuantity() {
+
+        return installments.stream()
+                .filter(Installment::isPaid)
+                .count();
+    }
+
+    public int remainingInstallments() {
+
+        return installments.size()
+                - (int) paidInstallmentsQuantity();
+    }
+
     public Installment findInstallment(
             InstallmentId installmentId) {
 
@@ -196,14 +232,6 @@ public class Credit {
                     "Maximum number of installments is 60");
         }
 
-    }
-
-    public Money installmentAmount(
-            InstallmentId installmentId
-    ) {
-
-        return findInstallment(installmentId)
-                .getAmount();
     }
 
     private void validateInstallmentList(List<Installment> installments) {
@@ -236,6 +264,29 @@ public class Credit {
 
         return installments.stream()
                 .allMatch(Installment::isPaid);
+    }
+
+    private void ensureCancelable() {
+
+        if (isCanceled()) {
+            throw new InvalidDomainStateException(
+                    "Credit is already canceled");
+        }
+
+        if (isRejected()) {
+            throw new InvalidDomainStateException(
+                    "Rejected credits cannot be canceled");
+        }
+
+        if (isContracted()) {
+            throw new InvalidDomainStateException(
+                    "Contracted credits cannot be canceled");
+        }
+
+        if (isPaidOff()) {
+            throw new InvalidDomainStateException(
+                    "Paid off credits cannot be canceled");
+        }
     }
 
     private void changeStatus(CreditStatus newStatus) {

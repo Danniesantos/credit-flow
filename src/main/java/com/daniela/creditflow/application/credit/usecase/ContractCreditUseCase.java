@@ -7,9 +7,10 @@ import com.daniela.creditflow.application.installment.factory.InstallmentFactory
 import com.daniela.creditflow.application.installment.policy.DueDatePolicy;
 import com.daniela.creditflow.domain.event.CreditContractedEvent;
 import com.daniela.creditflow.domain.model.Credit;
+import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.repository.CreditRepository;
 import com.daniela.creditflow.domain.valueObject.CreditId;
-import com.daniela.creditflow.domain.model.Installment;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ContractCreditUseCase {
 
     private final CreditRepository creditRepository;
@@ -27,20 +29,6 @@ public class ContractCreditUseCase {
     private final CreditCalculationService calculationService;
     private final DueDatePolicy dueDatePolicy;
     private final ApplicationEventPublisher eventPublisher;
-
-    public ContractCreditUseCase(CreditRepository creditRepository,
-                                 CreditService creditService,
-                                 InstallmentFactory installmentFactory,
-                                 CreditCalculationService calculationService,
-                                 DueDatePolicy dueDatePolicy,
-                                 ApplicationEventPublisher eventPublisher) {
-        this.creditRepository = creditRepository;
-        this.creditService = creditService;
-        this.installmentFactory = installmentFactory;
-        this.calculationService = calculationService;
-        this.dueDatePolicy = dueDatePolicy;
-        this.eventPublisher = eventPublisher;
-    }
 
     @Transactional
     public void execute(CreditId creditId) {
