@@ -1,12 +1,16 @@
 package com.daniela.creditflow.application.credit.mapper;
 
+import com.daniela.creditflow.application.credit.calculation.CreditCalculationResult;
+import com.daniela.creditflow.application.credit.dto.input.SimulateCreditInput;
 import com.daniela.creditflow.application.credit.dto.output.BalanceOutput;
 import com.daniela.creditflow.application.credit.dto.output.CreditDetailsOutput;
 import com.daniela.creditflow.application.credit.dto.output.RequestCreditOutput;
+import com.daniela.creditflow.application.credit.dto.output.SimulateCreditOutput;
 import com.daniela.creditflow.application.installment.dto.output.InstallmentDetailsOutput;
 import com.daniela.creditflow.application.installment.mapper.InstallmentOutputMapper;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.valueObject.InterestRate;
+import com.daniela.creditflow.domain.valueObject.Money;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +23,22 @@ import java.util.List;
 public class CreditApplicationMapper {
 
     private final InstallmentOutputMapper installmentMapper;
+
+    public SimulateCreditOutput toSimulateOutput(
+            Money requestedAmount,
+            CreditCalculationResult calculation,
+            Integer installments,
+            Money installmentAmount
+    ) {
+
+        return new SimulateCreditOutput(
+                requestedAmount.value(),
+                calculation.interestRate().percentage(),
+                calculation.totalAmount().value(),
+                installments,
+                installmentAmount.value()
+        );
+    }
 
     public RequestCreditOutput toCreditOutput(Credit credit) {
         return new RequestCreditOutput(
