@@ -3,27 +3,22 @@ package com.daniela.creditflow.application.credit.usecase;
 import com.daniela.creditflow.application.credit.dto.input.RequestCreditInput;
 import com.daniela.creditflow.application.credit.dto.output.RequestCreditOutput;
 import com.daniela.creditflow.application.credit.factory.CreditFactory;
-import com.daniela.creditflow.application.credit.mapper.CreditOutputMapper;
+import com.daniela.creditflow.application.credit.mapper.CreditApplicationMapper;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.repository.CreditRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class RequestCreditUseCase {
 
     private final CreditFactory creditFactory;
     private final CreditRepository creditRepository;
-    private final CreditOutputMapper creditOutputMapper;
+    private final CreditApplicationMapper creditOutputMapper;
 
-    public RequestCreditUseCase(CreditFactory creditFactory,
-                                CreditRepository creditRepository,
-                                CreditOutputMapper creditOutputMapper) {
-
-        this.creditFactory = creditFactory;
-        this.creditRepository = creditRepository;
-        this.creditOutputMapper = creditOutputMapper;
-    }
-
+    @Transactional
     public RequestCreditOutput execute(RequestCreditInput input) {
 
         Credit credit =

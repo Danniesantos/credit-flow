@@ -20,8 +20,7 @@ public class RabbitRetryConfig {
         RepublishMessageRecoverer recoverer =
                 new RepublishMessageRecoverer(
                         rabbitTemplate,
-                        RabbitConstants.CREDIT_DLQ_EXCHANGE,
-                        RabbitConstants.CREDIT_APPROVED_ROUTING_KEY
+                        RabbitConstants.CREDIT_DLQ_EXCHANGE
                 );
 
         return RetryInterceptorBuilder

@@ -1,9 +1,8 @@
 package com.daniela.creditflow.infrastructure.web.mapper;
 
-import com.daniela.creditflow.application.installment.dto.input.InstallmentInput;
 import com.daniela.creditflow.application.installment.dto.input.PaymentInstallmentInput;
 import com.daniela.creditflow.application.installment.dto.output.InstallmentDetailsOutput;
-import com.daniela.creditflow.infrastructure.web.request.InstallmentRequest;
+import com.daniela.creditflow.domain.valueObject.InstallmentId;
 import com.daniela.creditflow.infrastructure.web.request.PaymentRequest;
 import com.daniela.creditflow.infrastructure.web.response.InstallmentDetailsResponse;
 import org.springframework.stereotype.Component;
@@ -12,14 +11,6 @@ import java.util.UUID;
 
 @Component
 public class InstallmentWebMapper {
-
-    public InstallmentInput toInput(InstallmentRequest request) {
-        return new InstallmentInput(
-                request.number(),
-                request.amount(),
-                request.dueDate()
-        );
-    }
 
     public PaymentInstallmentInput toPaymentInstallmentInput(PaymentRequest request,
                                                              UUID installmentId) {
@@ -40,5 +31,9 @@ public class InstallmentWebMapper {
                 output.status(),
                 output.paidAt()
         );
+    }
+
+    public InstallmentId toInstallmentId(UUID id) {
+        return new InstallmentId(id);
     }
 }

@@ -3,6 +3,7 @@ package com.daniela.creditflow.infrastructure.web.mapper;
 import com.daniela.creditflow.application.customer.dto.input.CreateCustomerInput;
 import com.daniela.creditflow.application.customer.dto.input.UpdateCustomerInput;
 import com.daniela.creditflow.application.customer.dto.output.CustomerOutput;
+import com.daniela.creditflow.domain.valueObject.CustomerId;
 import com.daniela.creditflow.infrastructure.web.request.CustomerRequest;
 import com.daniela.creditflow.infrastructure.web.response.CustomerResponse;
 import org.springframework.stereotype.Component;
@@ -40,7 +41,7 @@ public class CustomerWebMapper {
         );
     }
 
-    public UpdateCustomerInput updateToInput(UUID id,
+    public UpdateCustomerInput toUpdateInput(UUID id,
                                              CustomerRequest request) {
 
         return new UpdateCustomerInput(
@@ -53,5 +54,9 @@ public class CustomerWebMapper {
                 request.getMonthlyIncome(),
                 request.getCreditScore()
         );
+    }
+
+    public CustomerId toCustomerId(UUID id) {
+        return new CustomerId(id);
     }
 }

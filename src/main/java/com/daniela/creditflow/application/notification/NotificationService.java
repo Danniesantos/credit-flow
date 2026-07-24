@@ -35,6 +35,19 @@ public class NotificationService {
 
     }
 
+    public void notifyCanceled(CreditMessage message) {
+
+        log.info("""
+                        Sending canceled notification
+                        
+                        Credit={}
+                        Customer={}
+                        """,
+                message.creditId(),
+                message.customerId());
+
+    }
+
     public void notifyContracted(CreditMessage message) {
 
         log.info("""

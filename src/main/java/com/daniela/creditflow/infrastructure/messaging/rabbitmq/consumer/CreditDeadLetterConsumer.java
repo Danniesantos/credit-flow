@@ -16,6 +16,7 @@ public class CreditDeadLetterConsumer {
             queues = {
                     RabbitConstants.CREDIT_APPROVED_DLQ,
                     RabbitConstants.CREDIT_REJECTED_DLQ,
+                    RabbitConstants.CREDIT_CANCELED_DLQ,
                     RabbitConstants.CREDIT_CONTRACTED_DLQ
             }
     )

@@ -15,7 +15,6 @@ public class RabbitExchangeConfig {
         );
     }
 
-
     @Bean
     public TopicExchange creditRetryExchange() {
 
@@ -23,7 +22,6 @@ public class RabbitExchangeConfig {
                 RabbitConstants.CREDIT_RETRY_EXCHANGE
         );
     }
-
 
     @Bean
     public TopicExchange creditDlqExchange() {

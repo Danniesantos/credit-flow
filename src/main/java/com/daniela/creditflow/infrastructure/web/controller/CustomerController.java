@@ -9,6 +9,7 @@ import com.daniela.creditflow.infrastructure.web.mapper.CustomerWebMapper;
 import com.daniela.creditflow.infrastructure.web.request.CustomerRequest;
 import com.daniela.creditflow.infrastructure.web.response.CustomerResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/customers")
+@RequiredArgsConstructor
 public class CustomerController {
 
     private final CustomerWebMapper customerMapper;
@@ -29,20 +31,6 @@ public class CustomerController {
     private final FindAllCustomersUseCase findAllCustomersUseCase;
     private final DeactivateCustomerUseCase deactivateCustomerUseCase;
     private final UpdateCustomerUseCase updateCustomerUseCase;
-
-    public CustomerController(CustomerWebMapper customerMapper,
-                              CreateCustomerUseCase createCustomer,
-                              FindCustomerUseCase findCustomer,
-                              FindAllCustomersUseCase findAllCustomers,
-                              DeactivateCustomerUseCase deactivateCustomerUseCase,
-                              UpdateCustomerUseCase updateCustomer) {
-        this.customerMapper = customerMapper;
-        this.createCustomerUseCase = createCustomer;
-        this.findCustomerUseCase = findCustomer;
-        this.findAllCustomersUseCase = findAllCustomers;
-        this.deactivateCustomerUseCase = deactivateCustomerUseCase;
-        this.updateCustomerUseCase = updateCustomer;
-    }
 
     @PostMapping
     public ResponseEntity<CustomerResponse> create(@RequestBody @Valid
@@ -82,16 +70,21 @@ public class CustomerController {
                                                      UUID id) {
 
         CustomerOutput output =
-                findCustomerUseCase.execute(new CustomerId(id));
+                findCustomerUseCase
+                        .execute(customerMapper
+                                .toCustomerId(id));
 
         return ResponseEntity.ok(
                 customerMapper.toResponse(output));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Void> deactivateCustomer(@PathVariable UUID id) {
+    public ResponseEntity<Void> deactivateCustomer(@PathVariable
+                                                   UUID id) {
 
-        deactivateCustomerUseCase.execute(new CustomerId(id));
+        CustomerId customerId = customerMapper.toCustomerId(id);
+
+        deactivateCustomerUseCase.execute(customerId);
 
         return ResponseEntity.noContent().build();
     }
@@ -103,7 +96,7 @@ public class CustomerController {
                                                    CustomerRequest request) {
 
         UpdateCustomerInput input =
-                customerMapper.updateToInput(id, request);
+                customerMapper.toUpdateInput(id, request);
 
         CustomerOutput output =
                 updateCustomerUseCase.execute(input);

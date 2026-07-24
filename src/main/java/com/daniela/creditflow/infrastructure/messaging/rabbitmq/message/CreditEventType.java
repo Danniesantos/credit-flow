@@ -3,5 +3,6 @@ package com.daniela.creditflow.infrastructure.messaging.rabbitmq.message;
 public enum CreditEventType {
     APPROVED,
     REJECTED,
-    CONTRACTED,
+    CANCELED,
+    CONTRACTED
 }

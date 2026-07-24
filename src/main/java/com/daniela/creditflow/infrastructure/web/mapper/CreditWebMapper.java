@@ -2,16 +2,15 @@ package com.daniela.creditflow.infrastructure.web.mapper;
 
 import com.daniela.creditflow.application.credit.dto.input.RequestCreditInput;
 import com.daniela.creditflow.application.credit.dto.input.SimulateCreditInput;
-import com.daniela.creditflow.application.credit.dto.output.AnalyzeCreditOutput;
-import com.daniela.creditflow.application.credit.dto.output.CreditDetailsOutput;
-import com.daniela.creditflow.application.credit.dto.output.RequestCreditOutput;
-import com.daniela.creditflow.application.credit.dto.output.SimulateCreditOutput;
+import com.daniela.creditflow.application.credit.dto.output.*;
+import com.daniela.creditflow.domain.valueObject.CreditId;
 import com.daniela.creditflow.infrastructure.web.request.RequestCreditRequest;
 import com.daniela.creditflow.infrastructure.web.request.SimulateCreditRequest;
 import com.daniela.creditflow.infrastructure.web.response.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class CreditWebMapper {
@@ -35,6 +34,10 @@ public class CreditWebMapper {
                 request.getRequestedAmount(),
                 request.getInstallments(),
                 request.getCreditType());
+    }
+
+    public CreditId toCreditId(UUID id) {
+        return new CreditId(id);
     }
 
     public RequestCreditResponse toRequestResponse(RequestCreditOutput output) {
@@ -90,6 +93,16 @@ public class CreditWebMapper {
                 installments,
                 output.createdAt(),
                 output.updatedAt()
+        );
+    }
+
+    public BalanceResponse toBalanceResponse(BalanceOutput output) {
+
+        return new BalanceResponse(
+                output.totalContractAmount(),
+                output.paidAmount(),
+                output.remainingAmount(),
+                output.remainingInstallments()
         );
     }
 }

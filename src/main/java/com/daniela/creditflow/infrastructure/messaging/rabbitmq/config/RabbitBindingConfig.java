@@ -24,18 +24,6 @@ public class RabbitBindingConfig {
     }
 
     @Bean
-    public Binding approvedRetryBinding(
-            Queue approvedRetryQueue,
-            TopicExchange creditRetryExchange
-    ) {
-
-        return BindingBuilder
-                .bind(approvedRetryQueue)
-                .to(creditRetryExchange)
-                .with(RabbitConstants.CREDIT_APPROVED_ROUTING_KEY);
-    }
-
-    @Bean
     public Binding approvedDlqBinding(
             Queue approvedDlq,
             TopicExchange creditDlqExchange
@@ -44,7 +32,7 @@ public class RabbitBindingConfig {
         return BindingBuilder
                 .bind(approvedDlq)
                 .to(creditDlqExchange)
-                .with(RabbitConstants.CREDIT_APPROVED_ROUTING_KEY);
+                .with("error." + RabbitConstants.CREDIT_APPROVED_ROUTING_KEY);
 
     }
 
@@ -62,27 +50,37 @@ public class RabbitBindingConfig {
     }
 
     @Bean
-    public Binding rejectedRetryBinding(
-            Queue rejectedRetryQueue,
-            TopicExchange creditRetryExchange
-    ) {
-
-        return BindingBuilder
-                .bind(rejectedRetryQueue)
-                .to(creditRetryExchange)
-                .with(RabbitConstants.CREDIT_REJECTED_ROUTING_KEY);
-    }
-
-    @Bean
     public Binding rejectedDlqBinding(
             Queue rejectedDlq,
             TopicExchange creditDlqExchange) {
 
         return BindingBuilder.bind(rejectedDlq)
                 .to(creditDlqExchange)
-                .with(RabbitConstants.CREDIT_REJECTED_ROUTING_KEY);
+                .with("error." + RabbitConstants.CREDIT_REJECTED_ROUTING_KEY);
     }
 
+    @Bean
+    public Binding canceledBinding(
+            Queue canceledQueue,
+            TopicExchange creditExchange) {
+
+        return BindingBuilder
+                .bind(canceledQueue)
+                .to(creditExchange)
+                .with(
+                        RabbitConstants.CREDIT_CANCELED_ROUTING_KEY
+                );
+    }
+
+    @Bean
+    public Binding canceledDlqBinding(
+            Queue canceledDlq,
+            TopicExchange creditDlqExchange) {
+
+        return BindingBuilder.bind(canceledDlq)
+                .to(creditDlqExchange)
+                .with("error." + RabbitConstants.CREDIT_CANCELED_ROUTING_KEY);
+    }
 
     @Bean
     public Binding contractedBinding(
@@ -98,25 +96,13 @@ public class RabbitBindingConfig {
     }
 
     @Bean
-    public Binding contractedRetryBinding(
-            Queue contractedRetryQueue,
-            TopicExchange creditRetryExchange
-    ) {
-
-        return BindingBuilder
-                .bind(contractedRetryQueue)
-                .to(creditRetryExchange)
-                .with(RabbitConstants.CREDIT_CONTRACTED_ROUTING_KEY);
-    }
-
-    @Bean
     public Binding contractedDlqBinding(
             Queue contractedDlq,
             TopicExchange creditDlqExchange) {
 
         return BindingBuilder.bind(contractedDlq)
                 .to(creditDlqExchange)
-                .with(RabbitConstants.CREDIT_CONTRACTED_ROUTING_KEY);
+                .with("error." + RabbitConstants.CREDIT_CONTRACTED_ROUTING_KEY);
     }
 
     @Bean
@@ -133,24 +119,12 @@ public class RabbitBindingConfig {
     }
 
     @Bean
-    public Binding paymentRetryBinding(
-            Queue paymentRetryQueue,
-            TopicExchange creditRetryExchange
-    ) {
-
-        return BindingBuilder
-                .bind(paymentRetryQueue)
-                .to(creditRetryExchange)
-                .with(RabbitConstants.CREDIT_PAYMENT_ROUTING_KEY);
-    }
-
-    @Bean
     public Binding paymentDlqBinding(
             Queue paymentDlq,
             TopicExchange creditDlqExchange) {
 
         return BindingBuilder.bind(paymentDlq)
                 .to(creditDlqExchange)
-                .with(RabbitConstants.CREDIT_PAYMENT_ROUTING_KEY);
+                .with("error." + RabbitConstants.CREDIT_PAYMENT_ROUTING_KEY);
     }
 }
