@@ -1,6 +1,6 @@
 package com.daniela.creditflow.domain.valueObject;
 
-import com.daniela.creditflow.domain.exceptions.DomainException;
+import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -9,13 +9,19 @@ import java.util.Objects;
 public record InterestRate(BigDecimal value) {
 
     public InterestRate {
-        Objects.requireNonNull(value, "InterestRate cannot be null");
+
+        if (value == null) {
+            throw new InvalidDomainStateException(
+                    "InterestRate cannot be null"
+            );
+        }
+
         if (value.compareTo(BigDecimal.ZERO) < 0) {
-            throw new DomainException(
+            throw new InvalidDomainStateException(
                     "Interest rate cannot be negative");
         }
         if (value.compareTo(BigDecimal.ONE) > 0) {
-            throw new DomainException("Interest rate cannot exceed 100%");
+            throw new InvalidDomainStateException("Interest rate cannot exceed 100%");
         }
     }
 

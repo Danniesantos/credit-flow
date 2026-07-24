@@ -1,10 +1,10 @@
 package com.daniela.creditflow.infrastructure.persistence.customer.repository;
 
-import com.daniela.creditflow.domain.customer.model.Customer;
-import com.daniela.creditflow.domain.customer.repository.CustomerRepository;
-import com.daniela.creditflow.domain.customer.valueObject.CPF;
-import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
-import com.daniela.creditflow.domain.customer.valueObject.Email;
+import com.daniela.creditflow.domain.model.Customer;
+import com.daniela.creditflow.domain.repository.CustomerRepository;
+import com.daniela.creditflow.domain.valueObject.CPF;
+import com.daniela.creditflow.domain.valueObject.CustomerId;
+import com.daniela.creditflow.domain.valueObject.Email;
 import com.daniela.creditflow.infrastructure.persistence.customer.entity.CustomerEntity;
 import com.daniela.creditflow.infrastructure.persistence.customer.mapper.CustomerPersistenceMapper;
 import org.springframework.data.domain.Page;

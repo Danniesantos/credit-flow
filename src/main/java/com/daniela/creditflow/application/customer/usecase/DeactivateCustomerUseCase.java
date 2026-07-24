@@ -1,9 +1,9 @@
 package com.daniela.creditflow.application.customer.usecase;
 
 import com.daniela.creditflow.application.customer.service.CustomerService;
-import com.daniela.creditflow.domain.customer.model.Customer;
-import com.daniela.creditflow.domain.customer.repository.CustomerRepository;
-import com.daniela.creditflow.domain.customer.valueObject.CustomerId;
+import com.daniela.creditflow.domain.model.Customer;
+import com.daniela.creditflow.domain.repository.CustomerRepository;
+import com.daniela.creditflow.domain.valueObject.CustomerId;
 import org.springframework.stereotype.Service;
 
 @Service

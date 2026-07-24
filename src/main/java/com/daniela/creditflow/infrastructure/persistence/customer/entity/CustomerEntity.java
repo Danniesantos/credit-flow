@@ -1,11 +1,9 @@
 package com.daniela.creditflow.infrastructure.persistence.customer.entity;
 
-import com.daniela.creditflow.domain.customer.model.CustomerStatus;
-import com.daniela.creditflow.infrastructure.persistence.credity.entity.CreditEntity;
+import com.daniela.creditflow.domain.model.CustomerStatus;
+import com.daniela.creditflow.infrastructure.persistence.credit.entity.CreditEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -67,13 +65,11 @@ public class CustomerEntity {
     private List<CreditEntity> credits =
             new ArrayList<>();
 
-    @CreationTimestamp
     @Column(name = "created_at",
             nullable = false,
             updatable = false)
     private Instant createdAt;
 
-    @UpdateTimestamp
     @Column(name = "updated_at",
             nullable = false)
     private Instant updatedAt;

@@ -1,8 +1,8 @@
 package com.daniela.creditflow.application.installment.factory;
 
 import com.daniela.creditflow.application.installment.policy.DueDatePolicy;
-import com.daniela.creditflow.domain.credit.valueObject.CreditId;
-import com.daniela.creditflow.domain.installment.model.Installment;
+import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.valueObject.Money;
 import org.springframework.stereotype.Component;
 

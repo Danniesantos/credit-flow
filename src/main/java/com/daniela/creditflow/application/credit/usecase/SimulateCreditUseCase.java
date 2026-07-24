@@ -1,7 +1,7 @@
 package com.daniela.creditflow.application.credit.usecase;
 
 import com.daniela.creditflow.application.credit.calculation.CreditCalculationResult;
-import com.daniela.creditflow.application.credit.calculation.CreditCalculationService;
+import com.daniela.creditflow.application.credit.service.CreditCalculationService;
 import com.daniela.creditflow.application.credit.dto.input.SimulateCreditInput;
 import com.daniela.creditflow.application.credit.dto.output.SimulateCreditOutput;
 import com.daniela.creditflow.domain.valueObject.Money;

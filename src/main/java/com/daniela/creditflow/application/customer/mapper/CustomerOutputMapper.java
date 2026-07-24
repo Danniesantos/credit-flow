@@ -1,7 +1,7 @@
 package com.daniela.creditflow.application.customer.mapper;
 
 import com.daniela.creditflow.application.customer.dto.output.CustomerOutput;
-import com.daniela.creditflow.domain.customer.model.Customer;
+import com.daniela.creditflow.domain.model.Customer;
 import org.springframework.stereotype.Component;
 
 @Component

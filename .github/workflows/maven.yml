@@ -3,13 +3,13 @@ name: Credit Flow CI
 on:
   push:
     branches:
-      - master
+      - main
       - develop
       - "feature/**"
 
   pull_request:
     branches:
-      - master
+      - main
       - develop
 
 jobs:
@@ -17,8 +17,22 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    steps:
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: creditflow
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin123
+        ports:
+          - 5438:5432
+        options: >-
+          --health-cmd "pg_isready -U admin -d creditflow"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -34,3 +48,12 @@ jobs:
 
       - name: Build project
         run: ./mvnw clean verify
+        env:
+          POSTGRES_DB: creditflow
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin123
+          RABBITMQ_HOST: localhost
+          RABBITMQ_PORT: 5672
+          RABBITMQ_USER: admin
+          RABBITMQ_PASSWORD: admin123
+          SPRING_DOCKER_COMPOSE_ENABLED: false
