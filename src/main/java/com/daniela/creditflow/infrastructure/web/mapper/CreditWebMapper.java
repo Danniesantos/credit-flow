@@ -99,7 +99,7 @@ public class CreditWebMapper {
     public BalanceResponse toBalanceResponse(BalanceOutput output) {
 
         return new BalanceResponse(
-                output.originalAmount(),
+                output.totalContractAmount(),
                 output.paidAmount(),
                 output.remainingAmount(),
                 output.remainingInstallments()

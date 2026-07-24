@@ -28,7 +28,7 @@ public class CreditController {
     private final RequestCreditUseCase requestCreditUseCase;
     private final AnalyzeCreditUseCase analyzeCreditUseCase;
     private final FindCreditUseCase findCreditUseCase;
-    private final BalanceCreditUseCase balanceUseCase;
+    private final FindCreditBalanceUseCase balanceUseCase;
     private final ContractCreditUseCase contractUseCase;
     private final CancelCreditUseCase cancelUseCase;
 
