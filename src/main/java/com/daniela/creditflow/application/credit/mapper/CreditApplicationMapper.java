@@ -1,5 +1,6 @@
 package com.daniela.creditflow.application.credit.mapper;
 
+import com.daniela.creditflow.application.credit.dto.output.BalanceOutput;
 import com.daniela.creditflow.application.credit.dto.output.CreditDetailsOutput;
 import com.daniela.creditflow.application.credit.dto.output.RequestCreditOutput;
 import com.daniela.creditflow.application.installment.dto.output.InstallmentDetailsOutput;
@@ -52,6 +53,13 @@ public class CreditApplicationMapper {
                 credit.getCreatedAt(),
                 credit.getUpdatedAt()
         );
+    }
+
+    public BalanceOutput toBalanceOutput(Credit credit) {
+        return new BalanceOutput(credit.totalInstallmentsAmount().value(),
+                credit.totalPaidAmount().value(),
+                credit.remainingAmount().value(),
+                credit.remainingInstallments());
     }
 
     private BigDecimal formatRate(InterestRate rate) {
