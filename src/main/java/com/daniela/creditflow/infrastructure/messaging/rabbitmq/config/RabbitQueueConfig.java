@@ -17,15 +17,6 @@ public class RabbitQueueConfig {
     }
 
     @Bean
-    public Queue approvedRetryQueue() {
-
-        return retryQueue(
-                RabbitConstants.CREDIT_APPROVED_RETRY_QUEUE,
-                RabbitConstants.CREDIT_APPROVED_ROUTING_KEY
-        );
-    }
-
-    @Bean
     public Queue approvedDlq() {
 
         return dlq(
@@ -50,10 +41,18 @@ public class RabbitQueueConfig {
     }
 
     @Bean
-    public Queue rejectedRetryQueue() {
+    public Queue canceledQueue() {
 
-        return retryQueue(RabbitConstants.CREDIT_REJECTED_RETRY_QUEUE,
-                RabbitConstants.CREDIT_REJECTED_ROUTING_KEY
+        return queue(
+                RabbitConstants.CREDIT_CANCELED_QUEUE
+        );
+    }
+
+    @Bean
+    public Queue canceledDlq() {
+
+        return dlq(
+                RabbitConstants.CREDIT_CANCELED_DLQ
         );
     }
 
@@ -62,15 +61,6 @@ public class RabbitQueueConfig {
 
         return queue(
                 RabbitConstants.CREDIT_CONTRACTED_QUEUE
-        );
-    }
-
-    @Bean
-    public Queue contractedRetryQueue() {
-
-        return retryQueue(
-                RabbitConstants.CREDIT_CONTRACTED_RETRY_QUEUE,
-                RabbitConstants.CREDIT_CONTRACTED_ROUTING_KEY
         );
     }
 
@@ -91,15 +81,6 @@ public class RabbitQueueConfig {
     }
 
     @Bean
-    public Queue paymentRetryQueue() {
-
-        return retryQueue(
-                RabbitConstants.CREDIT_PAYMENT_RETRY_QUEUE,
-                RabbitConstants.CREDIT_PAYMENT_ROUTING_KEY
-        );
-    }
-
-    @Bean
     public Queue paymentDlq() {
 
         return dlq(
@@ -110,19 +91,6 @@ public class RabbitQueueConfig {
     private Queue queue(String queueName) {
         return QueueBuilder
                 .durable(queueName)
-                .withArgument(
-                        "x-dead-letter-exchange",
-                        RabbitConstants.CREDIT_RETRY_EXCHANGE
-                )
-                .build();
-    }
-
-    private Queue retryQueue(String queueName, String routingKey) {
-        return QueueBuilder
-                .durable(queueName)
-                .withArgument("x-message-ttl", 5000)
-                .withArgument("x-dead-letter-exchange", RabbitConstants.CREDIT_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", routingKey)
                 .build();
     }
 
