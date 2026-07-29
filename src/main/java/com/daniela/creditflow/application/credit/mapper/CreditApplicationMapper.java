@@ -1,12 +1,9 @@
 package com.daniela.creditflow.application.credit.mapper;
 
 import com.daniela.creditflow.application.credit.calculation.CreditCalculationResult;
-import com.daniela.creditflow.application.credit.dto.input.SimulateCreditInput;
-import com.daniela.creditflow.application.credit.dto.output.BalanceOutput;
-import com.daniela.creditflow.application.credit.dto.output.CreditDetailsOutput;
-import com.daniela.creditflow.application.credit.dto.output.RequestCreditOutput;
-import com.daniela.creditflow.application.credit.dto.output.SimulateCreditOutput;
+import com.daniela.creditflow.application.credit.dto.output.*;
 import com.daniela.creditflow.application.installment.dto.output.InstallmentDetailsOutput;
+import com.daniela.creditflow.application.installment.dto.output.OverdueInstallmentOutput;
 import com.daniela.creditflow.application.installment.mapper.InstallmentOutputMapper;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.valueObject.InterestRate;
@@ -80,6 +77,21 @@ public class CreditApplicationMapper {
                 credit.totalPaidAmount().value(),
                 credit.remainingAmount().value(),
                 credit.remainingInstallments());
+    }
+
+    public OverdueOutput toOverdueOutput(Credit credit) {
+        List<OverdueInstallmentOutput> installments =
+                credit.overdueInstallments()
+                        .stream()
+                        .map(installmentMapper::toOverdueOutput)
+                        .toList();
+
+        return new OverdueOutput(
+                credit.hasOverdueInstallments(),
+                credit.overdueInstallmentsQuantity(),
+                credit.overdueAmount().value(),
+                installments
+        );
     }
 
     private BigDecimal formatRate(InterestRate rate) {
