@@ -119,7 +119,6 @@ public class Credit {
     }
 
     public void contract(List<Installment> installments) {
-
         if (isContracted()) {
             throw new InvalidDomainStateException(
                     "Credit is already contracted");
@@ -169,7 +168,6 @@ public class Credit {
     }
 
     public Money totalInstallmentsAmount() {
-
         return installments.stream()
                 .map(Installment::getAmount)
                 .reduce(Money.zero(), Money::add);
@@ -177,7 +175,6 @@ public class Credit {
     }
 
     public Money totalPaidAmount() {
-
         return installments.stream()
                 .filter(Installment::isPaid)
                 .map(Installment::getAmount)
@@ -185,13 +182,11 @@ public class Credit {
     }
 
     public Money remainingAmount() {
-
         return totalInstallmentsAmount()
                 .subtract(totalPaidAmount());
     }
 
     public long paidInstallmentsQuantity() {
-
         return installments.stream()
                 .filter(Installment::isPaid)
                 .count();
@@ -205,15 +200,33 @@ public class Credit {
 
     public Installment findInstallment(
             InstallmentId installmentId) {
-
         return installments.stream()
                 .filter(i -> i.getId().equals(installmentId))
                 .findFirst()
                 .orElseThrow(InstallmentNotFoundException::new);
     }
 
-    private void validateRequestedAmount() {
+    public boolean hasOverdueInstallments() {
+        return !overdueInstallments().isEmpty();
+    }
 
+    public long overdueInstallmentsQuantity() {
+        return overdueInstallments().size();
+    }
+
+    public Money overdueAmount() {
+        return overdueInstallments().stream()
+                .map(Installment::getAmount)
+                .reduce(Money.zero(), Money::add);
+    }
+
+    public List<Installment> overdueInstallments() {
+        return installments.stream()
+                .filter(Installment::isOverdue)
+                .toList();
+    }
+
+    private void validateRequestedAmount() {
         if (requestedAmount.isZero()) {
             throw new InvalidDomainStateException(
                     "Requested amount must be greater than zero");
@@ -221,7 +234,6 @@ public class Credit {
     }
 
     private void validateInstallmentsQuantity() {
-
         if (installmentsQuantity <= 0) {
             throw new InvalidDomainStateException(
                     "Installments quantity must be greater than zero");
@@ -235,7 +247,6 @@ public class Credit {
     }
 
     private void validateInstallmentList(List<Installment> installments) {
-
         if (installments.isEmpty()) {
             throw new InvalidDomainStateException(
                     "Credit must contain at least one installment");
@@ -244,7 +255,6 @@ public class Credit {
     }
 
     private void validateTotalAmount() {
-
         if (totalInstallmentsAmount().lessThan(requestedAmount)) {
 
             throw new InvalidDomainStateException(
@@ -253,7 +263,6 @@ public class Credit {
     }
 
     private void ensureUnderAnalysis() {
-
         if (!isUnderAnalysis()) {
             throw new InvalidDomainStateException(
                     "Credit is not under analysis");
@@ -261,13 +270,11 @@ public class Credit {
     }
 
     private boolean areAllInstallmentsPaid() {
-
         return installments.stream()
                 .allMatch(Installment::isPaid);
     }
 
     private void ensureCancelable() {
-
         if (isCanceled()) {
             throw new InvalidDomainStateException(
                     "Credit is already canceled");
