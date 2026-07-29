@@ -31,6 +31,7 @@ public class CreditController {
     private final FindCreditBalanceUseCase balanceUseCase;
     private final ContractCreditUseCase contractUseCase;
     private final CancelCreditUseCase cancelUseCase;
+    private final FindCreditOverdueUseCase overdueUseCase;
 
     @PostMapping
     public ResponseEntity<RequestCreditResponse> request(@RequestBody @Valid
@@ -116,6 +117,19 @@ public class CreditController {
         return ResponseEntity.ok(
                 creditWebMapper.toBalanceResponse(output));
 
+    }
+
+    @GetMapping("/{id}/overdue")
+    public ResponseEntity<OverdueResponse> getOverdueStatus(@PathVariable
+                                                            UUID id) {
+        CreditId creditId =
+                creditWebMapper.toCreditId(id);
+
+        OverdueOutput output =
+                overdueUseCase.execute(creditId);
+
+        return ResponseEntity.ok(
+                creditWebMapper.toOverdueResponse(output));
     }
 
     @PatchMapping("/{id}/cancel")
