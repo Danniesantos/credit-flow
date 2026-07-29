@@ -105,4 +105,20 @@ public class CreditWebMapper {
                 output.remainingInstallments()
         );
     }
+
+    public OverdueResponse toOverdueResponse(OverdueOutput output) {
+
+        List<OverdueInstallmentResponse> installments =
+                output.installments()
+                        .stream()
+                        .map(installmentMapper::toOverdueInstallmentResponse)
+                        .toList();
+
+        return new OverdueResponse(
+                output.hasOverdueInstallments(),
+                output.overdueInstallmentsQuantity(),
+                output.overdueAmount(),
+                installments
+        );
+    }
 }

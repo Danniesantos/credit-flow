@@ -1,6 +1,8 @@
 package com.daniela.creditflow.application.installment.mapper;
 
+import com.daniela.creditflow.application.credit.dto.output.OverdueOutput;
 import com.daniela.creditflow.application.installment.dto.output.InstallmentDetailsOutput;
+import com.daniela.creditflow.application.installment.dto.output.OverdueInstallmentOutput;
 import com.daniela.creditflow.domain.model.Installment;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,16 @@ public class InstallmentOutputMapper {
                 installment.getPaymentMethod(),
                 installment.getStatus(),
                 installment.getPaidAt()
+        );
+    }
+
+    public OverdueInstallmentOutput toOverdueOutput(Installment installment) {
+        return new OverdueInstallmentOutput(
+                installment.getId().value(),
+                installment.getNumber(),
+                installment.getAmount().value(),
+                installment.getDueDate(),
+                installment.daysOverdue()
         );
     }
 }

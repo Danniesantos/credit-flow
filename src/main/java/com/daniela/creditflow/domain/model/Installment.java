@@ -1,15 +1,16 @@
 package com.daniela.creditflow.domain.model;
 
-import com.daniela.creditflow.domain.valueObject.CreditId;
 import com.daniela.creditflow.domain.exceptions.InstallmentAlreadyPaidException;
 import com.daniela.creditflow.domain.exceptions.InstallmentCannotBePaidException;
 import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
+import com.daniela.creditflow.domain.valueObject.CreditId;
 import com.daniela.creditflow.domain.valueObject.InstallmentId;
 import com.daniela.creditflow.domain.valueObject.Money;
 import lombok.Getter;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 @Getter
@@ -99,6 +100,12 @@ public class Installment {
         this.paymentMethod = Objects.requireNonNull(paymentMethod);
         this.paidAt = Objects.requireNonNull(paidAt);
         this.status = InstallmentStatus.PAID;
+    }
+
+    public long daysOverdue() {
+        return isOverdue()
+                ? ChronoUnit.DAYS.between(dueDate, LocalDate.now())
+                : 0;
     }
 
 }
