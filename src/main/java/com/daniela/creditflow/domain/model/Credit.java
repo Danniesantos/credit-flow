@@ -19,34 +19,42 @@ public class Credit {
     private List<Installment> installments;
     private final CreditType creditType;
     private final InterestRate interestRate;
-    private final Integer installmentsQuantity;
+    private Integer installmentsQuantity;
     private CreditStatus status;
     private final Instant createdAt;
     private Instant updatedAt;
 
-    public Credit(CreditId id,
-                  CustomerId customerId,
-                  Money requestedAmount,
-                  CreditType creditType,
-                  InterestRate interestRate,
-                  Integer installmentsQuantity,
-                  CreditStatus status,
-                  Instant createdAt,
-                  Instant updatedAt) {
+    public Credit(
+            CreditId id,
+            CustomerId customerId,
+            Money requestedAmount,
+            CreditType creditType,
+            InterestRate interestRate,
+            Integer installmentsQuantity,
+            CreditStatus status,
+            Instant createdAt,
+            Instant updatedAt) {
 
         this.id = Objects.requireNonNull(id);
         this.customerId = Objects.requireNonNull(customerId);
         this.requestedAmount = Objects.requireNonNull(requestedAmount);
-        this.installmentsQuantity = Objects.requireNonNull(installmentsQuantity);
-        this.installments = new ArrayList<>();
         this.creditType = Objects.requireNonNull(creditType);
         this.interestRate = Objects.requireNonNull(interestRate);
+        this.installmentsQuantity = Objects.requireNonNull(installmentsQuantity);
         this.status = Objects.requireNonNull(status);
-        this.createdAt = createdAt != null ? createdAt : Instant.now();
-        this.updatedAt = updatedAt != null ? updatedAt : this.createdAt;
+
+        this.installments = new ArrayList<>();
+
+        this.createdAt = createdAt != null
+                ? createdAt
+                : Instant.now();
+
+        this.updatedAt = updatedAt != null
+                ? updatedAt
+                : this.createdAt;
+
         validateInstallmentsQuantity();
         validateRequestedAmount();
-
     }
 
     public static Credit restore(
@@ -59,8 +67,7 @@ public class Credit {
             CreditStatus status,
             List<Installment> installments,
             Instant createdAt,
-            Instant updatedAt
-    ) {
+            Instant updatedAt) {
 
         Credit credit = new Credit(
                 id,
@@ -119,14 +126,17 @@ public class Credit {
     }
 
     public void contract(List<Installment> installments) {
+
         if (isContracted()) {
             throw new InvalidDomainStateException(
-                    "Credit is already contracted");
+                    "Credit is already contracted"
+            );
         }
 
         if (!isApproved()) {
             throw new InvalidDomainStateException(
-                    "Only approved credits can be contracted");
+                    "Only approved credits can be contracted"
+            );
         }
 
         validateInstallmentList(installments);
@@ -138,10 +148,41 @@ public class Credit {
         changeStatus(CreditStatus.CONTRACTED);
     }
 
+    public void renegotiate(List<Installment> installments) {
+
+        ensureCanBeRenegotiated();
+
+        replaceInstallments(installments);
+    }
+
+    public void restructure(List<Installment> installments) {
+
+        ensureCanBeRestructured();
+
+        replaceInstallments(installments);
+    }
+
+    private void replaceInstallments(
+            List<Installment> newInstallments) {
+
+        validateInstallmentList(newInstallments);
+
+        List<Installment> updatedInstallments =
+                new ArrayList<>(paidInstallments());
+
+        updatedInstallments.addAll(newInstallments);
+
+        this.installments = updatedInstallments;
+        this.installmentsQuantity = updatedInstallments.size();
+
+        changeStatus(CreditStatus.CONTRACTED);
+    }
+
     public void markInstallmentAsPaid(
             InstallmentId installmentId,
             PaymentMethod paymentMethod,
             Instant paidAt) {
+
 
         if (isPaidOff()) {
             throw new InvalidDomainStateException(
@@ -155,12 +196,16 @@ public class Credit {
             );
         }
 
+
         Installment installment =
                 findInstallment(installmentId);
 
+
         installment.pay(
                 paymentMethod,
-                paidAt);
+                paidAt
+        );
+
 
         if (areAllInstallmentsPaid()) {
             changeStatus(CreditStatus.PAID_OFF);
@@ -168,25 +213,34 @@ public class Credit {
     }
 
     public Money totalInstallmentsAmount() {
+
         return installments.stream()
                 .map(Installment::getAmount)
-                .reduce(Money.zero(), Money::add);
-
+                .reduce(
+                        Money.zero(),
+                        Money::add
+                );
     }
 
     public Money totalPaidAmount() {
+
         return installments.stream()
                 .filter(Installment::isPaid)
                 .map(Installment::getAmount)
-                .reduce(Money.zero(), Money::add);
+                .reduce(
+                        Money.zero(),
+                        Money::add
+                );
     }
 
     public Money remainingAmount() {
+
         return totalInstallmentsAmount()
                 .subtract(totalPaidAmount());
     }
 
     public long paidInstallmentsQuantity() {
+
         return installments.stream()
                 .filter(Installment::isPaid)
                 .count();
@@ -194,109 +248,198 @@ public class Credit {
 
     public int remainingInstallments() {
 
-        return installments.size()
-                - (int) paidInstallmentsQuantity();
+        return (int) installments.stream()
+                .filter(Installment::isPending)
+                .count();
     }
 
     public Installment findInstallment(
             InstallmentId installmentId) {
+
         return installments.stream()
                 .filter(i -> i.getId().equals(installmentId))
                 .findFirst()
-                .orElseThrow(InstallmentNotFoundException::new);
-    }
-
-    public boolean hasOverdueInstallments() {
-        return !overdueInstallments().isEmpty();
-    }
-
-    public long overdueInstallmentsQuantity() {
-        return overdueInstallments().size();
-    }
-
-    public Money overdueAmount() {
-        return overdueInstallments().stream()
-                .map(Installment::getAmount)
-                .reduce(Money.zero(), Money::add);
+                .orElseThrow(
+                        InstallmentNotFoundException::new
+                );
     }
 
     public List<Installment> overdueInstallments() {
+
         return installments.stream()
                 .filter(Installment::isOverdue)
                 .toList();
     }
 
+    public boolean hasOverdueInstallments() {
+
+        return installments.stream()
+                .anyMatch(Installment::isOverdue);
+    }
+
+    public long overdueInstallmentsQuantity() {
+
+        return overdueInstallments().size();
+    }
+
+    public Money overdueAmount() {
+
+        return overdueInstallments().stream()
+                .map(Installment::getAmount)
+                .reduce(
+                        Money.zero(),
+                        Money::add
+                );
+    }
+
+    public List<Installment> pendingInstallments() {
+
+        return installments.stream()
+                .filter(Installment::isPending)
+                .toList();
+    }
+
+    public List<Installment> paidInstallments() {
+
+        return installments.stream()
+                .filter(Installment::isPaid)
+                .toList();
+    }
+
+    public boolean hasPendingInstallments() {
+
+        return installments.stream()
+                .anyMatch(Installment::isPending);
+    }
+
+    public boolean canRenegotiate() {
+
+        return isContracted()
+                && hasOverdueInstallments();
+    }
+
+    public boolean canRestructure() {
+
+        return isContracted()
+                && hasPendingInstallments();
+    }
+
+    public void ensureCanBeRenegotiated() {
+
+        if (!canRenegotiate()) {
+            throw new InvalidDomainStateException(
+                    "Credit cannot be renegotiated"
+            );
+        }
+    }
+
+    public void ensureCanBeRestructured() {
+
+        if (!canRestructure()) {
+            throw new InvalidDomainStateException(
+                    "Credit cannot be restructured"
+            );
+        }
+    }
+
+    public int nextInstallmentNumber() {
+
+        return installments.stream()
+                .mapToInt(Installment::getNumber)
+                .max()
+                .orElse(0) + 1;
+    }
+
     private void validateRequestedAmount() {
+
         if (requestedAmount.isZero()) {
             throw new InvalidDomainStateException(
-                    "Requested amount must be greater than zero");
+                    "Requested amount must be greater than zero"
+            );
         }
     }
 
     private void validateInstallmentsQuantity() {
+
         if (installmentsQuantity <= 0) {
             throw new InvalidDomainStateException(
-                    "Installments quantity must be greater than zero");
+                    "Installments quantity must be greater than zero"
+            );
         }
 
         if (installmentsQuantity > 60) {
             throw new InvalidDomainStateException(
-                    "Maximum number of installments is 60");
+                    "Maximum number of installments is 60"
+            );
         }
-
     }
 
-    private void validateInstallmentList(List<Installment> installments) {
-        if (installments.isEmpty()) {
-            throw new InvalidDomainStateException(
-                    "Credit must contain at least one installment");
-        }
+    private void validateInstallmentList(
+            List<Installment> installments) {
 
+        if (installments == null || installments.isEmpty()) {
+
+            throw new InvalidDomainStateException(
+                    "Credit must contain at least one installment"
+            );
+        }
     }
 
     private void validateTotalAmount() {
-        if (totalInstallmentsAmount().lessThan(requestedAmount)) {
+
+        if (totalInstallmentsAmount()
+                .lessThan(requestedAmount)) {
 
             throw new InvalidDomainStateException(
-                    "Installments total cannot be lower than requested amount");
+                    "Installments total cannot be lower than requested amount"
+            );
         }
     }
 
     private void ensureUnderAnalysis() {
+
         if (!isUnderAnalysis()) {
             throw new InvalidDomainStateException(
-                    "Credit is not under analysis");
+                    "Credit is not under analysis"
+            );
         }
     }
 
     private boolean areAllInstallmentsPaid() {
+
         return installments.stream()
                 .allMatch(Installment::isPaid);
     }
 
     private void ensureCancelable() {
+
         if (isCanceled()) {
             throw new InvalidDomainStateException(
-                    "Credit is already canceled");
+                    "Credit is already canceled"
+            );
         }
 
         if (isRejected()) {
             throw new InvalidDomainStateException(
-                    "Rejected credits cannot be canceled");
+                    "Rejected credits cannot be canceled"
+            );
         }
 
         if (isContracted()) {
             throw new InvalidDomainStateException(
-                    "Contracted credits cannot be canceled");
+                    "Contracted credits cannot be canceled"
+            );
         }
 
         if (isPaidOff()) {
             throw new InvalidDomainStateException(
-                    "Paid off credits cannot be canceled");
+                    "Paid off credits cannot be canceled"
+            );
         }
     }
 
     private void changeStatus(CreditStatus newStatus) {
+
         this.status = newStatus;
         this.updatedAt = Instant.now();
     }
