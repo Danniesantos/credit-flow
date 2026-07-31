@@ -124,6 +124,16 @@ public class CreditWebMapper {
         );
     }
 
+    public DebtorResponse toDebtorResponse(DebtorOutput output) {
+
+        return new DebtorResponse(
+                output.creditId(),
+                output.customerId(),
+                output.overdueInstallments(),
+                output.overdueAmount()
+        );
+    }
+
     public CreditAdjustmentInput toCreditAdjustmentInput(CreditAdjustmentRequest request) {
         return new CreditAdjustmentInput(request.getInstallmentsQuantity());
     }

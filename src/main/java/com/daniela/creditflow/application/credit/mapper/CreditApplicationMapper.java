@@ -94,6 +94,16 @@ public class CreditApplicationMapper {
         );
     }
 
+    public DebtorOutput toDebtorOutput(Credit credit) {
+
+        return new DebtorOutput(
+                credit.getId().value(),
+                credit.getCustomerId().value(),
+                credit.overdueInstallmentsQuantity(),
+                credit.overdueAmount().value()
+        );
+    }
+
     private BigDecimal formatRate(InterestRate rate) {
         return rate.percentage()
                 .setScale(2, RoundingMode.HALF_UP);

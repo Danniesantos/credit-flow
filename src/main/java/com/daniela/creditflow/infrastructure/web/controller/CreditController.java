@@ -13,6 +13,8 @@ import com.daniela.creditflow.infrastructure.web.request.SimulateCreditRequest;
 import com.daniela.creditflow.infrastructure.web.response.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -31,6 +33,7 @@ public class CreditController {
     private final AnalyzeCreditUseCase analyzeCreditUseCase;
     private final FindCreditUseCase findCreditUseCase;
     private final FindCreditBalanceUseCase balanceUseCase;
+    private final FindDebtorsUseCase debtorsUseCase;
     private final ContractCreditUseCase contractUseCase;
     private final CancelCreditUseCase cancelUseCase;
     private final FindCreditOverdueUseCase overdueUseCase;
@@ -134,6 +137,16 @@ public class CreditController {
 
         return ResponseEntity.ok(
                 creditWebMapper.toOverdueResponse(output));
+    }
+
+    @GetMapping("/debtors")
+    public ResponseEntity<Page<DebtorResponse>> findDebtors(Pageable pageable) {
+
+        Page<DebtorOutput> output =
+                debtorsUseCase.execute(pageable);
+
+        return ResponseEntity.ok(
+                output.map(creditWebMapper::toDebtorResponse));
     }
 
     @PatchMapping("/{id}/cancel")
