@@ -17,7 +17,9 @@ public class CreditDeadLetterConsumer {
                     RabbitConstants.CREDIT_APPROVED_DLQ,
                     RabbitConstants.CREDIT_REJECTED_DLQ,
                     RabbitConstants.CREDIT_CANCELED_DLQ,
-                    RabbitConstants.CREDIT_CONTRACTED_DLQ
+                    RabbitConstants.CREDIT_CONTRACTED_DLQ,
+                    RabbitConstants.CREDIT_RENEGOTIATED_DLQ,
+                    RabbitConstants.CREDIT_RESTRUCTURED_DLQ
             }
     )
     public void consume(

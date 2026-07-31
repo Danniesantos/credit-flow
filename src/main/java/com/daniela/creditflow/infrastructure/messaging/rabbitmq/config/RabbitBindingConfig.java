@@ -106,6 +106,52 @@ public class RabbitBindingConfig {
     }
 
     @Bean
+    public Binding renegotiatedBinding(
+            Queue renegotiatedQueue,
+            TopicExchange creditExchange) {
+
+        return BindingBuilder
+                .bind(renegotiatedQueue)
+                .to(creditExchange)
+                .with(
+                        RabbitConstants.CREDIT_RENEGOTIATED_ROUTING_KEY
+                );
+    }
+
+    @Bean
+    public Binding renegotiatedDlqBinding(
+            Queue renegotiatedDlq,
+            TopicExchange creditDlqExchange) {
+
+        return BindingBuilder.bind(renegotiatedDlq)
+                .to(creditDlqExchange)
+                .with("error." + RabbitConstants.CREDIT_RENEGOTIATED_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding restructuredBinding(
+            Queue restructuredQueue,
+            TopicExchange creditExchange) {
+
+        return BindingBuilder
+                .bind(restructuredQueue)
+                .to(creditExchange)
+                .with(
+                        RabbitConstants.CREDIT_RESTRUCTURED_ROUTING_KEY
+                );
+    }
+
+    @Bean
+    public Binding restructuredDlqBinding(
+            Queue restructuredDlq,
+            TopicExchange creditDlqExchange) {
+
+        return BindingBuilder.bind(restructuredDlq)
+                .to(creditDlqExchange)
+                .with("error." + RabbitConstants.CREDIT_RESTRUCTURED_ROUTING_KEY);
+    }
+
+    @Bean
     public Binding paymentBinding(
             Queue paymentQueue,
             TopicExchange creditExchange) {
