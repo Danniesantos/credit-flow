@@ -61,6 +61,32 @@ public class NotificationService {
 
     }
 
+    public void notifyRenegotiated(CreditMessage message) {
+
+        log.info("""
+                        Sending renegotiated notification
+                        
+                        Credit={}
+                        Customer={}
+                        """,
+                message.creditId(),
+                message.customerId());
+
+    }
+
+    public void notifyRestructured(CreditMessage message) {
+
+        log.info("""
+                        Sending restructured notification
+                        
+                        Credit={}
+                        Customer={}
+                        """,
+                message.creditId(),
+                message.customerId());
+
+    }
+
     public void notifyPayment(PaidMessage message) {
 
         log.info("""

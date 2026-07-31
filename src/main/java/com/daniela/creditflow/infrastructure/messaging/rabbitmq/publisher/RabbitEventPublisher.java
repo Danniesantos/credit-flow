@@ -12,5 +12,9 @@ public interface RabbitEventPublisher {
 
     void publishContracted(CreditContractedEvent event);
 
+    void publishRenegotiated(CreditRenegotiatedEvent event);
+
+    void publishRestructured(CreditRestructuredEvent event);
+
     void publishPayment(InstallmentPaidEvent event);
 }

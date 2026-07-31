@@ -1,9 +1,11 @@
 package com.daniela.creditflow.infrastructure.web.mapper;
 
+import com.daniela.creditflow.application.credit.dto.input.CreditAdjustmentInput;
 import com.daniela.creditflow.application.credit.dto.input.RequestCreditInput;
 import com.daniela.creditflow.application.credit.dto.input.SimulateCreditInput;
 import com.daniela.creditflow.application.credit.dto.output.*;
 import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.infrastructure.web.request.CreditAdjustmentRequest;
 import com.daniela.creditflow.infrastructure.web.request.RequestCreditRequest;
 import com.daniela.creditflow.infrastructure.web.request.SimulateCreditRequest;
 import com.daniela.creditflow.infrastructure.web.response.*;
@@ -120,5 +122,9 @@ public class CreditWebMapper {
                 output.overdueAmount(),
                 installments
         );
+    }
+
+    public CreditAdjustmentInput toCreditAdjustmentInput(CreditAdjustmentRequest request) {
+        return new CreditAdjustmentInput(request.getInstallmentsQuantity());
     }
 }

@@ -4,7 +4,6 @@ import com.daniela.creditflow.domain.event.*;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditEventType;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditMessage;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.PaidMessage;
-import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.PaymentEventType;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -49,13 +48,30 @@ public class RabbitEventMapper {
         );
     }
 
+    public CreditMessage toMessage(CreditRenegotiatedEvent event) {
+        return toMessage(
+                event.creditId().value(),
+                event.customerId().value(),
+                event.occurredAt(),
+                CreditEventType.RENEGOTIATED
+        );
+    }
+
+    public CreditMessage toMessage(CreditRestructuredEvent event) {
+        return toMessage(
+                event.creditId().value(),
+                event.customerId().value(),
+                event.occurredAt(),
+                CreditEventType.RESTRUCTURED
+        );
+    }
+
     public PaidMessage toMessage(InstallmentPaidEvent event) {
         return toMessage(
                 event.creditId().value(),
                 event.installmentId().value(),
                 event.customerId().value(),
-                event.paidAt(),
-                PaymentEventType.INSTALLMENT_PAID
+                event.paidAt()
         );
     }
 
@@ -77,15 +93,14 @@ public class RabbitEventMapper {
             UUID creditId,
             UUID installmentId,
             UUID customerId,
-            Instant paidAt,
-            PaymentEventType paymentType
+            Instant paidAt
     ) {
         return new PaidMessage(
                 creditId,
                 installmentId,
                 customerId,
                 paidAt,
-                paymentType
+                CreditEventType.PAID
         );
     }
 }

@@ -44,6 +44,7 @@ public class ContractCreditUseCase {
         List<Installment> installments =
                 installmentFactory.createInstallments(
                         credit.getId(),
+                        1,
                         credit.getInstallmentsQuantity(),
                         calculation.totalAmount(),
                         LocalDate.now(),

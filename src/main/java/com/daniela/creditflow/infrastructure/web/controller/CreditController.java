@@ -1,11 +1,13 @@
 package com.daniela.creditflow.infrastructure.web.controller;
 
+import com.daniela.creditflow.application.credit.dto.input.CreditAdjustmentInput;
 import com.daniela.creditflow.application.credit.dto.input.RequestCreditInput;
 import com.daniela.creditflow.application.credit.dto.input.SimulateCreditInput;
 import com.daniela.creditflow.application.credit.dto.output.*;
 import com.daniela.creditflow.application.credit.usecase.*;
 import com.daniela.creditflow.domain.valueObject.CreditId;
 import com.daniela.creditflow.infrastructure.web.mapper.CreditWebMapper;
+import com.daniela.creditflow.infrastructure.web.request.CreditAdjustmentRequest;
 import com.daniela.creditflow.infrastructure.web.request.RequestCreditRequest;
 import com.daniela.creditflow.infrastructure.web.request.SimulateCreditRequest;
 import com.daniela.creditflow.infrastructure.web.response.*;
@@ -32,6 +34,8 @@ public class CreditController {
     private final ContractCreditUseCase contractUseCase;
     private final CancelCreditUseCase cancelUseCase;
     private final FindCreditOverdueUseCase overdueUseCase;
+    private final RenegotiateCreditUseCase renegotiateUseCase;
+    private final RestructureCreditUseCase restructureUseCase;
 
     @PostMapping
     public ResponseEntity<RequestCreditResponse> request(@RequestBody @Valid
@@ -145,4 +149,33 @@ public class CreditController {
                 .noContent().build();
     }
 
+    @PostMapping("{id}/renegotiate")
+    public ResponseEntity<Void> renegotiate(@PathVariable UUID id,
+                                            @RequestBody CreditAdjustmentRequest request) {
+
+        CreditAdjustmentInput input =
+                creditWebMapper.toCreditAdjustmentInput(request);
+
+        CreditId creditId =
+                creditWebMapper.toCreditId(id);
+
+        renegotiateUseCase.execute(creditId, input);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("{id}/restructure")
+    public ResponseEntity<Void> restructure(@PathVariable UUID id,
+                                            @RequestBody CreditAdjustmentRequest request) {
+
+        CreditAdjustmentInput input =
+                creditWebMapper.toCreditAdjustmentInput(request);
+
+        CreditId creditId =
+                creditWebMapper.toCreditId(id);
+
+        restructureUseCase.execute(creditId, input);
+
+        return ResponseEntity.noContent().build();
+    }
 }

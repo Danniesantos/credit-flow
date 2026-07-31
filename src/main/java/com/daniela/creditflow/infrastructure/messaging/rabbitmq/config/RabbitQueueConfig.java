@@ -73,6 +73,38 @@ public class RabbitQueueConfig {
     }
 
     @Bean
+    public Queue renegotiatedQueue() {
+
+        return queue(
+                RabbitConstants.CREDIT_RENEGOTIATED_QUEUE
+        );
+    }
+
+    @Bean
+    public Queue renegotiatedDlq() {
+
+        return dlq(
+                RabbitConstants.CREDIT_RENEGOTIATED_DLQ
+        );
+    }
+
+    @Bean
+    public Queue restructuredQueue() {
+
+        return queue(
+                RabbitConstants.CREDIT_RESTRUCTURED_QUEUE
+        );
+    }
+
+    @Bean
+    public Queue restructuredDlq() {
+
+        return dlq(
+                RabbitConstants.CREDIT_RESTRUCTURED_DLQ
+        );
+    }
+
+    @Bean
     public Queue paymentQueue() {
 
         return queue(

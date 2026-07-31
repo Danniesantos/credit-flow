@@ -1,8 +1,9 @@
 package com.daniela.creditflow.application.installment.factory;
 
 import com.daniela.creditflow.application.installment.policy.DueDatePolicy;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
 import com.daniela.creditflow.domain.model.Installment;
+import com.daniela.creditflow.domain.valueObject.CreditId;
 import com.daniela.creditflow.domain.valueObject.Money;
 import org.springframework.stereotype.Component;
 
@@ -17,10 +18,13 @@ public class InstallmentFactory {
 
     public List<Installment> createInstallments(
             CreditId creditId,
+            Integer startNumber,
             Integer quantity,
             Money totalAmount,
             LocalDate referenceDate,
             DueDatePolicy policy) {
+
+        validateQuantity(quantity);
 
         List<Installment> installments = new ArrayList<>();
 
@@ -31,11 +35,13 @@ public class InstallmentFactory {
                                 2,
                                 RoundingMode.HALF_UP);
 
-        for (int i = 1; i <= quantity; i++) {
+        for (int i = 0; i < quantity; i++) {
+
+            int installmentNumber = startNumber + i;
 
             BigDecimal value = installmentValue;
 
-            if (i == quantity) {
+            if (i == quantity - 1) {
                 value = totalAmount.value()
                         .subtract(
                                 installmentValue.multiply(
@@ -45,11 +51,14 @@ public class InstallmentFactory {
             }
 
             LocalDate dueDate =
-                    policy.calculate(i, referenceDate);
+                    policy.calculate(
+                            i + 1,
+                            referenceDate
+                    );
 
             installments.add(
                     new Installment(
-                            i,
+                            installmentNumber,
                             new Money(value),
                             dueDate,
                             creditId
@@ -58,5 +67,14 @@ public class InstallmentFactory {
         }
 
         return installments;
+    }
+
+    private void validateQuantity(Integer quantity) {
+
+        if (quantity == null || quantity <= 0) {
+            throw new InvalidDomainStateException(
+                    "Installment quantity must be greater than zero"
+            );
+        }
     }
 }
