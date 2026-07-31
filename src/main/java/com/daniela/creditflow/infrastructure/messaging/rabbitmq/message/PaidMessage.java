@@ -7,6 +7,5 @@ public record PaidMessage(UUID creditId,
                           UUID installmentId,
                           UUID customerId,
                           Instant paidAt,
-                          PaymentEventType paymentEventType
-) {
+                          CreditEventType creditEventType) {
 }

@@ -22,7 +22,7 @@ public class InstallmentPaidConsumer {
 
         log.info(
                 "[RABBITMQ] Received event={} credit={} installment={} customer={}",
-                message.paymentEventType(),
+                message.creditEventType(),
                 message.creditId(),
                 message.installmentId(),
                 message.customerId()
