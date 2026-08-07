@@ -27,8 +27,13 @@ public class CreditStrategyFactory {
         );
     }
 
-    public CreditInterestCalculationStrategy getStrategy(
-            CreditType type) {
+    public CreditInterestCalculationStrategy getStrategy(CreditType type) {
+
+        if (type == null) {
+            throw new IllegalStateException(
+                    "Credit type cannot be null"
+            );
+        }
 
         CreditInterestCalculationStrategy strategy =
                 strategies.get(type);
