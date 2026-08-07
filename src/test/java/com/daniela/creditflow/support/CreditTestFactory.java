@@ -17,7 +17,7 @@ public final class CreditTestFactory {
         return new Credit(
                 new CreditId(UUID.randomUUID()),
                 new CustomerId(UUID.randomUUID()),
-                TestConstants.TEN_THOUSAND,
+                TestConstants.TOTAL_CREDIT_AMOUNT,
                 CreditType.PERSONAL,
                 TestConstants.FIVE_PERCENT,
                 12,
