@@ -39,7 +39,7 @@ class FindDebtorsUseCaseTest {
 
         Pageable pageable =
                 PageRequest.of(0, 10);
-        
+
         Credit credit =
                 CreditTestFactory.creditWithOverdueInstallments();
 
