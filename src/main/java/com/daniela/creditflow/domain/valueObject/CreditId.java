@@ -9,7 +9,7 @@ public record CreditId(UUID value) {
     public CreditId {
         if (value == null) {
             throw new InvalidDomainStateException(
-                    "CPF cannot be null"
+                    "Credit ID cannot be null"
             );
         }
     }
