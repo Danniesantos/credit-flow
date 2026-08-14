@@ -4,6 +4,7 @@ import com.daniela.creditflow.application.installment.dto.input.PaymentInstallme
 import com.daniela.creditflow.application.installment.usecase.PayInstallmentUseCase;
 import com.daniela.creditflow.infrastructure.web.mapper.InstallmentWebMapper;
 import com.daniela.creditflow.infrastructure.web.request.PaymentRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class InstallmentController {
 
     @PostMapping("/{installmentId}/pay")
     public ResponseEntity<Void> pay(@PathVariable UUID installmentId,
-                                    @RequestBody PaymentRequest request) {
+                                    @RequestBody @Valid PaymentRequest request) {
 
         PaymentInstallmentInput input =
                 mapper.toPaymentInstallmentInput(request, installmentId);

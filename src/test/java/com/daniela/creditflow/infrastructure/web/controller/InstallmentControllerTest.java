@@ -258,4 +258,51 @@ class InstallmentControllerTest {
                 )
                 .andExpect(status().isUnprocessableEntity());
     }
+
+    @Test
+    @DisplayName("Should return bad request when credit id is null")
+    void shouldReturnBadRequestWhenCreditIdIsNull()
+            throws Exception {
+
+        UUID installmentId = UUID.randomUUID();
+
+        mockMvc.perform(
+                        post("/installments/{installmentId}/pay", installmentId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                    {
+                                      "creditId": null,
+                                      "paymentMethod": "PIX"
+                                    }
+                                    """)
+                )
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(mapper);
+        verifyNoInteractions(payInstallmentUseCase);
+    }
+
+    @Test
+    @DisplayName("Should return bad request when payment method is null")
+    void shouldReturnBadRequestWhenPaymentMethodIsNull()
+            throws Exception {
+
+        UUID installmentId = UUID.randomUUID();
+        UUID creditId = UUID.randomUUID();
+
+        mockMvc.perform(
+                        post("/installments/{installmentId}/pay", installmentId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                    {
+                                      "creditId": "%s",
+                                      "paymentMethod": null
+                                    }
+                                    """.formatted(creditId))
+                )
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(mapper);
+        verifyNoInteractions(payInstallmentUseCase);
+    }
 }
