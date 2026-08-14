@@ -3,6 +3,7 @@ package com.daniela.creditflow.support;
 import com.daniela.creditflow.domain.model.*;
 import com.daniela.creditflow.domain.valueObject.CreditId;
 import com.daniela.creditflow.domain.valueObject.CustomerId;
+import com.daniela.creditflow.domain.valueObject.Money;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -117,6 +118,39 @@ public final class CreditTestFactory {
         );
 
         return credit;
+    }
+
+    public static Credit creditWithAmount(Money amount) {
+
+        return new Credit(
+                new CreditId(UUID.randomUUID()),
+                new CustomerId(UUID.randomUUID()),
+                amount,
+                CreditType.PERSONAL,
+                TestConstants.FIVE_PERCENT,
+                12,
+                CreditStatus.UNDER_ANALYSIS,
+                Instant.now(),
+                Instant.now()
+        );
+    }
+
+    public static Credit creditWithTypeAndAmount(
+            CreditType type,
+            Money amount
+    ) {
+
+        return new Credit(
+                new CreditId(UUID.randomUUID()),
+                new CustomerId(UUID.randomUUID()),
+                amount,
+                type,
+                TestConstants.FIVE_PERCENT,
+                12,
+                CreditStatus.UNDER_ANALYSIS,
+                Instant.now(),
+                Instant.now()
+        );
     }
 
 }
