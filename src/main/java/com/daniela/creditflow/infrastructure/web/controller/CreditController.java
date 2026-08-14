@@ -164,7 +164,7 @@ public class CreditController {
 
     @PostMapping("{id}/renegotiate")
     public ResponseEntity<Void> renegotiate(@PathVariable UUID id,
-                                            @RequestBody CreditAdjustmentRequest request) {
+                                            @RequestBody @Valid CreditAdjustmentRequest request) {
 
         CreditAdjustmentInput input =
                 creditWebMapper.toCreditAdjustmentInput(request);
@@ -179,7 +179,7 @@ public class CreditController {
 
     @PostMapping("{id}/restructure")
     public ResponseEntity<Void> restructure(@PathVariable UUID id,
-                                            @RequestBody CreditAdjustmentRequest request) {
+                                            @RequestBody @Valid CreditAdjustmentRequest request) {
 
         CreditAdjustmentInput input =
                 creditWebMapper.toCreditAdjustmentInput(request);
