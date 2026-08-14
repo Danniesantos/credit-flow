@@ -40,4 +40,23 @@ public final class CustomerTestFactory {
 
         return customer;
     }
+
+    public static Customer customerWithBadScore() {
+
+        Customer customer = customer();
+
+        customer.update(
+                new CustomerData(
+                        customer.getName(),
+                        customer.getCpf(),
+                        customer.getEmail(),
+                        customer.getDateOfBirth(),
+                        customer.getPhoneNumber(),
+                        new CreditScore(300),
+                        customer.getMonthlyIncome()
+                )
+        );
+
+        return customer;
+    }
 }
