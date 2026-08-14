@@ -180,6 +180,110 @@ public class CustomerControllerTest {
     }
 
     @Test
+    @DisplayName("Should return bad request when customer name has less than 3 characters")
+    void shouldReturnBadRequestWhenCustomerNameIsTooShort()
+            throws Exception {
+
+        mockMvc.perform(
+                        post("/customers")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                    {
+                                      "name": "Ab",
+                                      "cpf": "292.462.720-64",
+                                      "email": "testando@email.com",
+                                      "dateOfBirth": "1992-01-10",
+                                      "phoneNumber": "19999999999",
+                                      "monthlyIncome": 5000,
+                                      "creditScore": 800
+                                    }
+                                    """)
+                )
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(customerMapper);
+        verifyNoInteractions(createCustomerUseCase);
+    }
+
+    @Test
+    @DisplayName("Should return bad request when date of birth is not in the past")
+    void shouldReturnBadRequestWhenDateOfBirthIsNotInThePast()
+            throws Exception {
+
+        mockMvc.perform(
+                        post("/customers")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                    {
+                                      "name": "Testando",
+                                      "cpf": "292.462.720-64",
+                                      "email": "testando@email.com",
+                                      "dateOfBirth": "2030-01-10",
+                                      "phoneNumber": "19999999999",
+                                      "monthlyIncome": 5000,
+                                      "creditScore": 800
+                                    }
+                                    """)
+                )
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(customerMapper);
+        verifyNoInteractions(createCustomerUseCase);
+    }
+
+    @Test
+    @DisplayName("Should return bad request when monthly income is not positive")
+    void shouldReturnBadRequestWhenMonthlyIncomeIsNotPositive()
+            throws Exception {
+
+        mockMvc.perform(
+                        post("/customers")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                    {
+                                      "name": "Testando",
+                                      "cpf": "292.462.720-64",
+                                      "email": "testando@email.com",
+                                      "dateOfBirth": "1992-01-10",
+                                      "phoneNumber": "19999999999",
+                                      "monthlyIncome": 0,
+                                      "creditScore": 800
+                                    }
+                                    """)
+                )
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(customerMapper);
+        verifyNoInteractions(createCustomerUseCase);
+    }
+
+    @Test
+    @DisplayName("Should return bad request when credit score is outside valid range")
+    void shouldReturnBadRequestWhenCreditScoreIsInvalid()
+            throws Exception {
+
+        mockMvc.perform(
+                        post("/customers")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                    {
+                                      "name": "Testando",
+                                      "cpf": "292.462.720-64",
+                                      "email": "testando@email.com",
+                                      "dateOfBirth": "1992-01-10",
+                                      "phoneNumber": "19999999999",
+                                      "monthlyIncome": 5000,
+                                      "creditScore": 1001
+                                    }
+                                    """)
+                )
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(customerMapper);
+        verifyNoInteractions(createCustomerUseCase);
+    }
+
+    @Test
     @DisplayName("Should find all customers successfully")
     void shouldFindAllCustomersSuccessfully() throws Exception {
 
@@ -462,16 +566,16 @@ public class CustomerControllerTest {
                         put("/customers/{id}", "invalid-uuid")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
-                                    {
-                                      "name": "Testando",
-                                      "cpf": "292.462.720-64",
-                                      "email": "testando@email.com",
-                                      "dateOfBirth": "1992-01-10",
-                                      "phoneNumber": "19999999999",
-                                      "monthlyIncome": 5000,
-                                      "creditScore": 800
-                                    }
-                                    """)
+                                        {
+                                          "name": "Testando",
+                                          "cpf": "292.462.720-64",
+                                          "email": "testando@email.com",
+                                          "dateOfBirth": "1992-01-10",
+                                          "phoneNumber": "19999999999",
+                                          "monthlyIncome": 5000,
+                                          "creditScore": 800
+                                        }
+                                        """)
                 )
                 .andExpect(status().isBadRequest());
 
@@ -510,16 +614,16 @@ public class CustomerControllerTest {
                         put("/customers/{id}", customerId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
-                                    {
-                                      "name": "Testando",
-                                      "cpf": "292.462.720-64",
-                                      "email": "testando@email.com",
-                                      "dateOfBirth": "1992-01-10",
-                                      "phoneNumber": "19999999999",
-                                      "monthlyIncome": 5000,
-                                      "creditScore": 800
-                                    }
-                                    """)
+                                        {
+                                          "name": "Testando",
+                                          "cpf": "292.462.720-64",
+                                          "email": "testando@email.com",
+                                          "dateOfBirth": "1992-01-10",
+                                          "phoneNumber": "19999999999",
+                                          "monthlyIncome": 5000,
+                                          "creditScore": 800
+                                        }
+                                        """)
                 )
                 .andExpect(status().isNotFound());
 
@@ -542,16 +646,16 @@ public class CustomerControllerTest {
                         post("/customers")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
-                                    {
-                                      "name": "",
-                                      "cpf": "292.462.720-64",
-                                      "email": "testando@email.com",
-                                      "dateOfBirth": "1992-01-10",
-                                      "phoneNumber": "19999999999",
-                                      "monthlyIncome": 5000,
-                                      "creditScore": 800
-                                    }
-                                    """)
+                                        {
+                                          "name": "",
+                                          "cpf": "292.462.720-64",
+                                          "email": "testando@email.com",
+                                          "dateOfBirth": "1992-01-10",
+                                          "phoneNumber": "19999999999",
+                                          "monthlyIncome": 5000,
+                                          "creditScore": 800
+                                        }
+                                        """)
                 )
                 .andExpect(status().isBadRequest());
 
@@ -570,42 +674,21 @@ public class CustomerControllerTest {
                         put("/customers/{id}", customerId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
-                                    {
-                                      "name": "",
-                                      "cpf": "292.462.720-64",
-                                      "email": "testando@email.com",
-                                      "dateOfBirth": "1992-01-10",
-                                      "phoneNumber": "19999999999",
-                                      "monthlyIncome": 5000,
-                                      "creditScore": 800
-                                    }
-                                    """)
+                                        {
+                                          "name": "",
+                                          "cpf": "292.462.720-64",
+                                          "email": "testando@email.com",
+                                          "dateOfBirth": "1992-01-10",
+                                          "phoneNumber": "19999999999",
+                                          "monthlyIncome": 5000,
+                                          "creditScore": 800
+                                        }
+                                        """)
                 )
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(customerMapper);
         verifyNoInteractions(updateCustomerUseCase);
-    }
-
-
-
-    private CustomerOutput customerOutput(UUID id) {
-
-        Instant now = Instant.now();
-
-        return new CustomerOutput(
-                id,
-                TestConstants.CUSTOMER_NAME,
-                "***.***.***-64",
-                "testando@email.com",
-                TestConstants.CUSTOMER_BIRTH_DATE,
-                "19999999999",
-                TestConstants.CUSTOMER_MONTHLY_INCOME.value(),
-                800,
-                CustomerStatus.ACTIVE,
-                now,
-                now
-        );
     }
 
     @Test
@@ -634,16 +717,16 @@ public class CustomerControllerTest {
                         post("/customers")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
-                                    {
-                                      "name": "Testando",
-                                      "cpf": "292.462.720-64",
-                                      "email": "testando@email.com",
-                                      "dateOfBirth": "1992-01-10",
-                                      "phoneNumber": "19999999999",
-                                      "monthlyIncome": 5000,
-                                      "creditScore": 800
-                                    }
-                                    """)
+                                        {
+                                          "name": "Testando",
+                                          "cpf": "292.462.720-64",
+                                          "email": "testando@email.com",
+                                          "dateOfBirth": "1992-01-10",
+                                          "phoneNumber": "19999999999",
+                                          "monthlyIncome": 5000,
+                                          "creditScore": 800
+                                        }
+                                        """)
                 )
                 .andExpect(status().isConflict());
 
@@ -680,16 +763,16 @@ public class CustomerControllerTest {
                         post("/customers")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
-                                    {
-                                      "name": "Testando",
-                                      "cpf": "292.462.720-64",
-                                      "email": "testando@email.com",
-                                      "dateOfBirth": "1992-01-10",
-                                      "phoneNumber": "19999999999",
-                                      "monthlyIncome": 5000,
-                                      "creditScore": 800
-                                    }
-                                    """)
+                                        {
+                                          "name": "Testando",
+                                          "cpf": "292.462.720-64",
+                                          "email": "testando@email.com",
+                                          "dateOfBirth": "1992-01-10",
+                                          "phoneNumber": "19999999999",
+                                          "monthlyIncome": 5000,
+                                          "creditScore": 800
+                                        }
+                                        """)
                 )
                 .andExpect(status().isConflict());
 
@@ -698,6 +781,25 @@ public class CustomerControllerTest {
 
         verify(createCustomerUseCase)
                 .execute(input);
+    }
+
+    private CustomerOutput customerOutput(UUID id) {
+
+        Instant now = Instant.now();
+
+        return new CustomerOutput(
+                id,
+                TestConstants.CUSTOMER_NAME,
+                "***.***.***-64",
+                "testando@email.com",
+                TestConstants.CUSTOMER_BIRTH_DATE,
+                "19999999999",
+                TestConstants.CUSTOMER_MONTHLY_INCOME.value(),
+                800,
+                CustomerStatus.ACTIVE,
+                now,
+                now
+        );
     }
 
     private CustomerResponse customerResponse(CustomerOutput output) {
