@@ -1,5 +1,7 @@
 package com.daniela.creditflow.infrastructure.web.request;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import org.hibernate.validator.constraints.br.CPF;
@@ -42,13 +44,15 @@ public class CustomerRequest {
     @Max(value = 1000, message = "Credit score must be at most 1000")
     private Integer creditScore;
 
-    public CustomerRequest(String name,
-                           String cpf,
-                           String email,
-                           LocalDate dateOfBirth,
-                           String phoneNumber,
-                           BigDecimal monthlyIncome,
-                           Integer creditScore) {
+    @JsonCreator
+    public CustomerRequest(
+            @JsonProperty("name") String name,
+            @JsonProperty("cpf") String cpf,
+            @JsonProperty("email") String email,
+            @JsonProperty("dateOfBirth") LocalDate dateOfBirth,
+            @JsonProperty("phoneNumber") String phoneNumber,
+            @JsonProperty("monthlyIncome") BigDecimal monthlyIncome,
+            @JsonProperty("creditScore") Integer creditScore) {
         this.name = name;
         this.cpf = cpf;
         this.email = email;
