@@ -280,7 +280,7 @@ class CreditTest {
                 CreditTestFactory.creditWithOnePaidInstallment();
 
         assertThat(credit.totalPaidAmount())
-                .isEqualTo(TestConstants.ONE_THOUSAND);
+                .isEqualTo(TestConstants.INSTALLMENT_AMOUNT);
     }
 
     @Test
