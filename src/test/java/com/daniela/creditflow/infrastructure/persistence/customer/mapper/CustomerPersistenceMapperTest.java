@@ -77,7 +77,7 @@ class CustomerPersistenceMapperTest {
                 new CustomerEntity(
                         customerId,
                         TestConstants.CUSTOMER_NAME,
-                        "292.462.720-64",
+                        "29246272064",
                         "testando@email.com",
                         TestConstants.CUSTOMER_BIRTH_DATE,
                         "19999999999",

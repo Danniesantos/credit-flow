@@ -7,6 +7,7 @@ import com.daniela.creditflow.domain.model.InstallmentStatus;
 import com.daniela.creditflow.infrastructure.persistence.credit.entity.CreditEntity;
 import com.daniela.creditflow.infrastructure.persistence.customer.entity.CustomerEntity;
 import com.daniela.creditflow.infrastructure.persistence.installment.entity.InstallmentEntity;
+import com.daniela.creditflow.support.TestConstants;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -271,7 +272,11 @@ class CreditJpaRepositoryTest {
                 createCustomer();
 
         CustomerEntity anotherCustomer =
-                createCustomer();
+                createCustomer(
+                        UUID.randomUUID(),
+                        "12345678909",
+                        "another@email.com"
+                );
 
         CreditEntity credit =
                 createCredit(customer, CreditStatus.APPROVED);
@@ -310,6 +315,26 @@ class CreditJpaRepositoryTest {
                 CustomerStatus.ACTIVE,
                 now,
                 now
+        );
+    }
+
+    private CustomerEntity createCustomer(
+            UUID id,
+            String cpf,
+            String email
+    ) {
+        return new CustomerEntity(
+                id,
+                "Testando",
+                cpf,
+                email,
+                TestConstants.CUSTOMER_BIRTH_DATE,
+                "19999999999",
+                TestConstants.CUSTOMER_MONTHLY_INCOME.value(),
+                800,
+                CustomerStatus.ACTIVE,
+                Instant.now(),
+                Instant.now()
         );
     }
 

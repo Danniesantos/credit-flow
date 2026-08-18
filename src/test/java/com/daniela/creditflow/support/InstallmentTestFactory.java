@@ -4,6 +4,7 @@ import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.model.PaymentMethod;
 import com.daniela.creditflow.domain.valueObject.CreditId;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public final class InstallmentTestFactory {
         return new Installment(
                 TestConstants.INSTALLMENT_NUMBER,
                 TestConstants.INSTALLMENT_AMOUNT,
-                TEST_DATE.plusDays(10),
+                LocalDate.now().plusDays(10),
                 new CreditId()
         );
     }
