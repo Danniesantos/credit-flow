@@ -1,9 +1,11 @@
 package com.daniela.creditflow.infrastructure.web.mapper;
 
+import com.daniela.creditflow.application.credit.dto.input.CreditAdjustmentInput;
 import com.daniela.creditflow.application.credit.dto.input.RequestCreditInput;
 import com.daniela.creditflow.application.credit.dto.input.SimulateCreditInput;
 import com.daniela.creditflow.application.credit.dto.output.*;
 import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.infrastructure.web.request.CreditAdjustmentRequest;
 import com.daniela.creditflow.infrastructure.web.request.RequestCreditRequest;
 import com.daniela.creditflow.infrastructure.web.request.SimulateCreditRequest;
 import com.daniela.creditflow.infrastructure.web.response.*;
@@ -104,5 +106,35 @@ public class CreditWebMapper {
                 output.remainingAmount(),
                 output.remainingInstallments()
         );
+    }
+
+    public OverdueResponse toOverdueResponse(OverdueOutput output) {
+
+        List<OverdueInstallmentResponse> installments =
+                output.installments()
+                        .stream()
+                        .map(installmentMapper::toOverdueInstallmentResponse)
+                        .toList();
+
+        return new OverdueResponse(
+                output.hasOverdueInstallments(),
+                output.overdueInstallmentsQuantity(),
+                output.overdueAmount(),
+                installments
+        );
+    }
+
+    public DebtorResponse toDebtorResponse(DebtorOutput output) {
+
+        return new DebtorResponse(
+                output.creditId(),
+                output.customerId(),
+                output.overdueInstallments(),
+                output.overdueAmount()
+        );
+    }
+
+    public CreditAdjustmentInput toCreditAdjustmentInput(CreditAdjustmentRequest request) {
+        return new CreditAdjustmentInput(request.getInstallmentsQuantity());
     }
 }

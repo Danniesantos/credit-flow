@@ -33,6 +33,16 @@ public class RabbitEventListener {
     }
 
     @EventListener
+    public void handle(CreditRenegotiatedEvent event) {
+        publisher.publishRenegotiated(event);
+    }
+
+    @EventListener
+    public void handle(CreditRestructuredEvent event) {
+        publisher.publishRestructured(event);
+    }
+
+    @EventListener
     public void handle(InstallmentPaidEvent event) {
         publisher.publishPayment(event);
     }

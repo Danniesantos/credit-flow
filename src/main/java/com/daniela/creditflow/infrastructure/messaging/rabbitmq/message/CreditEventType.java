@@ -4,5 +4,8 @@ public enum CreditEventType {
     APPROVED,
     REJECTED,
     CANCELED,
-    CONTRACTED
+    CONTRACTED,
+    RENEGOTIATED,
+    RESTRUCTURED,
+    PAID
 }

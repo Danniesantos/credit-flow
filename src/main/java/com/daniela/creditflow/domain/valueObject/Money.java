@@ -49,11 +49,18 @@ public record Money(BigDecimal value) {
     }
 
     public Money divide(Integer divisor) {
+        if (divisor == null || divisor == 0) {
+            throw new InvalidDomainStateException(
+                    "Divisor cannot be zero"
+            );
+        }
 
         return new Money(
                 value.divide(
                         BigDecimal.valueOf(divisor),
                         2,
-                        RoundingMode.HALF_UP));
+                        RoundingMode.HALF_UP
+                )
+        );
     }
 }

@@ -4,5 +4,5 @@ import java.time.LocalDate;
 
 public interface DueDatePolicy {
 
-    LocalDate calculate(int installmentNumber, LocalDate referenceDate);
+    LocalDate calculate(int sequence, LocalDate referenceDate);
 }

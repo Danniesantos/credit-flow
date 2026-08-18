@@ -47,6 +47,22 @@ public class RabbitCreditEventPublisher implements RabbitEventPublisher {
     }
 
     @Override
+    public void publishRenegotiated(CreditRenegotiatedEvent event) {
+        publish(
+                RabbitConstants.CREDIT_RENEGOTIATED_ROUTING_KEY,
+                mapper.toMessage(event)
+        );
+    }
+
+    @Override
+    public void publishRestructured(CreditRestructuredEvent event) {
+        publish(
+                RabbitConstants.CREDIT_RESTRUCTURED_ROUTING_KEY,
+                mapper.toMessage(event)
+        );
+    }
+
+    @Override
     public void publishPayment(InstallmentPaidEvent event) {
         publish(
                 RabbitConstants.CREDIT_PAYMENT_ROUTING_KEY,

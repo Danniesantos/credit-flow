@@ -34,7 +34,7 @@ public class PaymentDeadLetterConsumer {
                         Queue={}
                         Headers={}
                         """,
-                message.paymentEventType(),
+                message.creditEventType(),
                 message.installmentId(),
                 message.creditId(),
                 message.customerId(),
