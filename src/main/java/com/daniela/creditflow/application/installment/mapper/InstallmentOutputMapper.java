@@ -1,6 +1,5 @@
 package com.daniela.creditflow.application.installment.mapper;
 
-import com.daniela.creditflow.application.credit.dto.output.OverdueOutput;
 import com.daniela.creditflow.application.installment.dto.output.InstallmentDetailsOutput;
 import com.daniela.creditflow.application.installment.dto.output.OverdueInstallmentOutput;
 import com.daniela.creditflow.domain.model.Installment;

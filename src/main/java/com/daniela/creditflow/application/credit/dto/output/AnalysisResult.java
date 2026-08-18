@@ -23,7 +23,7 @@ public record AnalysisResult(boolean approved,
                     "Approved analysis cannot contain a reason");
         }
 
-        if (!approved && reason.isBlank()) {
+        if (!approved && (reason == null || reason.isBlank())) {
             throw new IllegalArgumentException(
                     "Rejected analysis must contain a reason");
         }

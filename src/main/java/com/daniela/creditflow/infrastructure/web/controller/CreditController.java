@@ -13,6 +13,8 @@ import com.daniela.creditflow.infrastructure.web.request.SimulateCreditRequest;
 import com.daniela.creditflow.infrastructure.web.response.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -31,6 +33,7 @@ public class CreditController {
     private final AnalyzeCreditUseCase analyzeCreditUseCase;
     private final FindCreditUseCase findCreditUseCase;
     private final FindCreditBalanceUseCase balanceUseCase;
+    private final FindDebtorsUseCase debtorsUseCase;
     private final ContractCreditUseCase contractUseCase;
     private final CancelCreditUseCase cancelUseCase;
     private final FindCreditOverdueUseCase overdueUseCase;
@@ -136,6 +139,16 @@ public class CreditController {
                 creditWebMapper.toOverdueResponse(output));
     }
 
+    @GetMapping("/debtors")
+    public ResponseEntity<Page<DebtorResponse>> findDebtors(Pageable pageable) {
+
+        Page<DebtorOutput> output =
+                debtorsUseCase.execute(pageable);
+
+        return ResponseEntity.ok(
+                output.map(creditWebMapper::toDebtorResponse));
+    }
+
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<Void> cancel(@PathVariable
                                        UUID id) {
@@ -151,7 +164,7 @@ public class CreditController {
 
     @PostMapping("{id}/renegotiate")
     public ResponseEntity<Void> renegotiate(@PathVariable UUID id,
-                                            @RequestBody CreditAdjustmentRequest request) {
+                                            @RequestBody @Valid CreditAdjustmentRequest request) {
 
         CreditAdjustmentInput input =
                 creditWebMapper.toCreditAdjustmentInput(request);
@@ -166,7 +179,7 @@ public class CreditController {
 
     @PostMapping("{id}/restructure")
     public ResponseEntity<Void> restructure(@PathVariable UUID id,
-                                            @RequestBody CreditAdjustmentRequest request) {
+                                            @RequestBody @Valid CreditAdjustmentRequest request) {
 
         CreditAdjustmentInput input =
                 creditWebMapper.toCreditAdjustmentInput(request);
