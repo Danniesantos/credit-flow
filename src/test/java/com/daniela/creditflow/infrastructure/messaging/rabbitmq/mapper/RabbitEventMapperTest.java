@@ -3,8 +3,10 @@ package com.daniela.creditflow.infrastructure.messaging.rabbitmq.mapper;
 import com.daniela.creditflow.domain.event.*;
 import com.daniela.creditflow.domain.valueObject.CreditId;
 import com.daniela.creditflow.domain.valueObject.CustomerId;
+import com.daniela.creditflow.domain.valueObject.InstallmentId;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditEventType;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditMessage;
+import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.PaidMessage;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -134,5 +136,28 @@ class RabbitEventMapperTest {
         assertEquals(customerId, message.customerId());
         assertEquals(occurredAt, message.occurredAt());
         assertEquals(CreditEventType.RESTRUCTURED, message.eventType());
+    }
+
+    @Test
+    void shouldMapInstallmentPaidEvent() {
+        UUID creditId = UUID.randomUUID();
+        UUID installmentId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        Instant paidAt = Instant.now();
+
+        InstallmentPaidEvent event = new InstallmentPaidEvent(
+                new CreditId(creditId),
+                new InstallmentId(installmentId),
+                new CustomerId(customerId),
+                paidAt
+        );
+
+        PaidMessage message = mapper.toMessage(event);
+
+        assertEquals(creditId, message.creditId());
+        assertEquals(installmentId, message.installmentId());
+        assertEquals(customerId, message.customerId());
+        assertEquals(paidAt, message.paidAt());
+        assertEquals(CreditEventType.PAID, message.creditEventType());
     }
 }
