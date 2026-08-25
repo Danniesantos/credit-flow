@@ -2,8 +2,8 @@ package com.daniela.creditflow.domain.model;
 
 import com.daniela.creditflow.domain.exceptions.InstallmentNotFoundException;
 import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
-import com.daniela.creditflow.domain.valueObject.InstallmentId;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.InstallmentId;
+import com.daniela.creditflow.domain.valueobject.Money;
 import com.daniela.creditflow.support.CreditTestFactory;
 import com.daniela.creditflow.support.InstallmentTestFactory;
 import com.daniela.creditflow.support.TestConstants;
@@ -11,7 +11,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,13 +23,28 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class CreditTest {
 
+    private static final ZoneId ZONE_ID =
+            ZoneId.of("America/Sao_Paulo");
+
+    private static final Clock FIXED_CLOCK =
+            Clock.fixed(
+                    Instant.parse("2026-08-24T15:00:00Z"),
+                    ZONE_ID
+            );
+
+    private static final Instant NOW =
+            FIXED_CLOCK.instant();
+
+    private static final LocalDate TODAY =
+            LocalDate.now(FIXED_CLOCK);
+
     @Test
     @DisplayName("Should approve credit under analysis")
     void shouldApproveCredit() {
 
         Credit credit = CreditTestFactory.underAnalysisCredit();
 
-        credit.approve();
+        credit.approve(NOW);
 
         assertThat(credit.getStatus())
                 .isEqualTo(CreditStatus.APPROVED);
@@ -38,7 +56,7 @@ class CreditTest {
 
         Credit credit = CreditTestFactory.underAnalysisCredit();
 
-        credit.reject();
+        credit.reject(NOW);
 
         assertThat(credit.getStatus())
                 .isEqualTo(CreditStatus.REJECTED);
@@ -50,7 +68,7 @@ class CreditTest {
 
         Credit credit = CreditTestFactory.underAnalysisCredit();
 
-        credit.cancel();
+        credit.cancel(NOW);
 
         assertThat(credit.getStatus())
                 .isEqualTo(CreditStatus.CANCELED);
@@ -62,9 +80,12 @@ class CreditTest {
 
         Credit credit = CreditTestFactory.contractedCredit();
 
-        assertThatThrownBy(credit::cancel)
+        assertThatThrownBy(() ->
+                credit.cancel(NOW)
+        )
                 .isInstanceOf(InvalidDomainStateException.class)
-                .hasMessageContaining("Contracted credits cannot be canceled");
+                .hasMessageContaining(
+                        "Contracted credits cannot be canceled");
     }
 
     @Test
@@ -79,7 +100,7 @@ class CreditTest {
                         credit.getInstallmentsQuantity()
                 );
 
-        credit.contract(installments);
+        credit.contract(installments, NOW);
 
         assertThat(credit.getStatus())
                 .isEqualTo(CreditStatus.CONTRACTED);
@@ -95,10 +116,13 @@ class CreditTest {
         Credit credit = CreditTestFactory.underAnalysisCredit();
 
         assertThatThrownBy(() ->
-                credit.contract(List.of())
+                credit.contract(
+                        List.of(),
+                        NOW)
         )
                 .isInstanceOf(InvalidDomainStateException.class)
-                .hasMessageContaining("Only approved credits can be contracted");
+                .hasMessageContaining(
+                        "Only approved credits can be contracted");
     }
 
     @Test
@@ -114,7 +138,7 @@ class CreditTest {
                 );
 
         assertThatThrownBy(() ->
-                credit.contract(installments)
+                credit.contract(installments, NOW)
         )
                 .isInstanceOf(InvalidDomainStateException.class)
                 .hasMessageContaining("Credit is already contracted");
@@ -132,7 +156,8 @@ class CreditTest {
         credit.markInstallmentAsPaid(
                 installment.getId(),
                 PaymentMethod.PIX,
-                Instant.now()
+                NOW,
+                NOW
         );
 
         assertThat(installment.isPaid())
@@ -149,7 +174,8 @@ class CreditTest {
                 credit.markInstallmentAsPaid(
                         installment.getId(),
                         PaymentMethod.PIX,
-                        Instant.now()
+                        NOW,
+                        NOW
                 )
         );
 
@@ -171,7 +197,11 @@ class CreditTest {
                         6
                 );
 
-        credit.renegotiate(installments);
+        credit.renegotiate(
+                installments,
+                TODAY,
+                NOW
+        );
 
         assertThat(credit.getInstallments())
                 .hasSize(
@@ -187,7 +217,11 @@ class CreditTest {
                 CreditTestFactory.contractedCredit();
 
         assertThatThrownBy(() ->
-                credit.renegotiate(List.of())
+                credit.renegotiate(
+                        List.of(),
+                        TODAY,
+                        NOW
+                )
         )
                 .isInstanceOf(InvalidDomainStateException.class)
                 .hasMessageContaining("Credit cannot be renegotiated");
@@ -207,7 +241,10 @@ class CreditTest {
                         24
                 );
 
-        credit.restructure(installments);
+        credit.restructure(
+                installments,
+                NOW
+        );
 
         assertThat(credit.getInstallments())
                 .hasSize(
@@ -223,7 +260,10 @@ class CreditTest {
                 CreditTestFactory.paidOffCredit();
 
         assertThatThrownBy(() ->
-                credit.restructure(List.of())
+                credit.restructure(
+                        List.of(),
+                        NOW
+                )
         )
                 .isInstanceOf(InvalidDomainStateException.class)
                 .hasMessageContaining("Credit cannot be restructured");
@@ -245,7 +285,8 @@ class CreditTest {
                 credit.markInstallmentAsPaid(
                         installment.getId(),
                         PaymentMethod.PIX,
-                        Instant.now()
+                        NOW,
+                        NOW
                 )
         )
                 .isInstanceOf(InvalidDomainStateException.class)
@@ -265,7 +306,8 @@ class CreditTest {
                 credit.markInstallmentAsPaid(
                         installment.getId(),
                         PaymentMethod.PIX,
-                        Instant.now()
+                        NOW,
+                        NOW
                 )
         )
                 .isInstanceOf(InvalidDomainStateException.class)
@@ -323,11 +365,8 @@ class CreditTest {
         Credit credit =
                 CreditTestFactory.creditWithOverdueInstallments();
 
-        assertThat(credit.overdueInstallmentsQuantity())
+        assertThat(credit.overdueInstallmentsQuantity(TODAY))
                 .isEqualTo(12L);
-
-        System.out.println("Installments: " + credit.getInstallmentsQuantity());
-        System.out.println("Overdue: " + credit.overdueInstallmentsQuantity());
     }
 
     @Test
@@ -337,7 +376,7 @@ class CreditTest {
         Credit credit =
                 CreditTestFactory.creditWithOverdueInstallments();
 
-        assertThat(credit.overdueAmount())
+        assertThat(credit.overdueAmount(TODAY))
                 .isEqualTo(new Money(BigDecimal.valueOf(12_000)));
     }
 
@@ -391,7 +430,7 @@ class CreditTest {
         Credit credit =
                 CreditTestFactory.creditWithOverdueInstallments();
 
-        assertThat(credit.hasOverdueInstallments())
+        assertThat(credit.hasOverdueInstallments(TODAY))
                 .isTrue();
     }
 
@@ -467,7 +506,7 @@ class CreditTest {
         Credit credit =
                 CreditTestFactory.creditWithOverdueInstallments();
 
-        assertThat(credit.canRenegotiate())
+        assertThat(credit.canRenegotiate(TODAY))
                 .isTrue();
     }
 

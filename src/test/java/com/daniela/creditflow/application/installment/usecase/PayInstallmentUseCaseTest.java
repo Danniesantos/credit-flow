@@ -12,17 +12,21 @@ import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.model.InstallmentStatus;
 import com.daniela.creditflow.domain.model.PaymentMethod;
 import com.daniela.creditflow.domain.repository.CreditRepository;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
 import com.daniela.creditflow.support.CreditTestFactory;
 import com.daniela.creditflow.support.TestConstants;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -45,8 +49,24 @@ class PayInstallmentUseCaseTest {
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
-    @InjectMocks
     private PayInstallmentUseCase useCase;
+
+    private static final Clock FIXED_CLOCK =
+            Clock.fixed(
+                    Instant.parse("2026-08-24T15:00:00Z"),
+                    ZoneId.of("America/Sao_Paulo")
+            );
+
+    @BeforeEach
+    void setup(){
+        useCase = new PayInstallmentUseCase(
+                creditRepository,
+                creditService,
+                paymentService,
+                eventPublisher,
+                FIXED_CLOCK
+        );
+    }
 
     @Test
     @DisplayName("Should pay installment and publish event")

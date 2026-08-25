@@ -1,11 +1,13 @@
 package com.daniela.creditflow.support;
 
-import com.daniela.creditflow.domain.valueObject.InterestRate;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.InterestRate;
+import com.daniela.creditflow.domain.valueobject.Money;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 public class TestConstants {
 
@@ -39,5 +41,17 @@ public class TestConstants {
 
     public static final Instant CREATED_AT =
             Instant.parse("2026-08-07T12:00:00Z");
+
+    public static final ZoneId ZONE_ID =
+            ZoneId.of("America/Sao_Paulo");
+
+    public static final Instant NOW =
+            Instant.parse("2026-08-24T15:00:00Z");
+
+    public static final LocalDate TODAY =
+            LocalDate.of(2026, 8, 24);
+
+    public static final Clock FIXED_CLOCK =
+            Clock.fixed(NOW, ZONE_ID);
 
 }

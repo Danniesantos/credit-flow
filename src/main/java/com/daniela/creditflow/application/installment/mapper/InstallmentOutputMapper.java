@@ -5,6 +5,8 @@ import com.daniela.creditflow.application.installment.dto.output.OverdueInstallm
 import com.daniela.creditflow.domain.model.Installment;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class InstallmentOutputMapper {
 
@@ -21,13 +23,14 @@ public class InstallmentOutputMapper {
         );
     }
 
-    public OverdueInstallmentOutput toOverdueOutput(Installment installment) {
+    public OverdueInstallmentOutput toOverdueOutput(Installment installment,
+                                                    LocalDate today) {
         return new OverdueInstallmentOutput(
                 installment.getId().value(),
                 installment.getNumber(),
                 installment.getAmount().value(),
                 installment.getDueDate(),
-                installment.daysOverdue()
+                installment.daysOverdue(today)
         );
     }
 }

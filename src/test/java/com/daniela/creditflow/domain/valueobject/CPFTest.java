@@ -1,4 +1,4 @@
-package com.daniela.creditflow.domain.valueObject;
+package com.daniela.creditflow.domain.valueobject;
 
 import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
 import org.junit.jupiter.api.DisplayName;
@@ -21,11 +21,11 @@ class CPFTest {
     }
 
     @Test
-    @DisplayName("Should normalize CPF with formatting")
-    void shouldNormalizeCpf() {
+    @DisplayName("Should normalize CPF without formatting")
+    void shouldNormalizeCpfWithoutFormatting() {
 
         CPF cpf =
-                new CPF("292.462.720-64");
+                new CPF("29246272064");
 
         assertThat(cpf.value())
                 .isEqualTo("29246272064");

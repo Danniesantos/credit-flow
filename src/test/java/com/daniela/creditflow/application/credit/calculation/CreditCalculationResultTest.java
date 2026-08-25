@@ -1,7 +1,7 @@
 package com.daniela.creditflow.application.credit.calculation;
 
 import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.Money;
 import com.daniela.creditflow.support.TestConstants;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

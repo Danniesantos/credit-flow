@@ -6,7 +6,7 @@ import com.daniela.creditflow.domain.exceptions.CustomerNotFoundException;
 import com.daniela.creditflow.domain.model.Customer;
 import com.daniela.creditflow.domain.model.CustomerStatus;
 import com.daniela.creditflow.domain.repository.CustomerRepository;
-import com.daniela.creditflow.domain.valueObject.CustomerId;
+import com.daniela.creditflow.domain.valueobject.CustomerId;
 import com.daniela.creditflow.support.CustomerTestFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

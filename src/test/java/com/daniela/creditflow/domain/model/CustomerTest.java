@@ -2,14 +2,16 @@ package com.daniela.creditflow.domain.model;
 
 import com.daniela.creditflow.domain.exceptions.CustomerAlreadyInactiveException;
 import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
-import com.daniela.creditflow.domain.valueObject.CreditScore;
-import com.daniela.creditflow.domain.valueObject.Email;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.CreditScore;
+import com.daniela.creditflow.domain.valueobject.Email;
+import com.daniela.creditflow.domain.valueobject.Money;
 import com.daniela.creditflow.support.CustomerTestFactory;
+import com.daniela.creditflow.support.TestConstants;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 
@@ -17,6 +19,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class CustomerTest {
+
+    private static final Clock CLOCK = TestConstants.FIXED_CLOCK;
 
     @Test
     @DisplayName("Should create active customer")
@@ -51,7 +55,7 @@ class CustomerTest {
                 );
 
         assertThatThrownBy(() ->
-                new Customer(invalidData)
+                new Customer(invalidData, CLOCK)
         )
                 .isInstanceOf(InvalidDomainStateException.class)
                 .hasMessage("Name cannot be blank");
@@ -76,7 +80,7 @@ class CustomerTest {
                 );
 
         assertThatThrownBy(() ->
-                new Customer(invalidData)
+                new Customer(invalidData, CLOCK)
         )
                 .isInstanceOf(InvalidDomainStateException.class)
                 .hasMessage("Name must have at least 3 characters");
@@ -101,7 +105,7 @@ class CustomerTest {
                 );
 
         assertThatThrownBy(() ->
-                new Customer(invalidData)
+                new Customer(invalidData, CLOCK)
         )
                 .isInstanceOf(InvalidDomainStateException.class)
                 .hasMessage(

@@ -5,18 +5,21 @@ import com.daniela.creditflow.application.installment.factory.InstallmentFactory
 import com.daniela.creditflow.application.installment.policy.DueDatePolicy;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.Installment;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.Money;
 import com.daniela.creditflow.support.CreditTestFactory;
 import com.daniela.creditflow.support.TestConstants;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -33,8 +36,26 @@ class CreditInstallmentServiceTest {
     @Mock
     private DueDatePolicy dueDatePolicy;
 
-    @InjectMocks
     private CreditInstallmentService service;
+
+    private static final ZoneId ZONE_ID =
+            ZoneId.of("America/Sao_Paulo");
+
+    private static final Clock FIXED_CLOCK =
+            Clock.fixed(
+                    Instant.parse("2026-08-24T15:00:00Z"),
+                    ZONE_ID
+            );
+
+    @BeforeEach
+    void setUp() {
+        service = new CreditInstallmentService(
+                calculationService,
+                installmentFactory,
+                dueDatePolicy,
+                FIXED_CLOCK
+        );
+    }
 
     @Test
     @DisplayName("Should generate installments")
@@ -107,9 +128,9 @@ class CreditInstallmentServiceTest {
 
         verify(calculationService)
                 .calculate(
-                        eq(credit.getCreditType()),
-                        eq(credit.remainingAmount()),
-                        eq(3)
+                        credit.getCreditType(),
+                        credit.remainingAmount(),
+                        3
                 );
     }
 
@@ -141,14 +162,16 @@ class CreditInstallmentServiceTest {
 
         service.generate(credit, 2);
 
+        LocalDate expectedDate = LocalDate.of(2026, 8, 24);
+
         verify(installmentFactory)
                 .createInstallments(
-                        eq(credit.getId()),
-                        eq(credit.nextInstallmentNumber()),
-                        eq(2),
-                        eq(calculation.totalAmount()),
-                        any(LocalDate.class),
-                        eq(dueDatePolicy)
+                        credit.getId(),
+                        credit.nextInstallmentNumber(),
+                        2,
+                        calculation.totalAmount(),
+                        expectedDate,
+                        dueDatePolicy
                 );
     }
 }

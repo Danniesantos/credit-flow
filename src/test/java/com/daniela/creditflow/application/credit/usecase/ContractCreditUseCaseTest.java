@@ -10,21 +10,24 @@ import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.CreditStatus;
 import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.repository.CreditRepository;
-import com.daniela.creditflow.domain.valueObject.CreditId;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.CreditId;
+import com.daniela.creditflow.domain.valueobject.Money;
 import com.daniela.creditflow.support.CreditTestFactory;
 import com.daniela.creditflow.support.InstallmentTestFactory;
 import com.daniela.creditflow.support.TestConstants;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -53,8 +56,29 @@ class ContractCreditUseCaseTest {
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
-    @InjectMocks
     private ContractCreditUseCase useCase;
+
+    private static final ZoneId ZONE_ID =
+            ZoneId.of("America/Sao_Paulo");
+
+    private static final Clock FIXED_CLOCK =
+            Clock.fixed(
+                    Instant.parse("2026-08-24T15:00:00Z"),
+                    ZONE_ID
+            );
+
+    @BeforeEach
+    void setUp() {
+        useCase = new ContractCreditUseCase(
+                creditRepository,
+                creditService,
+                installmentFactory,
+                calculationService,
+                dueDatePolicy,
+                eventPublisher,
+                FIXED_CLOCK
+        );
+    }
 
     @Test
     @DisplayName("Should contract credit and publish event")
@@ -175,20 +199,20 @@ class ContractCreditUseCaseTest {
 
         verify(calculationService)
                 .calculate(
-                        eq(credit.getCreditType()),
-                        eq(credit.getRequestedAmount()),
-                        eq(credit.getInstallmentsQuantity())
+                        credit.getCreditType(),
+                        credit.getRequestedAmount(),
+                        credit.getInstallmentsQuantity()
                 );
 
-
+        LocalDate expectedDate = LocalDate.of(2026, 8, 24);
         verify(installmentFactory)
                 .createInstallments(
-                        eq(credit.getId()),
-                        eq(1),
-                        eq(credit.getInstallmentsQuantity()),
-                        eq(calculation.totalAmount()),
-                        any(LocalDate.class),
-                        eq(dueDatePolicy)
+                        credit.getId(),
+                        1,
+                        credit.getInstallmentsQuantity(),
+                        calculation.totalAmount(),
+                        expectedDate,
+                        dueDatePolicy
                 );
     }
 

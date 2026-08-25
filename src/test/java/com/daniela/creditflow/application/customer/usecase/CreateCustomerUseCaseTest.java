@@ -11,10 +11,11 @@ import com.daniela.creditflow.domain.model.Customer;
 import com.daniela.creditflow.domain.model.CustomerData;
 import com.daniela.creditflow.domain.repository.CustomerRepository;
 import com.daniela.creditflow.support.CustomerTestFactory;
+import com.daniela.creditflow.support.TestConstants;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -38,8 +39,18 @@ class CreateCustomerUseCaseTest {
     @Mock
     private CustomerDataMapper customerDataMapper;
 
-    @InjectMocks
     private CreateCustomerUseCase useCase;
+
+    @BeforeEach
+    void setup() {
+        useCase = new CreateCustomerUseCase(
+                customerRepository,
+                customerService,
+                customerOutputMapper,
+                customerDataMapper,
+                TestConstants.FIXED_CLOCK
+        );
+    }
 
     @Test
     @DisplayName("Should create customer successfully")
@@ -52,7 +63,10 @@ class CreateCustomerUseCaseTest {
                 CustomerTestFactory.customerData();
 
         Customer customer =
-                new Customer(customerData);
+                new Customer(
+                        customerData,
+                        TestConstants.FIXED_CLOCK
+                );
 
         CustomerOutput expected =
                 mock(CustomerOutput.class);

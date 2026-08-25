@@ -5,7 +5,7 @@ import com.daniela.creditflow.application.installment.dto.output.InstallmentDeta
 import com.daniela.creditflow.application.installment.dto.output.OverdueInstallmentOutput;
 import com.daniela.creditflow.domain.model.InstallmentStatus;
 import com.daniela.creditflow.domain.model.PaymentMethod;
-import com.daniela.creditflow.domain.valueObject.InstallmentId;
+import com.daniela.creditflow.domain.valueobject.InstallmentId;
 import com.daniela.creditflow.infrastructure.web.request.PaymentRequest;
 import com.daniela.creditflow.infrastructure.web.response.InstallmentDetailsResponse;
 import com.daniela.creditflow.infrastructure.web.response.OverdueInstallmentResponse;

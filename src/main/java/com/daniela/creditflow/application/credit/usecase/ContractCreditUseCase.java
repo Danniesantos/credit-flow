@@ -9,12 +9,13 @@ import com.daniela.creditflow.domain.event.CreditContractedEvent;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.repository.CreditRepository;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
@@ -29,11 +30,13 @@ public class ContractCreditUseCase {
     private final CreditCalculationService calculationService;
     private final DueDatePolicy dueDatePolicy;
     private final ApplicationEventPublisher eventPublisher;
+    private final Clock clock;
 
     @Transactional
     public void execute(CreditId creditId) {
 
-        Credit credit = creditService.findCredit(creditId);
+        Credit credit =
+                creditService.findCredit(creditId);
 
         CreditCalculationResult calculation =
                 calculationService.calculate(
@@ -41,22 +44,34 @@ public class ContractCreditUseCase {
                         credit.getRequestedAmount(),
                         credit.getInstallmentsQuantity());
 
+        LocalDate today =
+                LocalDate.now(clock);
+
+        Instant now =
+                clock.instant();
+
         List<Installment> installments =
                 installmentFactory.createInstallments(
                         credit.getId(),
                         1,
                         credit.getInstallmentsQuantity(),
                         calculation.totalAmount(),
-                        LocalDate.now(),
+                        today,
                         dueDatePolicy);
 
-        credit.contract(installments);
+        credit.contract(
+                installments,
+                now
+        );
 
         creditRepository.save(credit);
 
         eventPublisher.publishEvent(
-                new CreditContractedEvent(creditId,
+                new CreditContractedEvent(
+                        creditId,
                         credit.getCustomerId(),
-                        Instant.now()));
+                        now
+                )
+        );
     }
 }

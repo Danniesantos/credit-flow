@@ -1,20 +1,20 @@
-package com.daniela.creditflow.domain.valueObject;
+package com.daniela.creditflow.domain.valueobject;
 
 import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
 
 import java.util.UUID;
 
-public record CustomerId(UUID value) {
+public record InstallmentId(UUID value) {
 
-    public CustomerId {
+    public InstallmentId {
         if (value == null) {
             throw new InvalidDomainStateException(
-                    "CustomerId cannot be null"
+                    "InstallmentId cannot be null"
             );
         }
     }
 
-    public CustomerId() {
+    public InstallmentId() {
         this(UUID.randomUUID());
     }
 }

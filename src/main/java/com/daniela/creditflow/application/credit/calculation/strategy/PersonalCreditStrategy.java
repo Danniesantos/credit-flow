@@ -1,6 +1,6 @@
 package com.daniela.creditflow.application.credit.calculation.strategy;
 
-import com.daniela.creditflow.domain.valueObject.InterestRate;
+import com.daniela.creditflow.domain.valueobject.InterestRate;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

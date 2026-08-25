@@ -8,7 +8,7 @@ import com.daniela.creditflow.application.installment.mapper.InstallmentOutputMa
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.InstallmentStatus;
 import com.daniela.creditflow.domain.model.PaymentMethod;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.Money;
 import com.daniela.creditflow.support.CreditTestFactory;
 import com.daniela.creditflow.support.TestConstants;
 import org.junit.jupiter.api.DisplayName;
@@ -180,45 +180,48 @@ class CreditApplicationMapperTest {
         Credit credit =
                 CreditTestFactory.creditWithOverdueInstallments();
 
-        when(installmentMapper.toOverdueOutput(any()))
-                .thenReturn(
-                        new OverdueInstallmentOutput(
-                                UUID.randomUUID(),
-                                1,
-                                BigDecimal.valueOf(1000),
-                                LocalDate.now().minusDays(10),
-                                10L
-                        )
-                );
+        LocalDate today =
+                LocalDate.of(2026, 8, 24);
+
+        when(installmentMapper.toOverdueOutput(
+                any(),
+                eq(today)
+        )).thenReturn(
+                new OverdueInstallmentOutput(
+                        UUID.randomUUID(),
+                        1,
+                        BigDecimal.valueOf(1000),
+                        today.minusDays(10),
+                        10L
+                )
+        );
 
         OverdueOutput output =
-                mapper.toOverdueOutput(credit);
+                mapper.toOverdueOutput(
+                        credit,
+                        today
+                );
 
         assertThat(output.hasOverdueInstallments())
                 .isTrue();
 
         assertThat(output.overdueInstallmentsQuantity())
                 .isEqualTo(
-                        Long.valueOf(
-                                credit.overdueInstallmentsQuantity()
-                        )
-                );
-
-        assertThat(output.overdueInstallmentsQuantity())
-                .isEqualTo(
-                        Long.valueOf(
-                                credit.overdueInstallmentsQuantity()
-                        )
+                        credit.overdueInstallmentsQuantity(today)
                 );
 
         assertThat(output.overdueAmount())
                 .isEqualByComparingTo(
-                        credit.overdueAmount().value()
+                        credit.overdueAmount(today).value()
                 );
 
-        verify(installmentMapper,
-                times(credit.overdueInstallments().size()))
-                .toOverdueOutput(any());
+        verify(
+                installmentMapper,
+                times(credit.overdueInstallments(today).size())
+        ).toOverdueOutput(
+                any(),
+                eq(today)
+        );
     }
 
     @Test
@@ -228,8 +231,14 @@ class CreditApplicationMapperTest {
         Credit credit =
                 CreditTestFactory.creditWithOverdueInstallments();
 
+        LocalDate today =
+                LocalDate.of(2026, 8, 24);
+
         DebtorOutput output =
-                mapper.toDebtorOutput(credit);
+                mapper.toDebtorOutput(
+                        credit,
+                        today
+                );
 
         assertThat(output.creditId())
                 .isEqualTo(
@@ -243,12 +252,12 @@ class CreditApplicationMapperTest {
 
         assertThat(output.overdueInstallments())
                 .isEqualTo(
-                        credit.overdueInstallmentsQuantity()
+                        credit.overdueInstallmentsQuantity(today)
                 );
 
         assertThat(output.overdueAmount())
                 .isEqualByComparingTo(
-                        credit.overdueAmount().value()
+                        credit.overdueAmount(today).value()
                 );
     }
 }
