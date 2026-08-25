@@ -10,7 +10,7 @@ import com.daniela.creditflow.domain.model.CreditStatus;
 import com.daniela.creditflow.domain.model.CreditType;
 import com.daniela.creditflow.domain.model.InstallmentStatus;
 import com.daniela.creditflow.domain.model.PaymentMethod;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
 import com.daniela.creditflow.infrastructure.web.request.CreditAdjustmentRequest;
 import com.daniela.creditflow.infrastructure.web.request.RequestCreditRequest;
 import com.daniela.creditflow.infrastructure.web.request.SimulateCreditRequest;

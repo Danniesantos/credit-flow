@@ -32,6 +32,7 @@ class CreditStatusTest {
                 CreditStatus.openStatuses();
 
         assertThat(result)
+                .isNotEmpty()
                 .doesNotContain(
                         CreditStatus.REJECTED,
                         CreditStatus.CANCELED,

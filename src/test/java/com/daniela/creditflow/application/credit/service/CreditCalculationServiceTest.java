@@ -4,7 +4,7 @@ import com.daniela.creditflow.application.credit.calculation.CreditCalculationRe
 import com.daniela.creditflow.application.credit.calculation.CreditStrategyFactory;
 import com.daniela.creditflow.application.credit.calculation.strategy.CreditInterestCalculationStrategy;
 import com.daniela.creditflow.domain.model.CreditType;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.Money;
 import com.daniela.creditflow.support.TestConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

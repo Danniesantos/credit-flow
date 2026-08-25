@@ -8,6 +8,7 @@ import com.daniela.creditflow.domain.model.Installment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class CreditInstallmentService {
     private final CreditCalculationService calculationService;
     private final InstallmentFactory installmentFactory;
     private final DueDatePolicy dueDatePolicy;
+    private final Clock clock;
 
 
     public List<Installment> generate(Credit credit,
@@ -35,7 +37,7 @@ public class CreditInstallmentService {
                 credit.nextInstallmentNumber(),
                 quantity,
                 calculation.totalAmount(),
-                LocalDate.now(),
+                LocalDate.now(clock),
                 dueDatePolicy
         );
     }

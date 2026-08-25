@@ -7,12 +7,13 @@ import com.daniela.creditflow.domain.event.CreditRestructuredEvent;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.repository.CreditRepository;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 
@@ -24,12 +25,15 @@ public class RestructureCreditUseCase {
     private final CreditRepository creditRepository;
     private final CreditInstallmentService creditInstallmentService;
     private final ApplicationEventPublisher eventPublisher;
+    private final Clock clock;
 
     @Transactional
-    public void execute(CreditId creditId,
-                        CreditAdjustmentInput input) {
+    public void execute(
+            CreditId creditId,
+            CreditAdjustmentInput input) {
 
-        Credit credit = service.findCredit(creditId);
+        Credit credit =
+                service.findCredit(creditId);
 
         List<Installment> installments =
                 creditInstallmentService.generate(
@@ -37,14 +41,22 @@ public class RestructureCreditUseCase {
                         input.installmentsQuantity()
                 );
 
-        credit.restructure(installments);
+        Instant now = clock.instant();
+
+        credit.restructure(
+                installments,
+                now
+        );
 
         creditRepository.save(credit);
 
         eventPublisher.publishEvent(
-                new CreditRestructuredEvent(creditId,
+                new CreditRestructuredEvent(
+                        creditId,
                         credit.getCustomerId(),
-                        Instant.now()));
+                        now
+                )
+        );
     }
 }
 

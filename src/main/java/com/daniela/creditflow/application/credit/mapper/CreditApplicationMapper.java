@@ -6,13 +6,14 @@ import com.daniela.creditflow.application.installment.dto.output.InstallmentDeta
 import com.daniela.creditflow.application.installment.dto.output.OverdueInstallmentOutput;
 import com.daniela.creditflow.application.installment.mapper.InstallmentOutputMapper;
 import com.daniela.creditflow.domain.model.Credit;
-import com.daniela.creditflow.domain.valueObject.InterestRate;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.InterestRate;
+import com.daniela.creditflow.domain.valueobject.Money;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -79,28 +80,35 @@ public class CreditApplicationMapper {
                 credit.remainingInstallments());
     }
 
-    public OverdueOutput toOverdueOutput(Credit credit) {
+    public OverdueOutput toOverdueOutput(Credit credit,
+                                         LocalDate today) {
+
         List<OverdueInstallmentOutput> installments =
-                credit.overdueInstallments()
+                credit.overdueInstallments(today)
                         .stream()
-                        .map(installmentMapper::toOverdueOutput)
+                        .map(installment ->
+                                installmentMapper.toOverdueOutput(
+                                        installment,
+                                        today
+                                ))
                         .toList();
 
         return new OverdueOutput(
-                credit.hasOverdueInstallments(),
-                credit.overdueInstallmentsQuantity(),
-                credit.overdueAmount().value(),
+                credit.hasOverdueInstallments(today),
+                credit.overdueInstallmentsQuantity(today),
+                credit.overdueAmount(today).value(),
                 installments
         );
     }
 
-    public DebtorOutput toDebtorOutput(Credit credit) {
+    public DebtorOutput toDebtorOutput(Credit credit,
+                                       LocalDate today) {
 
         return new DebtorOutput(
                 credit.getId().value(),
                 credit.getCustomerId().value(),
-                credit.overdueInstallmentsQuantity(),
-                credit.overdueAmount().value()
+                credit.overdueInstallmentsQuantity(today),
+                credit.overdueAmount(today).value()
         );
     }
 

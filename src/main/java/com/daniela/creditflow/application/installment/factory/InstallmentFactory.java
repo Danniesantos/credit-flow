@@ -3,8 +3,8 @@ package com.daniela.creditflow.application.installment.factory;
 import com.daniela.creditflow.application.installment.policy.DueDatePolicy;
 import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
 import com.daniela.creditflow.domain.model.Installment;
-import com.daniela.creditflow.domain.valueObject.CreditId;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.CreditId;
+import com.daniela.creditflow.domain.valueobject.Money;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -45,7 +45,7 @@ public class InstallmentFactory {
                 value = totalAmount.value()
                         .subtract(
                                 installmentValue.multiply(
-                                        BigDecimal.valueOf(quantity - 1)
+                                        BigDecimal.valueOf((long) quantity - 1)
                                 )
                         );
             }

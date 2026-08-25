@@ -1,8 +1,8 @@
 package com.daniela.creditflow.domain.repository;
 
 import com.daniela.creditflow.domain.model.Credit;
-import com.daniela.creditflow.domain.valueObject.CreditId;
-import com.daniela.creditflow.domain.valueObject.CustomerId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CustomerId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

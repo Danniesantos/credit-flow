@@ -4,7 +4,7 @@ import com.daniela.creditflow.application.customer.dto.input.CreateCustomerInput
 import com.daniela.creditflow.application.customer.dto.input.UpdateCustomerInput;
 import com.daniela.creditflow.application.customer.dto.output.CustomerOutput;
 import com.daniela.creditflow.domain.model.CustomerStatus;
-import com.daniela.creditflow.domain.valueObject.CustomerId;
+import com.daniela.creditflow.domain.valueobject.CustomerId;
 import com.daniela.creditflow.infrastructure.web.request.CustomerRequest;
 import com.daniela.creditflow.infrastructure.web.response.CustomerResponse;
 import com.daniela.creditflow.support.TestConstants;

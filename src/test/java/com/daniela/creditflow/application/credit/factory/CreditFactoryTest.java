@@ -6,7 +6,7 @@ import com.daniela.creditflow.application.credit.service.CreditCalculationServic
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.CreditStatus;
 import com.daniela.creditflow.domain.model.CreditType;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.Money;
 import com.daniela.creditflow.support.TestConstants;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,10 @@ class CreditFactoryTest {
 
 
         CreditFactory factory =
-                new CreditFactory(calculationService);
+                new CreditFactory(
+                        calculationService,
+                        TestConstants.FIXED_CLOCK
+                );
 
 
         RequestCreditInput input =
@@ -95,7 +98,10 @@ class CreditFactoryTest {
 
 
         CreditFactory factory =
-                new CreditFactory(calculationService);
+                new CreditFactory(
+                        calculationService,
+                        TestConstants.FIXED_CLOCK
+                );
 
 
         RequestCreditInput input =

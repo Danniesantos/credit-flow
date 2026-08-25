@@ -2,7 +2,7 @@ package com.daniela.creditflow.support;
 
 import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.model.PaymentMethod;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

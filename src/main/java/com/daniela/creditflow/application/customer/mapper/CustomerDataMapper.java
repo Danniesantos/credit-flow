@@ -2,12 +2,12 @@ package com.daniela.creditflow.application.customer.mapper;
 
 import com.daniela.creditflow.application.customer.dto.input.CreateCustomerInput;
 import com.daniela.creditflow.application.customer.dto.input.UpdateCustomerInput;
-import com.daniela.creditflow.domain.valueObject.CreditScore;
-import com.daniela.creditflow.domain.valueObject.CPF;
+import com.daniela.creditflow.domain.valueobject.CreditScore;
+import com.daniela.creditflow.domain.valueobject.CPF;
 import com.daniela.creditflow.domain.model.CustomerData;
-import com.daniela.creditflow.domain.valueObject.Email;
-import com.daniela.creditflow.domain.valueObject.PhoneNumber;
-import com.daniela.creditflow.domain.valueObject.*;
+import com.daniela.creditflow.domain.valueobject.Email;
+import com.daniela.creditflow.domain.valueobject.PhoneNumber;
+import com.daniela.creditflow.domain.valueobject.*;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

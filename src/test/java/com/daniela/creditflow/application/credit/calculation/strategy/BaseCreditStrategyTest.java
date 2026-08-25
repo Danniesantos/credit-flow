@@ -1,8 +1,8 @@
 package com.daniela.creditflow.application.credit.calculation.strategy;
 
 import com.daniela.creditflow.application.credit.calculation.CreditCalculationResult;
-import com.daniela.creditflow.domain.valueObject.InterestRate;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.InterestRate;
+import com.daniela.creditflow.domain.valueobject.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

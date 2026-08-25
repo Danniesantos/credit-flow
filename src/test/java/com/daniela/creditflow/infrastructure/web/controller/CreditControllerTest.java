@@ -13,7 +13,7 @@ import com.daniela.creditflow.domain.model.CreditStatus;
 import com.daniela.creditflow.domain.model.CreditType;
 import com.daniela.creditflow.domain.model.InstallmentStatus;
 import com.daniela.creditflow.domain.model.PaymentMethod;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
 import com.daniela.creditflow.infrastructure.web.mapper.CreditWebMapper;
 import com.daniela.creditflow.infrastructure.web.request.CreditAdjustmentRequest;
 import com.daniela.creditflow.infrastructure.web.request.RequestCreditRequest;
@@ -22,6 +22,8 @@ import com.daniela.creditflow.infrastructure.web.response.*;
 import com.daniela.creditflow.support.TestConstants;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
@@ -35,6 +37,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -42,7 +45,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CreditController.class)
-public class CreditControllerTest {
+class CreditControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -251,6 +254,128 @@ public class CreditControllerTest {
                 .toSimulateResponse(output);
     }
 
+    @ParameterizedTest
+    @MethodSource("invalidSimulationRequests")
+    @DisplayName("Should return bad request when simulation request is invalid")
+    void shouldReturnBadRequestWhenSimulationRequestIsInvalid(
+            String requestBody) throws Exception {
+
+        mockMvc.perform(
+                        post("/credits/simulate")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(creditWebMapper);
+        verifyNoInteractions(simulateCreditUseCase);
+    }
+
+    private static Stream<String> invalidSimulationRequests() {
+
+        return Stream.of(
+                """
+                {
+                  "requestedAmount": null,
+                  "installments": 12,
+                  "creditType": "PERSONAL"
+                }
+                """,
+
+                """
+                {
+                  "requestedAmount": 0,
+                  "installments": 12,
+                  "creditType": "PERSONAL"
+                }
+                """,
+
+                """
+                {
+                  "requestedAmount": -100,
+                  "installments": 12,
+                  "creditType": "PERSONAL"
+                }
+                """,
+
+                """
+                {
+                  "requestedAmount": 10000,
+                  "installments": null,
+                  "creditType": "PERSONAL"
+                }
+                """,
+
+                """
+                {
+                  "requestedAmount": 10000,
+                  "installments": 0,
+                  "creditType": "PERSONAL"
+                }
+                """,
+
+                """
+                {
+                  "requestedAmount": 10000,
+                  "installments": 61,
+                  "creditType": "PERSONAL"
+                }
+                """,
+
+                """
+                {
+                  "requestedAmount": 10000,
+                  "installments": 12,
+                  "creditType": null
+                }
+                """,
+
+                """
+                {
+                  "requestedAmount": 10000,
+                  "installments": 12,
+                  "creditType": "INVALID"
+                }
+                """
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidCreditCancellationMessages")
+    @DisplayName("Should return unprocessable entity when credit cannot be canceled")
+    void shouldReturnUnprocessableEntityWhenCreditCannotBeCanceled(
+            String exceptionMessage) throws Exception {
+
+        UUID creditId = UUID.randomUUID();
+
+        CreditId input = new CreditId(creditId);
+
+        when(creditWebMapper.toCreditId(creditId))
+                .thenReturn(input);
+
+        doThrow(new InvalidDomainStateException(exceptionMessage))
+                .when(cancelUseCase)
+                .execute(input);
+
+        mockMvc.perform(
+                        patch("/credits/{id}/cancel", creditId)
+                )
+                .andExpect(status().isUnprocessableEntity());
+
+        verify(cancelUseCase)
+                .execute(input);
+    }
+
+    private static Stream<String> invalidCreditCancellationMessages() {
+
+        return Stream.of(
+                "Credit is already canceled",
+                "Rejected credit cannot be canceled",
+                "Contracted credit cannot be canceled",
+                "Paid off credit cannot be canceled"
+        );
+    }
+
     @Test
     @DisplayName("Should return bad request when customer id is null")
     void shouldReturnBadRequestWhenCustomerIdIsNull()
@@ -267,98 +392,6 @@ public class CreditControllerTest {
                                           "creditType": "PERSONAL"
                                         }
                                         """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(requestCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when requested amount is null")
-    void shouldReturnBadRequestWhenRequestedAmountIsNull()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                        {
-                                          "customerId": "%s",
-                                          "requestedAmount": null,
-                                          "installments": 12,
-                                          "creditType": "PERSONAL"
-                                        }
-                                        """.formatted(UUID.randomUUID()))
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(requestCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when requested amount is zero")
-    void shouldReturnBadRequestWhenRequestedAmountIsZero()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                        {
-                                          "customerId": "%s",
-                                          "requestedAmount": 0,
-                                          "installments": 12,
-                                          "creditType": "PERSONAL"
-                                        }
-                                        """.formatted(UUID.randomUUID()))
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(requestCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when requested amount is negative")
-    void shouldReturnBadRequestWhenRequestedAmountIsNegative()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                        {
-                                          "customerId": "%s",
-                                          "requestedAmount": -100,
-                                          "installments": 12,
-                                          "creditType": "PERSONAL"
-                                        }
-                                        """.formatted(UUID.randomUUID()))
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(requestCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when installments are null")
-    void shouldReturnBadRequestWhenInstallmentsAreNull()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                        {
-                                          "customerId": "%s",
-                                          "requestedAmount": 10000,
-                                          "installments": null,
-                                          "creditType": "PERSONAL"
-                                        }
-                                        """.formatted(UUID.randomUUID()))
                 )
                 .andExpect(status().isBadRequest());
 
@@ -1167,114 +1200,6 @@ public class CreditControllerTest {
     }
 
     @Test
-    @DisplayName("Should return unprocessable entity when credit is already canceled")
-    void shouldReturnUnprocessableEntityWhenCreditIsAlreadyCanceled()
-            throws Exception {
-
-        UUID creditId = UUID.randomUUID();
-
-        CreditId input = new CreditId(creditId);
-
-        when(creditWebMapper.toCreditId(creditId))
-                .thenReturn(input);
-
-        doThrow(new InvalidDomainStateException(
-                "Credit is already canceled"
-        ))
-                .when(cancelUseCase)
-                .execute(input);
-
-        mockMvc.perform(
-                        patch("/credits/{id}/cancel", creditId)
-                )
-                .andExpect(status().isUnprocessableEntity());
-
-        verify(cancelUseCase)
-                .execute(input);
-    }
-
-    @Test
-    @DisplayName("Should return unprocessable entity when rejected credit is canceled")
-    void shouldReturnUnprocessableEntityWhenRejectedCreditIsCanceled()
-            throws Exception {
-
-        UUID creditId = UUID.randomUUID();
-
-        CreditId input = new CreditId(creditId);
-
-        when(creditWebMapper.toCreditId(creditId))
-                .thenReturn(input);
-
-        doThrow(new InvalidDomainStateException(
-                "Rejected credits cannot be canceled"
-        ))
-                .when(cancelUseCase)
-                .execute(input);
-
-        mockMvc.perform(
-                        patch("/credits/{id}/cancel", creditId)
-                )
-                .andExpect(status().isUnprocessableEntity());
-
-        verify(cancelUseCase)
-                .execute(input);
-    }
-
-    @Test
-    @DisplayName("Should return unprocessable entity when contracted credit is canceled")
-    void shouldReturnUnprocessableEntityWhenContractedCreditIsCanceled()
-            throws Exception {
-
-        UUID creditId = UUID.randomUUID();
-
-        CreditId input = new CreditId(creditId);
-
-        when(creditWebMapper.toCreditId(creditId))
-                .thenReturn(input);
-
-        doThrow(new InvalidDomainStateException(
-                "Contracted credits cannot be canceled"
-        ))
-                .when(cancelUseCase)
-                .execute(input);
-
-        mockMvc.perform(
-                        patch("/credits/{id}/cancel", creditId)
-                )
-                .andExpect(status().isUnprocessableEntity());
-
-        verify(cancelUseCase)
-                .execute(input);
-    }
-
-    @Test
-    @DisplayName("Should return unprocessable entity when paid off credit is canceled")
-    void shouldReturnUnprocessableEntityWhenPaidOffCreditIsCanceled()
-            throws Exception {
-
-        UUID creditId = UUID.randomUUID();
-
-        CreditId input = new CreditId(creditId);
-
-        when(creditWebMapper.toCreditId(creditId))
-                .thenReturn(input);
-
-        doThrow(new InvalidDomainStateException(
-                "Paid off credits cannot be canceled"
-        ))
-                .when(cancelUseCase)
-                .execute(input);
-
-        mockMvc.perform(
-                        patch("/credits/{id}/cancel", creditId)
-                )
-                .andExpect(status().isUnprocessableEntity());
-
-        verify(cancelUseCase)
-                .execute(input);
-    }
-
-    @Test
     @DisplayName("Should return not found when credit does not exist")
     void shouldReturnNotFoundWhenCreditDoesNotExistOnCancel()
             throws Exception {
@@ -1683,75 +1608,6 @@ public class CreditControllerTest {
     }
 
     @Test
-    @DisplayName("Should return bad request when installments are less than one")
-    void shouldReturnBadRequestWhenInstallmentsAreLessThanOne()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                        {
-                                          "customerId": "%s",
-                                          "requestedAmount": 10000,
-                                          "installments": 0,
-                                          "creditType": "PERSONAL"
-                                        }
-                                        """.formatted(UUID.randomUUID()))
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(requestCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when installments exceed sixty")
-    void shouldReturnBadRequestWhenInstallmentsExceedSixty()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                        {
-                                          "customerId": "%s",
-                                          "requestedAmount": 10000,
-                                          "installments": 61,
-                                          "creditType": "PERSONAL"
-                                        }
-                                        """.formatted(UUID.randomUUID()))
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(requestCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when credit type is null")
-    void shouldReturnBadRequestWhenCreditTypeIsNull()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                        {
-                                          "customerId": "%s",
-                                          "requestedAmount": 10000,
-                                          "installments": 12,
-                                          "creditType": null
-                                        }
-                                        """.formatted(UUID.randomUUID()))
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(requestCreditUseCase);
-    }
-
-    @Test
     @DisplayName("Should return bad request when customer id has invalid format")
     void shouldReturnBadRequestWhenCustomerIdHasInvalidFormat()
             throws Exception {
@@ -1772,205 +1628,6 @@ public class CreditControllerTest {
 
         verifyNoInteractions(creditWebMapper);
         verifyNoInteractions(requestCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when credit type is invalid")
-    void shouldReturnBadRequestWhenCreditTypeIsInvalid()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                        {
-                                          "customerId": "%s",
-                                          "requestedAmount": 10000,
-                                          "installments": 12,
-                                          "creditType": "INVALID"
-                                        }
-                                        """.formatted(UUID.randomUUID()))
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(requestCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when requested amount is null")
-    void shouldReturnBadRequestWhenRequestedAmountIsNullOnSimulation()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits/simulate")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                    {
-                                      "requestedAmount": null,
-                                      "installments": 12,
-                                      "creditType": "PERSONAL"
-                                    }
-                                    """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(simulateCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when requested amount is zero")
-    void shouldReturnBadRequestWhenRequestedAmountIsZeroOnSimulation()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits/simulate")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                    {
-                                      "requestedAmount": 0,
-                                      "installments": 12,
-                                      "creditType": "PERSONAL"
-                                    }
-                                    """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(simulateCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when requested amount is negative")
-    void shouldReturnBadRequestWhenRequestedAmountIsNegativeOnSimulation()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits/simulate")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                    {
-                                      "requestedAmount": -100,
-                                      "installments": 12,
-                                      "creditType": "PERSONAL"
-                                    }
-                                    """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(simulateCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when installments are null")
-    void shouldReturnBadRequestWhenInstallmentsAreNullOnSimulation()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits/simulate")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                    {
-                                      "requestedAmount": 10000,
-                                      "installments": null,
-                                      "creditType": "PERSONAL"
-                                    }
-                                    """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(simulateCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when installments are less than one")
-    void shouldReturnBadRequestWhenInstallmentsAreLessThanOneOnSimulation()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits/simulate")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                    {
-                                      "requestedAmount": 10000,
-                                      "installments": 0,
-                                      "creditType": "PERSONAL"
-                                    }
-                                    """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(simulateCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when installments exceed sixty")
-    void shouldReturnBadRequestWhenInstallmentsExceedSixtyOnSimulation()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits/simulate")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                    {
-                                      "requestedAmount": 10000,
-                                      "installments": 61,
-                                      "creditType": "PERSONAL"
-                                    }
-                                    """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(simulateCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when credit type is null")
-    void shouldReturnBadRequestWhenCreditTypeIsNullOnSimulation()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits/simulate")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                    {
-                                      "requestedAmount": 10000,
-                                      "installments": 12,
-                                      "creditType": null
-                                    }
-                                    """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(simulateCreditUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when credit type is invalid")
-    void shouldReturnBadRequestWhenCreditTypeIsInvalidOnSimulation()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/credits/simulate")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                    {
-                                      "requestedAmount": 10000,
-                                      "installments": 12,
-                                      "creditType": "INVALID"
-                                    }
-                                    """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(creditWebMapper);
-        verifyNoInteractions(simulateCreditUseCase);
     }
 
     @Test
@@ -2015,6 +1672,102 @@ public class CreditControllerTest {
 
         verifyNoInteractions(creditWebMapper);
         verifyNoInteractions(renegotiateUseCase);
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidCreditRequests")
+    @DisplayName("Should return bad request when credit request is invalid")
+    void shouldReturnBadRequestWhenCreditRequestIsInvalid(
+            String requestBody) throws Exception {
+
+        mockMvc.perform(
+                        post("/credits")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(creditWebMapper);
+        verifyNoInteractions(requestCreditUseCase);
+    }
+
+    private static Stream<String> invalidCreditRequests() {
+
+        UUID customerId = UUID.randomUUID();
+
+        return Stream.of(
+                """
+                {
+                  "customerId": "%s",
+                  "requestedAmount": null,
+                  "installments": 12,
+                  "creditType": "PERSONAL"
+                }
+                """.formatted(customerId),
+
+                """
+                {
+                  "customerId": "%s",
+                  "requestedAmount": 0,
+                  "installments": 12,
+                  "creditType": "PERSONAL"
+                }
+                """.formatted(customerId),
+
+                """
+                {
+                  "customerId": "%s",
+                  "requestedAmount": -100,
+                  "installments": 12,
+                  "creditType": "PERSONAL"
+                }
+                """.formatted(customerId),
+
+                """
+                {
+                  "customerId": "%s",
+                  "requestedAmount": 10000,
+                  "installments": null,
+                  "creditType": "PERSONAL"
+                }
+                """.formatted(customerId),
+
+                """
+                {
+                  "customerId": "%s",
+                  "requestedAmount": 10000,
+                  "installments": 0,
+                  "creditType": "PERSONAL"
+                }
+                """.formatted(customerId),
+
+                """
+                {
+                  "customerId": "%s",
+                  "requestedAmount": 10000,
+                  "installments": 61,
+                  "creditType": "PERSONAL"
+                }
+                """.formatted(customerId),
+
+                """
+                {
+                  "customerId": "%s",
+                  "requestedAmount": 10000,
+                  "installments": 12,
+                  "creditType": null
+                }
+                """.formatted(customerId),
+
+                """
+                {
+                  "customerId": "%s",
+                  "requestedAmount": 10000,
+                  "installments": 12,
+                  "creditType": "INVALID"
+                }
+                """.formatted(customerId)
+        );
     }
 
     @Test

@@ -1,11 +1,12 @@
 package com.daniela.creditflow.infrastructure.persistence.credit.mapper;
 
 import com.daniela.creditflow.domain.model.Credit;
-import com.daniela.creditflow.domain.valueObject.CreditId;
-import com.daniela.creditflow.domain.valueObject.CustomerId;
+import com.daniela.creditflow.domain.model.CreditSnapshot;
 import com.daniela.creditflow.domain.model.Installment;
-import com.daniela.creditflow.domain.valueObject.InterestRate;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CustomerId;
+import com.daniela.creditflow.domain.valueobject.InterestRate;
+import com.daniela.creditflow.domain.valueobject.Money;
 import com.daniela.creditflow.infrastructure.persistence.credit.entity.CreditEntity;
 import com.daniela.creditflow.infrastructure.persistence.customer.entity.CustomerEntity;
 import com.daniela.creditflow.infrastructure.persistence.installment.mapper.InstallmentMapper;
@@ -49,6 +50,7 @@ public class CreditMapper {
     }
 
     public Credit toDomain(CreditEntity entity) {
+
         List<Installment> installments =
                 entity.getInstallments()
                         .stream()
@@ -56,16 +58,18 @@ public class CreditMapper {
                         .toList();
 
         return Credit.restore(
-                new CreditId(entity.getId()),
-                new CustomerId(entity.getCustomer().getId()),
-                new Money(entity.getRequestedAmount()),
-                entity.getCreditType(),
-                new InterestRate(entity.getInterestRate()),
-                entity.getInstallmentsQuantity(),
-                entity.getStatus(),
-                installments,
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                new CreditSnapshot(
+                        new CreditId(entity.getId()),
+                        new CustomerId(entity.getCustomer().getId()),
+                        new Money(entity.getRequestedAmount()),
+                        entity.getCreditType(),
+                        new InterestRate(entity.getInterestRate()),
+                        entity.getInstallmentsQuantity(),
+                        entity.getStatus(),
+                        entity.getCreatedAt(),
+                        entity.getUpdatedAt(),
+                        installments
+                )
         );
     }
 }

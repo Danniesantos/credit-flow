@@ -4,13 +4,15 @@ import com.daniela.creditflow.application.installment.dto.output.InstallmentDeta
 import com.daniela.creditflow.application.installment.dto.output.OverdueInstallmentOutput;
 import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.model.PaymentMethod;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
 import com.daniela.creditflow.support.InstallmentTestFactory;
 import com.daniela.creditflow.support.TestConstants;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -19,6 +21,9 @@ class InstallmentOutputMapperTest {
 
     private final InstallmentOutputMapper mapper =
             new InstallmentOutputMapper();
+
+    private static final LocalDate TODAY =
+            LocalDate.of(2026, 8, 24);
 
     @Test
     @DisplayName("Should map installment to details output")
@@ -89,7 +94,10 @@ class InstallmentOutputMapperTest {
                 ).getFirst();
 
         OverdueInstallmentOutput output =
-                mapper.toOverdueOutput(installment);
+                mapper.toOverdueOutput(
+                        installment,
+                        TODAY
+                );
 
         assertThat(output.id())
                 .isEqualTo(installment.getId().value());
@@ -104,6 +112,8 @@ class InstallmentOutputMapperTest {
                 .isEqualTo(installment.getDueDate());
 
         assertThat(output.overdueDays())
-                .isEqualTo(installment.daysOverdue());
+                .isEqualTo(
+                        installment.daysOverdue(TODAY)
+                );
     }
 }

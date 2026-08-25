@@ -2,8 +2,8 @@ package com.daniela.creditflow.infrastructure.persistence.credit.repository;
 
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.CreditStatus;
-import com.daniela.creditflow.domain.valueObject.CreditId;
-import com.daniela.creditflow.domain.valueObject.CustomerId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CustomerId;
 import com.daniela.creditflow.infrastructure.persistence.credit.entity.CreditEntity;
 import com.daniela.creditflow.infrastructure.persistence.credit.mapper.CreditMapper;
 import org.junit.jupiter.api.DisplayName;

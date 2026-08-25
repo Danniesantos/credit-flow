@@ -1,7 +1,7 @@
 package com.daniela.creditflow.application.credit.calculation;
 
-import com.daniela.creditflow.domain.valueObject.InterestRate;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.InterestRate;
+import com.daniela.creditflow.domain.valueobject.Money;
 
 public record CreditCalculationResult(Money interestAmount,
                                       Money totalAmount,

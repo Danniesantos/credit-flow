@@ -9,12 +9,15 @@ import com.daniela.creditflow.domain.event.InstallmentPaidEvent;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.repository.CreditRepository;
-import com.daniela.creditflow.domain.valueObject.CreditId;
-import com.daniela.creditflow.domain.valueObject.InstallmentId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
+import com.daniela.creditflow.domain.valueobject.InstallmentId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Clock;
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +27,7 @@ public class PayInstallmentUseCase {
     private final CreditService creditService;
     private final PaymentService paymentService;
     private final ApplicationEventPublisher eventPublisher;
+    private final Clock clock;
 
     @Transactional
     public void execute(PaymentInstallmentInput input) {
@@ -50,7 +54,8 @@ public class PayInstallmentUseCase {
         credit.markInstallmentAsPaid(
                 installmentId,
                 input.paymentMethod(),
-                result.paidAt()
+                result.paidAt(),
+                Instant.now(clock)
         );
 
         creditRepository.save(credit);
@@ -63,6 +68,5 @@ public class PayInstallmentUseCase {
                         result.paidAt()
                 )
         );
-
     }
 }

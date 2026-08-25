@@ -6,12 +6,13 @@ import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.CreditStatus;
 import com.daniela.creditflow.domain.repository.CreditRepository;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
 import com.daniela.creditflow.support.CreditTestFactory;
+import com.daniela.creditflow.support.TestConstants;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
@@ -33,8 +34,18 @@ class CancelCreditUseCaseTest {
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
-    @InjectMocks
     private CancelCreditUseCase useCase;
+
+    @BeforeEach
+    void setup() {
+        useCase = new CancelCreditUseCase(
+                creditService,
+                creditRepository,
+                eventPublisher,
+                TestConstants.FIXED_CLOCK
+        );
+    }
+
 
     @Test
     @DisplayName("Should cancel credit and publish canceled event")
@@ -46,23 +57,16 @@ class CancelCreditUseCaseTest {
         CreditId creditId =
                 credit.getId();
 
-
         when(creditService.findCredit(creditId))
                 .thenReturn(credit);
 
-
         useCase.execute(creditId);
 
-
         assertThat(credit.getStatus())
-                .isEqualTo(
-                        CreditStatus.CANCELED
-                );
-
+                .isEqualTo(CreditStatus.CANCELED);
 
         verify(creditRepository)
                 .save(credit);
-
 
         verify(eventPublisher)
                 .publishEvent(
@@ -77,21 +81,14 @@ class CancelCreditUseCaseTest {
         Credit credit =
                 CreditTestFactory.underAnalysisCredit();
 
-
         when(creditService.findCredit(
                 credit.getId()
         )).thenReturn(credit);
 
-
-        useCase.execute(
-                credit.getId()
-        );
-
+        useCase.execute(credit.getId());
 
         verify(creditService)
-                .findCredit(
-                        credit.getId()
-                );
+                .findCredit(credit.getId());
     }
 
     @Test
@@ -101,21 +98,16 @@ class CancelCreditUseCaseTest {
         Credit credit =
                 CreditTestFactory.canceledCredit();
 
-
         when(creditService.findCredit(
                 credit.getId()
         )).thenReturn(credit);
 
-
         assertThatThrownBy(() ->
-                useCase.execute(
-                        credit.getId()
-                )
+                useCase.execute(credit.getId())
         )
                 .isInstanceOf(
                         InvalidDomainStateException.class
                 );
-
 
         verify(creditRepository, never())
                 .save(any());

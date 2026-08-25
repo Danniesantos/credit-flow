@@ -3,7 +3,7 @@ package com.daniela.creditflow.application.credit.analysis;
 import com.daniela.creditflow.application.credit.dto.output.AnalysisResult;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.Customer;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.Money;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

@@ -1,4 +1,4 @@
-package com.daniela.creditflow.domain.valueObject;
+package com.daniela.creditflow.domain.valueobject;
 
 import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
 

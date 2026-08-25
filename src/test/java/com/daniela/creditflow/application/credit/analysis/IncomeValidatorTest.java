@@ -3,7 +3,7 @@ package com.daniela.creditflow.application.credit.analysis;
 import com.daniela.creditflow.application.credit.dto.output.AnalysisResult;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.Customer;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.Money;
 import com.daniela.creditflow.support.CreditTestFactory;
 import com.daniela.creditflow.support.CustomerTestFactory;
 import org.junit.jupiter.api.BeforeEach;

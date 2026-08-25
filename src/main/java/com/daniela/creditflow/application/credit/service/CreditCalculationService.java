@@ -3,7 +3,7 @@ package com.daniela.creditflow.application.credit.service;
 import com.daniela.creditflow.application.credit.calculation.CreditCalculationResult;
 import com.daniela.creditflow.application.credit.calculation.CreditStrategyFactory;
 import com.daniela.creditflow.domain.model.CreditType;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.Money;
 import org.springframework.stereotype.Service;
 
 @Service
