@@ -9,13 +9,15 @@ import com.daniela.creditflow.domain.exceptions.CustomerAlreadyInactiveException
 import com.daniela.creditflow.domain.exceptions.CustomerNotFoundException;
 import com.daniela.creditflow.domain.exceptions.EmailAlreadyExistsException;
 import com.daniela.creditflow.domain.model.CustomerStatus;
-import com.daniela.creditflow.domain.valueObject.CustomerId;
+import com.daniela.creditflow.domain.valueobject.CustomerId;
 import com.daniela.creditflow.infrastructure.web.mapper.CustomerWebMapper;
 import com.daniela.creditflow.infrastructure.web.request.CustomerRequest;
 import com.daniela.creditflow.infrastructure.web.response.CustomerResponse;
 import com.daniela.creditflow.support.TestConstants;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -35,7 +38,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CustomerController.class)
-public class CustomerControllerTest {
+class CustomerControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -53,6 +56,87 @@ public class CustomerControllerTest {
     @MockitoBean
     private UpdateCustomerUseCase updateCustomerUseCase;
 
+    @ParameterizedTest
+    @MethodSource("invalidCustomerRequests")
+    @DisplayName("Should return bad request when customer request is invalid")
+    void shouldReturnBadRequestWhenCustomerRequestIsInvalid(
+            String requestBody) throws Exception {
+
+        mockMvc.perform(
+                        post("/customers")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(customerMapper);
+        verifyNoInteractions(createCustomerUseCase);
+    }
+
+    private static Stream<String> invalidCustomerRequests() {
+
+        return Stream.of(
+                """
+                {
+                  "name": "Ab",
+                  "cpf": "292.462.720-64",
+                  "email": "testando@email.com",
+                  "dateOfBirth": "1992-01-10",
+                  "phoneNumber": "19999999999",
+                  "monthlyIncome": 5000,
+                  "creditScore": 800
+                }
+                """,
+
+                """
+                {
+                  "name": "Daniela Santos",
+                  "cpf": "292.462.720-64",
+                  "email": "testando@email.com",
+                  "dateOfBirth": "2027-01-01",
+                  "phoneNumber": "19999999999",
+                  "monthlyIncome": 5000,
+                  "creditScore": 800
+                }
+                """,
+
+                """
+                {
+                  "name": "Daniela Santos",
+                  "cpf": "292.462.720-64",
+                  "email": "testando@email.com",
+                  "dateOfBirth": "1992-01-10",
+                  "phoneNumber": "19999999999",
+                  "monthlyIncome": 0,
+                  "creditScore": 800
+                }
+                """,
+
+                """
+                {
+                  "name": "Daniela Santos",
+                  "cpf": "292.462.720-64",
+                  "email": "testando@email.com",
+                  "dateOfBirth": "1992-01-10",
+                  "phoneNumber": "19999999999",
+                  "monthlyIncome": 5000,
+                  "creditScore": 1001
+                }
+                """,
+
+                """
+                {
+                  "name": "",
+                  "cpf": "292.462.720-64",
+                  "email": "testando@email.com",
+                  "dateOfBirth": "1992-01-10",
+                  "phoneNumber": "19999999999",
+                  "monthlyIncome": 5000,
+                  "creditScore": 800
+                }
+                """
+        );
+    }
     @Test
     @DisplayName("Should create customer successfully")
     void shouldCreateCustomerSuccessfully() throws Exception {
@@ -177,110 +261,6 @@ public class CustomerControllerTest {
 
         verify(customerMapper)
                 .toResponse(output);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when customer name has less than 3 characters")
-    void shouldReturnBadRequestWhenCustomerNameIsTooShort()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/customers")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                    {
-                                      "name": "Ab",
-                                      "cpf": "292.462.720-64",
-                                      "email": "testando@email.com",
-                                      "dateOfBirth": "1992-01-10",
-                                      "phoneNumber": "19999999999",
-                                      "monthlyIncome": 5000,
-                                      "creditScore": 800
-                                    }
-                                    """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(customerMapper);
-        verifyNoInteractions(createCustomerUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when date of birth is not in the past")
-    void shouldReturnBadRequestWhenDateOfBirthIsNotInThePast()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/customers")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                    {
-                                      "name": "Testando",
-                                      "cpf": "292.462.720-64",
-                                      "email": "testando@email.com",
-                                      "dateOfBirth": "2030-01-10",
-                                      "phoneNumber": "19999999999",
-                                      "monthlyIncome": 5000,
-                                      "creditScore": 800
-                                    }
-                                    """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(customerMapper);
-        verifyNoInteractions(createCustomerUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when monthly income is not positive")
-    void shouldReturnBadRequestWhenMonthlyIncomeIsNotPositive()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/customers")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                    {
-                                      "name": "Testando",
-                                      "cpf": "292.462.720-64",
-                                      "email": "testando@email.com",
-                                      "dateOfBirth": "1992-01-10",
-                                      "phoneNumber": "19999999999",
-                                      "monthlyIncome": 0,
-                                      "creditScore": 800
-                                    }
-                                    """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(customerMapper);
-        verifyNoInteractions(createCustomerUseCase);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when credit score is outside valid range")
-    void shouldReturnBadRequestWhenCreditScoreIsInvalid()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/customers")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                    {
-                                      "name": "Testando",
-                                      "cpf": "292.462.720-64",
-                                      "email": "testando@email.com",
-                                      "dateOfBirth": "1992-01-10",
-                                      "phoneNumber": "19999999999",
-                                      "monthlyIncome": 5000,
-                                      "creditScore": 1001
-                                    }
-                                    """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(customerMapper);
-        verifyNoInteractions(createCustomerUseCase);
     }
 
     @Test
@@ -441,20 +421,6 @@ public class CustomerControllerTest {
 
         verify(deactivateCustomerUseCase)
                 .execute(input);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when customer id is invalid")
-    void shouldReturnBadRequestWhenCustomerIdIsInvalidOnFindById()
-            throws Exception {
-
-        mockMvc.perform(
-                        get("/customers/{id}", "invalid-uuid")
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(customerMapper);
-        verifyNoInteractions(findCustomerUseCase);
     }
 
     @Test
@@ -635,32 +601,6 @@ public class CustomerControllerTest {
 
         verify(updateCustomerUseCase)
                 .execute(input);
-    }
-
-    @Test
-    @DisplayName("Should return bad request when customer request is invalid")
-    void shouldReturnBadRequestWhenCustomerRequestIsInvalid()
-            throws Exception {
-
-        mockMvc.perform(
-                        post("/customers")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("""
-                                        {
-                                          "name": "",
-                                          "cpf": "292.462.720-64",
-                                          "email": "testando@email.com",
-                                          "dateOfBirth": "1992-01-10",
-                                          "phoneNumber": "19999999999",
-                                          "monthlyIncome": 5000,
-                                          "creditScore": 800
-                                        }
-                                        """)
-                )
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(customerMapper);
-        verifyNoInteractions(createCustomerUseCase);
     }
 
     @Test

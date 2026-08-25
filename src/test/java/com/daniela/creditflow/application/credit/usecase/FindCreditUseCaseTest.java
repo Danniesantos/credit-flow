@@ -4,7 +4,7 @@ import com.daniela.creditflow.application.credit.dto.output.CreditDetailsOutput;
 import com.daniela.creditflow.application.credit.mapper.CreditApplicationMapper;
 import com.daniela.creditflow.application.credit.service.CreditService;
 import com.daniela.creditflow.domain.model.Credit;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
 import com.daniela.creditflow.support.CreditTestFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

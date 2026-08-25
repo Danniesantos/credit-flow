@@ -7,13 +7,15 @@ import com.daniela.creditflow.domain.event.CreditRenegotiatedEvent;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.repository.CreditRepository;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -24,12 +26,15 @@ public class RenegotiateCreditUseCase {
     private final CreditRepository creditRepository;
     private final CreditInstallmentService creditInstallmentService;
     private final ApplicationEventPublisher eventPublisher;
+    private final Clock clock;
 
     @Transactional
-    public void execute(CreditId creditId,
-                        CreditAdjustmentInput input) {
+    public void execute(
+            CreditId creditId,
+            CreditAdjustmentInput input) {
 
-        Credit credit = service.findCredit(creditId);
+        Credit credit =
+                service.findCredit(creditId);
 
         List<Installment> installments =
                 creditInstallmentService.generate(
@@ -37,13 +42,26 @@ public class RenegotiateCreditUseCase {
                         input.installmentsQuantity()
                 );
 
-        credit.renegotiate(installments);
+        LocalDate today =
+                LocalDate.now(clock);
+
+        Instant now =
+                clock.instant();
+
+        credit.renegotiate(
+                installments,
+                today,
+                now
+        );
 
         creditRepository.save(credit);
 
         eventPublisher.publishEvent(
-                new CreditRenegotiatedEvent(creditId,
+                new CreditRenegotiatedEvent(
+                        creditId,
                         credit.getCustomerId(),
-                        Instant.now()));
+                        now
+                )
+        );
     }
 }

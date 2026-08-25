@@ -5,6 +5,7 @@ import com.daniela.creditflow.application.credit.mapper.CreditApplicationMapper;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.repository.CreditRepository;
 import com.daniela.creditflow.support.CreditTestFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -24,14 +29,33 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class FindDebtorsUseCaseTest {
 
+    private static final Instant NOW =
+            Instant.parse("2026-08-24T15:00:00Z");
+
+    private static final LocalDate TODAY =
+            LocalDate.of(2026, 8, 24);
+
     @Mock
     private CreditRepository repository;
 
     @Mock
     private CreditApplicationMapper creditMapper;
 
+    @Mock
+    private Clock clock;
+
     @InjectMocks
     private FindDebtorsUseCase useCase;
+
+    @BeforeEach
+    void setup() {
+
+        when(clock.instant())
+                .thenReturn(NOW);
+
+        when(clock.getZone())
+                .thenReturn(ZoneId.of("America/Sao_Paulo"));
+    }
 
     @Test
     @DisplayName("Should return debtors page")
@@ -54,7 +78,10 @@ class FindDebtorsUseCaseTest {
         when(repository.findCreditsWithOverdueInstallments(pageable))
                 .thenReturn(credits);
 
-        when(creditMapper.toDebtorOutput(credit))
+        when(creditMapper.toDebtorOutput(
+                credit,
+                TODAY
+        ))
                 .thenReturn(debtor);
 
         Page<DebtorOutput> result =
@@ -70,7 +97,10 @@ class FindDebtorsUseCaseTest {
                 .findCreditsWithOverdueInstallments(pageable);
 
         verify(creditMapper)
-                .toDebtorOutput(credit);
+                .toDebtorOutput(
+                        credit,
+                        TODAY
+                );
     }
 
     @Test
@@ -81,9 +111,7 @@ class FindDebtorsUseCaseTest {
                 PageRequest.of(0, 10);
 
         when(repository.findCreditsWithOverdueInstallments(pageable))
-                .thenReturn(
-                        Page.empty()
-                );
+                .thenReturn(Page.empty());
 
         Page<DebtorOutput> result =
                 useCase.execute(pageable);

@@ -16,7 +16,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class CustomerPersistenceMapperTest {
 
     private final CustomerPersistenceMapper mapper =
-            new CustomerPersistenceMapper();
+            new CustomerPersistenceMapper(
+                    TestConstants.FIXED_CLOCK
+            );
 
     @Test
     @DisplayName("Should map customer to entity")
@@ -70,8 +72,8 @@ class CustomerPersistenceMapperTest {
 
         UUID customerId = UUID.randomUUID();
 
-        Instant createdAt = Instant.now();
-        Instant updatedAt = Instant.now();
+        Instant createdAt = TestConstants.FIXED_CLOCK.instant();
+        Instant updatedAt = TestConstants.FIXED_CLOCK.instant();
 
         CustomerEntity entity =
                 new CustomerEntity(

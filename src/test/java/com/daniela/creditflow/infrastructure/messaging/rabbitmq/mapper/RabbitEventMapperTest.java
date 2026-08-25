@@ -1,9 +1,9 @@
 package com.daniela.creditflow.infrastructure.messaging.rabbitmq.mapper;
 
 import com.daniela.creditflow.domain.event.*;
-import com.daniela.creditflow.domain.valueObject.CreditId;
-import com.daniela.creditflow.domain.valueObject.CustomerId;
-import com.daniela.creditflow.domain.valueObject.InstallmentId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CustomerId;
+import com.daniela.creditflow.domain.valueobject.InstallmentId;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditEventType;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.CreditMessage;
 import com.daniela.creditflow.infrastructure.messaging.rabbitmq.message.PaidMessage;

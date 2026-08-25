@@ -2,13 +2,14 @@ package com.daniela.creditflow.domain.model;
 
 import com.daniela.creditflow.domain.exceptions.InstallmentAlreadyPaidException;
 import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
 import com.daniela.creditflow.support.InstallmentTestFactory;
 import com.daniela.creditflow.support.TestConstants;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 import static com.daniela.creditflow.support.TestConstants.TEST_DATE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -16,11 +17,15 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class InstallmentTest {
 
+    private static final LocalDate TODAY =
+            LocalDate.of(2026, 8, 24);
+
     @Test
     @DisplayName("Should create pending installment")
     void shouldCreatePendingInstallment() {
 
-        Installment installment = InstallmentTestFactory.pendingInstallment();
+        Installment installment =
+                InstallmentTestFactory.pendingInstallment();
 
         assertThat(installment.getStatus())
                 .isEqualTo(InstallmentStatus.PENDING);
@@ -36,7 +41,8 @@ class InstallmentTest {
     @DisplayName("Should pay pending installment")
     void shouldPayPendingInstallment() {
 
-        Installment installment = InstallmentTestFactory.pendingInstallment();
+        Installment installment =
+                InstallmentTestFactory.pendingInstallment();
 
         Instant paidAt = Instant.now();
 
@@ -59,14 +65,17 @@ class InstallmentTest {
     @DisplayName("Should not pay installment twice")
     void shouldNotPayInstallmentTwice() {
 
-        Installment installment = InstallmentTestFactory.paidInstallment();
+        Installment installment =
+                InstallmentTestFactory.paidInstallment();
 
         assertThatThrownBy(() ->
                 installment.pay(
                         PaymentMethod.CREDIT_CARD,
                         Instant.now()
                 ))
-                .isInstanceOf(InstallmentAlreadyPaidException.class);
+                .isInstanceOf(
+                        InstallmentAlreadyPaidException.class
+                );
     }
 
     @Test
@@ -80,8 +89,12 @@ class InstallmentTest {
                         TEST_DATE.plusDays(10),
                         new CreditId()
                 ))
-                .isInstanceOf(InvalidDomainStateException.class)
-                .hasMessage("Installment number must be greater than zero");
+                .isInstanceOf(
+                        InvalidDomainStateException.class
+                )
+                .hasMessage(
+                        "Installment number must be greater than zero"
+                );
     }
 
     @Test
@@ -95,14 +108,17 @@ class InstallmentTest {
                         TEST_DATE.plusDays(10),
                         new CreditId()
                 ))
-                .isInstanceOf(InvalidDomainStateException.class);
+                .isInstanceOf(
+                        InvalidDomainStateException.class
+                );
     }
 
     @Test
     @DisplayName("Should identify pending installment")
     void shouldIdentifyPendingInstallment() {
 
-        Installment installment = InstallmentTestFactory.pendingInstallment();
+        Installment installment =
+                InstallmentTestFactory.pendingInstallment();
 
         assertThat(installment.isPending())
                 .isTrue();
@@ -112,14 +128,17 @@ class InstallmentTest {
     @DisplayName("Should not pay installment that is not pending")
     void shouldNotPayInstallmentThatIsNotPending() {
 
-        Installment installment = InstallmentTestFactory.paidInstallment();
+        Installment installment =
+                InstallmentTestFactory.paidInstallment();
 
         assertThatThrownBy(() ->
                 installment.pay(
                         PaymentMethod.PIX,
                         TestConstants.PAID_AT
                 ))
-                .isInstanceOf(InstallmentAlreadyPaidException.class);
+                .isInstanceOf(
+                        InstallmentAlreadyPaidException.class
+                );
     }
 
     @Test
@@ -132,7 +151,7 @@ class InstallmentTest {
                         1
                 ).getFirst();
 
-        assertThat(installment.isOverdue())
+        assertThat(installment.isOverdue(TODAY))
                 .isTrue();
     }
 
@@ -146,7 +165,7 @@ class InstallmentTest {
                         1
                 ).getFirst();
 
-        assertThat(installment.daysOverdue())
+        assertThat(installment.daysOverdue(TODAY))
                 .isGreaterThan(0);
     }
 
@@ -157,10 +176,10 @@ class InstallmentTest {
         Installment installment =
                 InstallmentTestFactory.pendingInstallment();
 
-        assertThat(installment.isOverdue())
+        assertThat(installment.isOverdue(TODAY))
                 .isFalse();
 
-        assertThat(installment.daysOverdue())
+        assertThat(installment.daysOverdue(TODAY))
                 .isZero();
     }
 

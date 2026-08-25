@@ -1,15 +1,16 @@
 package com.daniela.creditflow.domain.model;
 
-import com.daniela.creditflow.domain.valueObject.CreditScore;
-import com.daniela.creditflow.domain.valueObject.CPF;
-import com.daniela.creditflow.domain.valueObject.CustomerId;
-import com.daniela.creditflow.domain.valueObject.Email;
-import com.daniela.creditflow.domain.valueObject.PhoneNumber;
+import com.daniela.creditflow.domain.valueobject.CreditScore;
+import com.daniela.creditflow.domain.valueobject.CPF;
+import com.daniela.creditflow.domain.valueobject.CustomerId;
+import com.daniela.creditflow.domain.valueobject.Email;
+import com.daniela.creditflow.domain.valueobject.PhoneNumber;
 import com.daniela.creditflow.domain.exceptions.CustomerAlreadyInactiveException;
 import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.Money;
 import lombok.Getter;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -28,6 +29,7 @@ public class Customer {
     private CustomerStatus status;
     private final Instant createdAt;
     private Instant updatedAt;
+    private final Clock clock;
 
 
     public Customer(
@@ -35,24 +37,27 @@ public class Customer {
             CustomerData data,
             CustomerStatus status,
             Instant createdAt,
-            Instant updatedAt) {
+            Instant updatedAt,
+            Clock clock) {
 
         this.id = Objects.requireNonNull(id);
         this.status = Objects.requireNonNull(status);
         this.createdAt = Objects.requireNonNull(createdAt);
         this.updatedAt = Objects.requireNonNull(updatedAt);
+        this.clock = Objects.requireNonNull(clock);
 
         changeData(data);
     }
 
-    public Customer(CustomerData data) {
-
+    public Customer(CustomerData data,
+                    Clock clock) {
         this(
                 new CustomerId(),
                 data,
                 CustomerStatus.ACTIVE,
-                Instant.now(),
-                Instant.now()
+                Instant.now(clock),
+                Instant.now(clock),
+                clock
         );
     }
 
@@ -78,7 +83,7 @@ public class Customer {
 
     private void validateAge() {
 
-        if (dateOfBirth.isAfter(java.time.LocalDate.now())) {
+        if (dateOfBirth.isAfter(java.time.LocalDate.now(clock))) {
             throw new InvalidDomainStateException(
                     "Date of birth cannot be in the future"
             );
@@ -92,7 +97,7 @@ public class Customer {
         }
 
         this.status = CustomerStatus.INACTIVE;
-        this.updatedAt = Instant.now();
+        this.updatedAt = Instant.now(clock);
     }
 
     private void changeData(CustomerData data) {

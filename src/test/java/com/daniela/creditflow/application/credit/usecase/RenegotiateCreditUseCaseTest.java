@@ -7,13 +7,14 @@ import com.daniela.creditflow.domain.event.CreditRenegotiatedEvent;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.Installment;
 import com.daniela.creditflow.domain.repository.CreditRepository;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
 import com.daniela.creditflow.support.CreditTestFactory;
 import com.daniela.creditflow.support.InstallmentTestFactory;
+import com.daniela.creditflow.support.TestConstants;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
@@ -22,7 +23,6 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,8 +41,18 @@ class RenegotiateCreditUseCaseTest {
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
-    @InjectMocks
     private RenegotiateCreditUseCase useCase;
+
+    @BeforeEach
+    void setup() {
+        useCase = new RenegotiateCreditUseCase(
+                service,
+                creditRepository,
+                creditInstallmentService,
+                eventPublisher,
+                TestConstants.FIXED_CLOCK
+        );
+    }
 
     @Test
     @DisplayName("Should renegotiate credit and publish event")

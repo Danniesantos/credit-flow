@@ -4,20 +4,26 @@ import com.daniela.creditflow.application.credit.calculation.CreditCalculationRe
 import com.daniela.creditflow.application.credit.dto.input.RequestCreditInput;
 import com.daniela.creditflow.application.credit.service.CreditCalculationService;
 import com.daniela.creditflow.domain.model.Credit;
-import com.daniela.creditflow.domain.model.CreditStatus;
-import com.daniela.creditflow.domain.valueObject.CreditId;
-import com.daniela.creditflow.domain.valueObject.CustomerId;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CustomerId;
+import com.daniela.creditflow.domain.valueobject.Money;
 import org.springframework.stereotype.Component;
+
+import java.time.Clock;
+import java.time.Instant;
 
 @Component
 public class CreditFactory {
 
     private final CreditCalculationService calculationService;
+    private final Clock clock;
 
-    public CreditFactory(CreditCalculationService calculationService) {
-
+    public CreditFactory(
+            CreditCalculationService calculationService,
+            Clock clock
+    ) {
         this.calculationService = calculationService;
+        this.clock = clock;
     }
 
     public Credit create(RequestCreditInput input) {
@@ -36,6 +42,8 @@ public class CreditFactory {
                         requestedAmount,
                         input.installments());
 
+        Instant now = clock.instant();
+
         return new Credit(
                 creditId,
                 customerId,
@@ -43,9 +51,7 @@ public class CreditFactory {
                 input.creditType(),
                 calculation.interestRate(),
                 input.installments(),
-                CreditStatus.UNDER_ANALYSIS,
-                null,
-                null
+                now
         );
     }
 }

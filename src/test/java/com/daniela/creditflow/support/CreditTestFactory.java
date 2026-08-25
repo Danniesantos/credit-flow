@@ -1,14 +1,17 @@
 package com.daniela.creditflow.support;
 
 import com.daniela.creditflow.domain.model.*;
-import com.daniela.creditflow.domain.valueObject.CreditId;
-import com.daniela.creditflow.domain.valueObject.CustomerId;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CustomerId;
+import com.daniela.creditflow.domain.valueobject.Money;
 
 import java.time.Instant;
 import java.util.UUID;
 
 public final class CreditTestFactory {
+
+    private static final Instant NOW =
+            Instant.parse("2026-08-24T15:00:00Z");
 
     private CreditTestFactory() {
     }
@@ -22,54 +25,65 @@ public final class CreditTestFactory {
                 CreditType.PERSONAL,
                 TestConstants.FIVE_PERCENT,
                 12,
-                CreditStatus.UNDER_ANALYSIS,
-                Instant.now(),
-                Instant.now()
+                NOW
         );
     }
 
     public static Credit restoredCredit(Credit credit) {
+
         return Credit.restore(
-                credit.getId(),
-                credit.getCustomerId(),
-                credit.getRequestedAmount(),
-                credit.getCreditType(),
-                credit.getInterestRate(),
-                credit.getInstallmentsQuantity(),
-                credit.getStatus(),
-                credit.getInstallments(),
-                credit.getCreatedAt(),
-                credit.getUpdatedAt()
+                new CreditSnapshot(
+                        credit.getId(),
+                        credit.getCustomerId(),
+                        credit.getRequestedAmount(),
+                        credit.getCreditType(),
+                        credit.getInterestRate(),
+                        credit.getInstallmentsQuantity(),
+                        credit.getStatus(),
+                        credit.getCreatedAt(),
+                        credit.getUpdatedAt(),
+                        credit.getInstallments()
+                )
         );
     }
 
     public static Credit approvedCredit() {
 
         Credit credit = underAnalysisCredit();
-        credit.approve();
+
+        credit.approve(NOW);
+
         return credit;
     }
 
     public static Credit rejectedCredit() {
+
         Credit credit = underAnalysisCredit();
-        credit.reject();
+
+        credit.reject(NOW);
+
         return credit;
     }
 
     public static Credit canceledCredit() {
+
         Credit credit = underAnalysisCredit();
-        credit.cancel();
+
+        credit.cancel(NOW);
+
         return credit;
     }
 
     public static Credit contractedCredit() {
+
         Credit credit = approvedCredit();
 
         credit.contract(
                 InstallmentTestFactory.installments(
                         credit.getId(),
                         credit.getInstallmentsQuantity()
-                )
+                ),
+                NOW
         );
 
         return credit;
@@ -83,7 +97,8 @@ public final class CreditTestFactory {
                 credit.markInstallmentAsPaid(
                         installment.getId(),
                         PaymentMethod.PIX,
-                        Instant.now()
+                        TestConstants.PAID_AT,
+                        NOW
                 )
         );
 
@@ -100,7 +115,8 @@ public final class CreditTestFactory {
         credit.markInstallmentAsPaid(
                 installment.getId(),
                 PaymentMethod.PIX,
-                Instant.now()
+                TestConstants.PAID_AT,
+                NOW
         );
 
         return credit;
@@ -114,7 +130,8 @@ public final class CreditTestFactory {
                 InstallmentTestFactory.overdueInstallments(
                         credit.getId(),
                         credit.getInstallmentsQuantity()
-                )
+                ),
+                NOW
         );
 
         return credit;
@@ -129,9 +146,7 @@ public final class CreditTestFactory {
                 CreditType.PERSONAL,
                 TestConstants.FIVE_PERCENT,
                 12,
-                CreditStatus.UNDER_ANALYSIS,
-                Instant.now(),
-                Instant.now()
+                NOW
         );
     }
 
@@ -147,10 +162,7 @@ public final class CreditTestFactory {
                 type,
                 TestConstants.FIVE_PERCENT,
                 12,
-                CreditStatus.UNDER_ANALYSIS,
-                Instant.now(),
-                Instant.now()
+                NOW
         );
     }
-
 }

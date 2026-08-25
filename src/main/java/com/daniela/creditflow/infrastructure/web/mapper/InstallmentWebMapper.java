@@ -1,10 +1,9 @@
 package com.daniela.creditflow.infrastructure.web.mapper;
 
-import com.daniela.creditflow.application.credit.dto.output.OverdueOutput;
 import com.daniela.creditflow.application.installment.dto.input.PaymentInstallmentInput;
 import com.daniela.creditflow.application.installment.dto.output.InstallmentDetailsOutput;
 import com.daniela.creditflow.application.installment.dto.output.OverdueInstallmentOutput;
-import com.daniela.creditflow.domain.valueObject.InstallmentId;
+import com.daniela.creditflow.domain.valueobject.InstallmentId;
 import com.daniela.creditflow.infrastructure.web.request.PaymentRequest;
 import com.daniela.creditflow.infrastructure.web.response.InstallmentDetailsResponse;
 import com.daniela.creditflow.infrastructure.web.response.OverdueInstallmentResponse;

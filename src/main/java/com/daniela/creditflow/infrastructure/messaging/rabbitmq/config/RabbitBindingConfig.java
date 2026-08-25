@@ -32,7 +32,9 @@ public class RabbitBindingConfig {
         return BindingBuilder
                 .bind(approvedDlq)
                 .to(creditDlqExchange)
-                .with("error." + RabbitConstants.CREDIT_APPROVED_ROUTING_KEY);
+                .with(
+                        RabbitConstants.ERROR_ROUTING_PREFIX
+                                + RabbitConstants.CREDIT_APPROVED_ROUTING_KEY);
 
     }
 
@@ -56,7 +58,8 @@ public class RabbitBindingConfig {
 
         return BindingBuilder.bind(rejectedDlq)
                 .to(creditDlqExchange)
-                .with("error." + RabbitConstants.CREDIT_REJECTED_ROUTING_KEY);
+                .with(RabbitConstants.ERROR_ROUTING_PREFIX
+                        + RabbitConstants.CREDIT_REJECTED_ROUTING_KEY);
     }
 
     @Bean
@@ -79,7 +82,8 @@ public class RabbitBindingConfig {
 
         return BindingBuilder.bind(canceledDlq)
                 .to(creditDlqExchange)
-                .with("error." + RabbitConstants.CREDIT_CANCELED_ROUTING_KEY);
+                .with(RabbitConstants.ERROR_ROUTING_PREFIX
+                        + RabbitConstants.CREDIT_CANCELED_ROUTING_KEY);
     }
 
     @Bean
@@ -102,7 +106,8 @@ public class RabbitBindingConfig {
 
         return BindingBuilder.bind(contractedDlq)
                 .to(creditDlqExchange)
-                .with("error." + RabbitConstants.CREDIT_CONTRACTED_ROUTING_KEY);
+                .with(RabbitConstants.ERROR_ROUTING_PREFIX
+                        + RabbitConstants.CREDIT_CONTRACTED_ROUTING_KEY);
     }
 
     @Bean
@@ -125,7 +130,8 @@ public class RabbitBindingConfig {
 
         return BindingBuilder.bind(renegotiatedDlq)
                 .to(creditDlqExchange)
-                .with("error." + RabbitConstants.CREDIT_RENEGOTIATED_ROUTING_KEY);
+                .with(RabbitConstants.ERROR_ROUTING_PREFIX
+                        + RabbitConstants.CREDIT_RENEGOTIATED_ROUTING_KEY);
     }
 
     @Bean
@@ -148,7 +154,8 @@ public class RabbitBindingConfig {
 
         return BindingBuilder.bind(restructuredDlq)
                 .to(creditDlqExchange)
-                .with("error." + RabbitConstants.CREDIT_RESTRUCTURED_ROUTING_KEY);
+                .with(RabbitConstants.ERROR_ROUTING_PREFIX
+                        + RabbitConstants.CREDIT_RESTRUCTURED_ROUTING_KEY);
     }
 
     @Bean
@@ -171,6 +178,7 @@ public class RabbitBindingConfig {
 
         return BindingBuilder.bind(paymentDlq)
                 .to(creditDlqExchange)
-                .with("error." + RabbitConstants.CREDIT_PAYMENT_ROUTING_KEY);
+                .with(RabbitConstants.ERROR_ROUTING_PREFIX
+                        + RabbitConstants.CREDIT_APPROVED_ROUTING_KEY);
     }
 }

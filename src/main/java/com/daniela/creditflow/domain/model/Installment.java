@@ -3,9 +3,9 @@ package com.daniela.creditflow.domain.model;
 import com.daniela.creditflow.domain.exceptions.InstallmentAlreadyPaidException;
 import com.daniela.creditflow.domain.exceptions.InstallmentCannotBePaidException;
 import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
-import com.daniela.creditflow.domain.valueObject.CreditId;
-import com.daniela.creditflow.domain.valueObject.InstallmentId;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.CreditId;
+import com.daniela.creditflow.domain.valueobject.InstallmentId;
+import com.daniela.creditflow.domain.valueobject.Money;
 import lombok.Getter;
 
 import java.time.Instant;
@@ -43,7 +43,7 @@ public class Installment {
         );
     }
 
-    public Installment(
+    private Installment(
             InstallmentId id,
             Integer number,
             Money amount,
@@ -65,6 +65,21 @@ public class Installment {
         validateNumber();
     }
 
+    public static Installment restore(
+            InstallmentSnapshot snapshot) {
+
+        return new Installment(
+                snapshot.id(),
+                snapshot.number(),
+                snapshot.amount(),
+                snapshot.dueDate(),
+                snapshot.paymentMethod(),
+                snapshot.status(),
+                snapshot.creditId(),
+                snapshot.paidAt()
+        );
+    }
+
     public boolean isPaid() {
         return status == InstallmentStatus.PAID;
     }
@@ -73,8 +88,8 @@ public class Installment {
         return status == InstallmentStatus.PENDING;
     }
 
-    public boolean isOverdue() {
-        return isPending() && dueDate.isBefore(LocalDate.now());
+    public boolean isOverdue(LocalDate today) {
+        return isPending() && dueDate.isBefore(today);
     }
 
     private void validateNumber() {
@@ -102,9 +117,9 @@ public class Installment {
         this.status = InstallmentStatus.PAID;
     }
 
-    public long daysOverdue() {
-        return isOverdue()
-                ? ChronoUnit.DAYS.between(dueDate, LocalDate.now())
+    public long daysOverdue(LocalDate today) {
+        return isOverdue(today)
+                ? ChronoUnit.DAYS.between(dueDate, today)
                 : 0;
     }
 

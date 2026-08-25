@@ -2,10 +2,10 @@ package com.daniela.creditflow.support;
 
 import com.daniela.creditflow.domain.model.Customer;
 import com.daniela.creditflow.domain.model.CustomerData;
-import com.daniela.creditflow.domain.valueObject.CPF;
-import com.daniela.creditflow.domain.valueObject.CreditScore;
-import com.daniela.creditflow.domain.valueObject.Email;
-import com.daniela.creditflow.domain.valueObject.PhoneNumber;
+import com.daniela.creditflow.domain.valueobject.CPF;
+import com.daniela.creditflow.domain.valueobject.CreditScore;
+import com.daniela.creditflow.domain.valueobject.Email;
+import com.daniela.creditflow.domain.valueobject.PhoneNumber;
 
 public final class CustomerTestFactory {
 
@@ -15,7 +15,8 @@ public final class CustomerTestFactory {
     public static Customer customer() {
 
         return new Customer(
-                customerData()
+                customerData(),
+                TestConstants.FIXED_CLOCK
         );
     }
 

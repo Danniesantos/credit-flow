@@ -86,6 +86,9 @@ class RequestCreditUseCaseTest {
         RequestCreditInput input =
                 mock(RequestCreditInput.class);
 
+        RequestCreditOutput output =
+                mock(RequestCreditOutput.class);
+
         Credit credit =
                 CreditTestFactory.underAnalysisCredit();
 
@@ -96,9 +99,7 @@ class RequestCreditUseCaseTest {
                 .thenReturn(credit);
 
         when(creditOutputMapper.toCreditOutput(credit))
-                .thenReturn(
-                        mock(RequestCreditOutput.class)
-                );
+                .thenReturn(output);
 
         useCase.execute(input);
 

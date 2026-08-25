@@ -2,6 +2,11 @@ package com.daniela.creditflow.infrastructure.messaging.rabbitmq.config;
 
 public class RabbitConstants {
 
+    private RabbitConstants() {
+    }
+
+    public static final String ERROR_ROUTING_PREFIX = "error.";
+
     public static final String CREDIT_EXCHANGE = "credit.exchange";
 
     public static final String CREDIT_APPROVED_QUEUE = "credit.approved.queue";
@@ -30,7 +35,6 @@ public class RabbitConstants {
     public static final String CREDIT_RESTRUCTURED_DLQ = "credit.restructured.dlq";
 
     public static final String CREDIT_PAYMENT_DLQ = "credit.payment.dlq";
-
 
     public static final String CREDIT_DLQ_EXCHANGE = "credit.dlq.exchange";
 }

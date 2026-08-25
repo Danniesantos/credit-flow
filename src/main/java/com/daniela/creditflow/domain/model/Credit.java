@@ -2,10 +2,11 @@ package com.daniela.creditflow.domain.model;
 
 import com.daniela.creditflow.domain.exceptions.InstallmentNotFoundException;
 import com.daniela.creditflow.domain.exceptions.InvalidDomainStateException;
-import com.daniela.creditflow.domain.valueObject.*;
+import com.daniela.creditflow.domain.valueobject.*;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,57 +32,44 @@ public class Credit {
             CreditType creditType,
             InterestRate interestRate,
             Integer installmentsQuantity,
-            CreditStatus status,
-            Instant createdAt,
-            Instant updatedAt) {
+            Instant now) {
 
         this.id = Objects.requireNonNull(id);
         this.customerId = Objects.requireNonNull(customerId);
         this.requestedAmount = Objects.requireNonNull(requestedAmount);
         this.creditType = Objects.requireNonNull(creditType);
         this.interestRate = Objects.requireNonNull(interestRate);
-        this.installmentsQuantity = Objects.requireNonNull(installmentsQuantity);
-        this.status = Objects.requireNonNull(status);
+        this.installmentsQuantity =
+                Objects.requireNonNull(installmentsQuantity);
+        this.status = CreditStatus.UNDER_ANALYSIS;
 
         this.installments = new ArrayList<>();
 
-        this.createdAt = createdAt != null
-                ? createdAt
-                : Instant.now();
-
-        this.updatedAt = updatedAt != null
-                ? updatedAt
-                : this.createdAt;
+        this.createdAt = Objects.requireNonNull(now);
+        this.updatedAt = now;
 
         validateInstallmentsQuantity();
         validateRequestedAmount();
     }
 
-    public static Credit restore(
-            CreditId id,
-            CustomerId customerId,
-            Money requestedAmount,
-            CreditType creditType,
-            InterestRate interestRate,
-            Integer installmentsQuantity,
-            CreditStatus status,
-            List<Installment> installments,
-            Instant createdAt,
-            Instant updatedAt) {
+    public static Credit restore(CreditSnapshot snapshot) {
 
         Credit credit = new Credit(
-                id,
-                customerId,
-                requestedAmount,
-                creditType,
-                interestRate,
-                installmentsQuantity,
-                status,
-                createdAt,
-                updatedAt
+                snapshot.id(),
+                snapshot.customerId(),
+                snapshot.requestedAmount(),
+                snapshot.creditType(),
+                snapshot.interestRate(),
+                snapshot.installmentsQuantity(),
+                snapshot.createdAt()
         );
 
-        credit.installments = new ArrayList<>(installments);
+        credit.status = Objects.requireNonNull(snapshot.status());
+        credit.installments = new ArrayList<>(snapshot.installments());
+
+        credit.updatedAt = snapshot.updatedAt() != null
+                ? snapshot.updatedAt()
+                : snapshot.createdAt();
 
         return credit;
     }
@@ -110,22 +98,23 @@ public class Credit {
         return status == CreditStatus.PAID_OFF;
     }
 
-    public void approve() {
+    public void approve(Instant now) {
         ensureUnderAnalysis();
-        changeStatus(CreditStatus.APPROVED);
+        changeStatus(CreditStatus.APPROVED, now);
     }
 
-    public void reject() {
+    public void reject(Instant now) {
         ensureUnderAnalysis();
-        changeStatus(CreditStatus.REJECTED);
+        changeStatus(CreditStatus.REJECTED, now);
     }
 
-    public void cancel() {
+    public void cancel(Instant now) {
         ensureCancelable();
-        changeStatus(CreditStatus.CANCELED);
+        changeStatus(CreditStatus.CANCELED, now);
     }
 
-    public void contract(List<Installment> installments) {
+    public void contract(List<Installment> installments,
+                         Instant now) {
 
         if (isContracted()) {
             throw new InvalidDomainStateException(
@@ -145,25 +134,31 @@ public class Credit {
 
         validateTotalAmount();
 
-        changeStatus(CreditStatus.CONTRACTED);
+        changeStatus(
+                CreditStatus.CONTRACTED,
+                now);
     }
 
-    public void renegotiate(List<Installment> installments) {
+    public void renegotiate(List<Installment> installments,
+                            LocalDate today,
+                            Instant now) {
 
-        ensureCanBeRenegotiated();
+        ensureCanBeRenegotiated(today);
 
-        replaceInstallments(installments);
+        replaceInstallments(installments, now);
     }
 
-    public void restructure(List<Installment> installments) {
+    public void restructure(List<Installment> installments,
+                            Instant now) {
 
         ensureCanBeRestructured();
 
-        replaceInstallments(installments);
+        replaceInstallments(installments, now);
     }
 
     private void replaceInstallments(
-            List<Installment> newInstallments) {
+            List<Installment> newInstallments,
+            Instant now) {
 
         validateInstallmentList(newInstallments);
 
@@ -175,14 +170,15 @@ public class Credit {
         this.installments = updatedInstallments;
         this.installmentsQuantity = updatedInstallments.size();
 
-        changeStatus(CreditStatus.CONTRACTED);
+        changeStatus(
+                CreditStatus.CONTRACTED,
+                now);
     }
 
-    public void markInstallmentAsPaid(
-            InstallmentId installmentId,
-            PaymentMethod paymentMethod,
-            Instant paidAt) {
-
+    public void markInstallmentAsPaid(InstallmentId installmentId,
+                                      PaymentMethod paymentMethod,
+                                      Instant paidAt,
+                                      Instant now) {
 
         if (isPaidOff()) {
             throw new InvalidDomainStateException(
@@ -196,19 +192,19 @@ public class Credit {
             );
         }
 
-
         Installment installment =
                 findInstallment(installmentId);
-
 
         installment.pay(
                 paymentMethod,
                 paidAt
         );
 
-
         if (areAllInstallmentsPaid()) {
-            changeStatus(CreditStatus.PAID_OFF);
+            changeStatus(
+                    CreditStatus.PAID_OFF,
+                    now
+            );
         }
     }
 
@@ -264,27 +260,27 @@ public class Credit {
                 );
     }
 
-    public List<Installment> overdueInstallments() {
+    public List<Installment> overdueInstallments(LocalDate today) {
 
         return installments.stream()
-                .filter(Installment::isOverdue)
+                .filter(installment -> installment.isOverdue(today))
                 .toList();
     }
 
-    public boolean hasOverdueInstallments() {
+    public boolean hasOverdueInstallments(LocalDate today) {
 
         return installments.stream()
-                .anyMatch(Installment::isOverdue);
+                .anyMatch(installment -> installment.isOverdue(today));
     }
 
-    public long overdueInstallmentsQuantity() {
+    public long overdueInstallmentsQuantity(LocalDate today) {
 
-        return overdueInstallments().size();
+        return overdueInstallments(today).size();
     }
 
-    public Money overdueAmount() {
+    public Money overdueAmount(LocalDate today) {
 
-        return overdueInstallments().stream()
+        return overdueInstallments(today).stream()
                 .map(Installment::getAmount)
                 .reduce(
                         Money.zero(),
@@ -312,10 +308,10 @@ public class Credit {
                 .anyMatch(Installment::isPending);
     }
 
-    public boolean canRenegotiate() {
+    public boolean canRenegotiate(LocalDate today) {
 
         return isContracted()
-                && hasOverdueInstallments();
+                && hasOverdueInstallments(today);
     }
 
     public boolean canRestructure() {
@@ -324,9 +320,9 @@ public class Credit {
                 && hasPendingInstallments();
     }
 
-    public void ensureCanBeRenegotiated() {
+    public void ensureCanBeRenegotiated(LocalDate today) {
 
-        if (!canRenegotiate()) {
+        if (!canRenegotiate(today)) {
             throw new InvalidDomainStateException(
                     "Credit cannot be renegotiated"
             );
@@ -438,10 +434,11 @@ public class Credit {
         }
     }
 
-    private void changeStatus(CreditStatus newStatus) {
+    private void changeStatus(CreditStatus newStatus,
+                              Instant now) {
 
         this.status = newStatus;
-        this.updatedAt = Instant.now();
+        this.updatedAt = now;
     }
 }
 

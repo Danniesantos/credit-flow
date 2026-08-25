@@ -11,7 +11,7 @@ import com.daniela.creditflow.application.credit.dto.output.AnalysisResult;
 import com.daniela.creditflow.application.credit.service.CreditCalculationService;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.CreditType;
-import com.daniela.creditflow.domain.valueObject.Money;
+import com.daniela.creditflow.domain.valueobject.Money;
 import com.daniela.creditflow.support.CreditTestFactory;
 import com.daniela.creditflow.support.CustomerTestFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class CreditAnalysisFlowTest {
+class CreditAnalysisFlowTest {
 
     private CreditCalculationService calculationService;
     private CreditAnalysisChain analysisChain;

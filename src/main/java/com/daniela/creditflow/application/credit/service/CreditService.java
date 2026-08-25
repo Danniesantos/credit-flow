@@ -2,7 +2,7 @@ package com.daniela.creditflow.application.credit.service;
 
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.repository.CreditRepository;
-import com.daniela.creditflow.domain.valueObject.CreditId;
+import com.daniela.creditflow.domain.valueobject.CreditId;
 import com.daniela.creditflow.domain.exceptions.CreditNotFoundException;
 import org.springframework.stereotype.Service;
 
