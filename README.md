@@ -2,10 +2,28 @@
 
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F)
+![Spring Data JPA](https://img.shields.io/badge/Spring_Data_JPA-3.x-6DB33F)
+![Hibernate](https://img.shields.io/badge/Hibernate-ORM-59666C)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1)
-![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED)
 ![Flyway](https://img.shields.io/badge/Flyway-Database_Migrations-CC0200)
-![License](https://img.shields.io/badge/License-MIT-blue)
+![RabbitMQ](https://img.shields.io/badge/RabbitMQ-Messaging-FF6600)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED)
+![Docker Compose](https://img.shields.io/badge/Docker_Compose-Enabled-2496ED)
+![Maven](https://img.shields.io/badge/Maven-Build-C71A36)
+![Bean Validation](https://img.shields.io/badge/Bean_Validation-Jakarta-59666C)
+
+![JUnit 5](https://img.shields.io/badge/JUnit_5-Testing-25A162)
+![Mockito](https://img.shields.io/badge/Mockito-Mocking-78C257)
+![AssertJ](https://img.shields.io/badge/AssertJ-Testing-6DB33F)
+![Testcontainers](https://img.shields.io/badge/Testcontainers-Integration_Testing-2496ED)
+![JaCoCo](https://img.shields.io/badge/JaCoCo-Code_Coverage-EF2D5E)
+![SonarQube](https://img.shields.io/badge/SonarQube-Code_Quality-4E9BCD)
+
+![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-85EA2D)
+![Spring REST Docs](https://img.shields.io/badge/Spring_REST_Docs-API_Documentation-6DB33F)
+
+![Git](https://img.shields.io/badge/Git-Version_Control-F05032)
+![GitHub](https://img.shields.io/badge/GitHub-Repository-181717)
 
 A backend REST API for credit request and management, developed with **Java 21 and Spring Boot**, following **Clean Architecture** and **Domain-Driven Design (DDD)** principles.
 
@@ -472,7 +490,7 @@ The project aims to keep business logic well tested and maintainable while conti
 
 | Method | Endpoint                 | Description        |
 | ------ | ------------------------ | ------------------ |
-| PATCH  | `/installments/{id}/pay` | Pay an installment |
+| POST  | `/installments/{id}/pay` | Pay an installment |
 
 > The API is under continuous development and new endpoints may be added as business requirements evolve.
 
