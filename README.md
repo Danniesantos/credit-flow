@@ -7,87 +7,139 @@
 ![Flyway](https://img.shields.io/badge/Flyway-Database_Migrations-CC0200)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
-A backend application for credit request and management built with Java and Spring Boot, following Clean Architecture and Domain-Driven Design (DDD) principles.
+A backend REST API for credit request and management, developed with **Java 21 and Spring Boot**, following **Clean Architecture** and **Domain-Driven Design (DDD)** principles.
 
-> 🚧 This project is currently under development.
+> 🚧 This project is a study and portfolio project focused on applying software engineering practices to a realistic credit management domain.
 
 ---
 
 # About
 
-Credit Flow is a study project that simulates a real-world credit management system.
+CreditFlow simulates a credit management system where customers can request credit, go through a credit analysis process, contract approved credits and manage their installments.
 
-The main goal is to apply software engineering best practices while modeling business rules through a rich domain model instead of relying on an anemic architecture.
+The main goal of the project is to model business rules inside a **rich domain model**, keeping business logic independent from frameworks and infrastructure concerns.
 
-Concepts applied in this project:
+The project applies concepts such as:
 
-- Clean Architecture
-- Domain-Driven Design (DDD)
-- SOLID Principles
-- Design Patterns
-- Clean Code
-- RESTful APIs
-- Docker
-- Flyway
-- Git Best Practices
+* Clean Architecture
+* Domain-Driven Design (DDD)
+* SOLID principles
+* Rich Domain Model
+* Value Objects
+* Design Patterns
+* Domain Events
+* Use Case pattern
+* Repository pattern
+* Mapper pattern
+* Strategy pattern
+* Chain of Responsibility
+* Clean Code
+* RESTful APIs
+* Automated testing
+* Database migrations
+* Asynchronous messaging
 
 ---
 
 # Technologies
 
-- Java 21
-- Spring Boot
-- Spring Data JPA
-- PostgreSQL
-- Flyway
-- Docker
-- Docker Compose
-- Maven
-- Bean Validation
-- IntelliJ IDEA
+* Java 21
+* Spring Boot 3
+* Spring Data JPA
+* Hibernate
+* PostgreSQL
+* Flyway
+* RabbitMQ
+* Docker
+* Docker Compose
+* Maven
+* Bean Validation
+* JUnit 5
+* Mockito
+* AssertJ
+* Testcontainers
+* JaCoCo
+* SonarQube
+* Git / GitHub
 
 ---
 
 # Architecture
 
-The project follows the Clean Architecture approach.
+The project follows **Clean Architecture**, separating business rules from application orchestration, web concerns and infrastructure.
 
+```text
+                    ┌──────────────────────┐
+                    │     Web / REST       │
+                    │ Controllers / DTOs   │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │     Application      │
+                    │ Use Cases / Services │
+                    │ Mappers / Factories  │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │       Domain         │
+                    │ Entities / Value     │
+                    │ Objects / Rules      │
+                    │ Events / Repositories│
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │   Infrastructure     │
+                    │ JPA / PostgreSQL     │
+                    │ RabbitMQ / Messaging │
+                    └──────────────────────┘
 ```
-Controller
-        │
-        ▼
-Application (Use Cases)
-        │
-        ▼
-Domain
-        │
-        ▼
-Infrastructure (Persistence)
-```
+
+The domain layer does not depend on infrastructure implementations.
 
 Current architectural components include:
 
-- Domain Entities
-- Value Objects
-- Use Cases
-- Factories
-- Policies
-- Repository Interfaces
-- Mappers
-- DTOs
-- Persistence Layer
+* Domain Entities
+* Value Objects
+* Domain Events
+* Domain Services
+* Use Cases
+* Application Services
+* Factories
+* Strategies
+* Validators
+* Repository Interfaces
+* Repository Implementations
+* Mappers
+* DTOs
+* Persistence Entities
+* Messaging Components
 
 ---
 
 # Project Structure
 
-```
+```text
 src
-├── application
-├── domain
-├── infrastructure
-└── web
+├── main
+│   └── java
+│       └── com.daniela.creditflow
+│           ├── application
+│           ├── domain
+│           └── infrastructure
+│
+└── test
+    └── java
+        └── com.daniela.creditflow
+            ├── application
+            ├── domain
+            ├── infrastructure
+            └── support
 ```
+
+The project is organized primarily around the application's architectural boundaries rather than framework-specific layers.
 
 ---
 
@@ -97,78 +149,199 @@ src
 
 The customer module supports:
 
-- Create a customer
-- Update customer information
-- Retrieve customer by ID
-- Retrieve all customers with pagination
-- Deactivate customer
+* Create customer
+* Update customer information
+* Retrieve customer by ID
+* Retrieve customers
+* Deactivate customer
+* Validate customer data
+* Validate CPF, email and phone number
+* Manage customer credit score
+* Manage customer status
 
 ### Business Rules
 
-- Customer names must contain at least 3 characters.
-- Date of birth cannot be in the future.
-- Customers are created with **ACTIVE** status by default.
-- A customer cannot be deactivated twice.
-- A customer cannot be deactivated while having open credits.
-- Updates automatically refresh the last modification timestamp.
-- Domain validation is enforced through Value Objects and business rules.
+* Customer name must contain at least 3 characters.
+* Date of birth cannot be in the future.
+* Monthly income must be greater than zero.
+* Credit score must be between 0 and 1000.
+* Customers are created with `ACTIVE` status.
+* A customer cannot be deactivated twice.
+* A customer cannot be deactivated while having open credits.
+* Domain validation is performed through Value Objects and business rules.
 
 ---
 
 ## Credit Management
 
-The credit module currently supports:
+The credit module supports:
 
-- Request a new credit
-- Simulate a credit
-- Analyze a credit
-- Retrieve credit details
+* Request credit
+* Simulate credit
+* Analyze credit
+* Contract credit
+* Retrieve credit details
+* Retrieve credit balance
+* Retrieve overdue installments
+* Find customers with outstanding debts
+* Cancel credit
+* Renegotiate credit
+* Restructure credit
 
-### Business Rules
+### Credit Analysis
 
-- Credit simulation calculates interest before approval.
-- Installments are automatically generated.
-- The last installment adjusts rounding differences.
-- Installment due dates are generated using a due date policy.
-- Credits are initially created with **UNDER_ANALYSIS** status.
+Credit analysis is implemented using a validation chain:
+
+```text
+Score Validator
+       │
+       ▼
+Income Validator
+       │
+       ▼
+Limit Validator
+       │
+       ▼
+Credit Approved / Rejected
+```
+
+Each validation is responsible for a specific business rule while keeping the analysis flow extensible.
+
+### Credit Calculation
+
+Different credit types use different interest calculation strategies:
+
+* Personal credit
+* Payroll credit
+* Business credit
+
+The calculation strategy is selected through a strategy factory.
+
+```text
+CreditCalculationService
+          │
+          ▼
+CreditStrategyFactory
+          │
+     ┌────┴────┬────────────┐
+     ▼         ▼            ▼
+ Personal   Payroll      Business
+ Strategy   Strategy      Strategy
+```
 
 ---
 
 ## Installment Management
 
-Installments are automatically created when a credit request is submitted.
+Installments are automatically generated when a credit is created.
 
-Current implementation includes:
+Current functionality includes:
 
-- Automatic installment generation
-- Monthly due date calculation
-- Installment status management
-- Precise monetary calculation using BigDecimal
-- Rounding adjustment on the last installment
+* Automatic installment generation
+* Monthly due date calculation
+* Installment status management
+* Installment payment
+* Pending installment calculation
+* Overdue installment identification
+* Precise monetary calculations using `BigDecimal`
+* Rounding adjustment on the last installment
+
+The installment domain is responsible for its own business behavior instead of exposing only anemic data structures.
+
+---
+
+# Domain Events
+
+The application uses domain events to represent important business occurrences.
+
+Current events include:
+
+* `CreditApprovedEvent`
+* `CreditRejectedEvent`
+* `CreditContractedEvent`
+* `CreditCanceledEvent`
+* `CreditRenegotiatedEvent`
+* `CreditRestructuredEvent`
+* `InstallmentPaidEvent`
+
+These events can be published through the messaging infrastructure.
+
+---
+
+# Messaging
+
+RabbitMQ is used for asynchronous communication.
+
+The application includes:
+
+* RabbitMQ exchanges
+* Queues
+* Retry queues
+* Dead Letter Queues (DLQ)
+* Event mapping
+* Event consumers/producers
+
+The messaging infrastructure is isolated from the domain through application and infrastructure boundaries.
 
 ---
 
 # Database
 
-The application uses PostgreSQL as the relational database.
+The application uses **PostgreSQL** as its relational database.
 
-Database versioning is managed using Flyway migrations.
+Database schema versioning is managed using **Flyway**.
+
+The persistence layer uses:
+
+* Spring Data JPA
+* Hibernate
+* JPA Entities
+* Persistence Mappers
+* Repository implementations
+
+Domain models are kept separate from persistence entities.
 
 ---
 
 # Docker
 
-Start the database using Docker Compose.
+Docker Compose is used to run the project's infrastructure locally.
+
+Start the containers with:
 
 ```bash
 docker compose up -d
+```
+
+The project can use Docker for services such as PostgreSQL and RabbitMQ.
+
+To stop the containers:
+
+```bash
+docker compose down
 ```
 
 ---
 
 # Environment Configuration
 
-Sensitive information is managed using environment variables.
+Sensitive configuration is managed through environment variables.
+
+Create a `.env` file in the project root based on the provided `.env.example`.
+
+Example:
+
+```env
+POSTGRES_DB=creditflow
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=admin123
+```
+
+The `.env` file should not be committed to the repository.
+
+---
+
+# Running the Application
 
 ## 1. Clone the repository
 
@@ -176,154 +349,90 @@ Sensitive information is managed using environment variables.
 git clone https://github.com/Danniesantos/credit-flow.git
 ```
 
----
-
-## 2. Create a `.env` file
-
-Create a file named:
-
-```
-.env
+```bash
+cd credit-flow
 ```
 
-at the project root.
+## 2. Configure environment variables
 
-Example:
+Copy the example environment file:
 
-```properties
-POSTGRES_DB=creditflow
-POSTGRES_USER=admin
-POSTGRES_PASSWORD=admin123
+```bash
+cp .env.example .env
 ```
 
-The `.env` file is ignored by Git and should never be committed.
+Adjust the values according to your local environment.
 
----
+## 3. Start infrastructure
 
-## 3. Copy the example file
-
-The project provides a template:
-
-```
-.env.example
+```bash
+docker compose up -d
 ```
 
-Copy it to:
+## 4. Run the application
 
-```
-.env
-```
+Using Maven:
 
-Then replace the placeholder values with your own local configuration.
-
----
-
-# IntelliJ IDEA Configuration (EnvFile Plugin)
-
-To automatically load environment variables, install the **EnvFile** plugin.
-
-### Install
-
-Settings
-
-↓
-
-Plugins
-
-↓
-
-Marketplace
-
-↓
-
-Search:
-
-```
-EnvFile
+```bash
+./mvnw spring-boot:run
 ```
 
-Install and restart IntelliJ IDEA.
+On Windows:
 
----
-
-### Configure
-
-Open:
-
-```
-Run
-```
-
-↓
-
-```
-Edit Configurations
-```
-
-Select:
-
-```
-CreditFlowApplication
-```
-
-Enable:
-
-```
-Enable EnvFile
-```
-
-Click:
-
-```
-+
-```
-
-Choose the project's:
-
-```
-.env
-```
-
-Click:
-
-```
-Apply
-```
-
-Then:
-
-```
-OK
+```bash
+mvnw.cmd spring-boot:run
 ```
 
 ---
 
-# Spring Configuration
+# Testing
 
-The application loads database configuration from environment variables.
+The project contains unit, integration and web-layer tests.
 
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5438/${POSTGRES_DB}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+Testing technologies include:
+
+* JUnit 5
+* Mockito
+* AssertJ
+* Spring Boot Test
+* MockMvc
+* Testcontainers
+
+Run the test suite with:
+
+```bash
+mvn test
 ```
+
+To execute the complete Maven verification lifecycle:
+
+```bash
+mvn clean verify
+```
+
+The project currently contains **400+ automated tests**, covering domain rules, application services, use cases, mappers, repositories, controllers and integration scenarios.
 
 ---
 
-# Docker Compose
+# Code Quality
 
-Docker Compose uses the same variables.
+Code quality is monitored using **SonarQube**.
 
-```yaml
-environment:
-  POSTGRES_DB: ${POSTGRES_DB}
-  POSTGRES_USER: ${POSTGRES_USER}
-  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-```
+The project uses:
 
-This keeps Docker and Spring Boot synchronized using a single configuration source.
+* JaCoCo for test coverage
+* SonarQube for static code analysis
+* SonarLint during development
+
+Current analysis results include:
+
+* **Security:** A
+* **Reliability:** A
+* **Maintainability:** A
+* **Test Coverage:** 96%+
+* **Duplications:** 0%
+
+The project aims to keep business logic well tested and maintainable while continuously improving code quality.
 
 ---
 
@@ -331,24 +440,112 @@ This keeps Docker and Spring Boot synchronized using a single configuration sour
 
 ## Customer
 
-| Method | Endpoint | Description |
-|----------|------------------------------|--------------------------------------|
-| POST | `/customers` | Create a new customer |
-| GET | `/customers` | Retrieve all customers |
-| GET | `/customers/{id}` | Retrieve customer details |
-| PUT | `/customers/{id}` | Update customer information |
-| PATCH | `/customers/{id}/status` | Deactivate a customer |
+| Method | Endpoint                 | Description                 |
+| ------ | ------------------------ | --------------------------- |
+| POST   | `/customers`             | Create a customer           |
+| GET    | `/customers`             | Retrieve customers          |
+| GET    | `/customers/{id}`        | Retrieve customer details   |
+| PUT    | `/customers/{id}`        | Update customer information |
+| PATCH  | `/customers/{id}/status` | Deactivate a customer       |
 
 ---
 
 ## Credit
 
-| Method | Endpoint | Description |
-|----------|---------------------------------|--------------------------------|
-| POST | `/credits` | Request a new credit |
-| POST | `/credits/simulate` | Simulate a credit |
-| POST | `/credits/{id}/analyze` | Analyze a credit |
-| GET | `/credits/{id}` | Retrieve credit details |
+| Method | Endpoint                    | Description                               |
+| ------ | --------------------------- | ----------------------------------------- |
+| POST   | `/credits`                  | Request a new credit                      |
+| POST   | `/credits/simulate`         | Simulate a credit                         |
+| POST   | `/credits/{id}/analyze`     | Analyze a credit                          |
+| POST   | `/credits/{id}/contract`    | Contract an approved credit               |
+| GET    | `/credits/{id}`             | Retrieve credit details                   |
+| GET    | `/credits/{id}/balance`     | Retrieve credit balance                   |
+| GET    | `/credits/{id}/overdue`     | Retrieve overdue installments             |
+| GET    | `/credits/debtors`          | Retrieve customers with outstanding debts |
+| PATCH  | `/credits/{id}/cancel`      | Cancel a credit                           |
+| PATCH  | `/credits/{id}/renegotiate` | Renegotiate a credit                      |
+| PATCH  | `/credits/{id}/restructure` | Restructure a credit                      |
+
+---
+
+## Installment
+
+| Method | Endpoint                 | Description        |
+| ------ | ------------------------ | ------------------ |
+| PATCH  | `/installments/{id}/pay` | Pay an installment |
+
+> The API is under continuous development and new endpoints may be added as business requirements evolve.
+
+---
+
+# Design Patterns and Practices
+
+The project applies several design patterns and software engineering practices.
+
+### Strategy
+
+Used for different credit interest calculation strategies.
+
+```text
+CreditInterestCalculationStrategy
+├── PersonalCreditStrategy
+├── PayrollCreditStrategy
+└── BusinessCreditStrategy
+```
+
+### Factory
+
+Factories are used to encapsulate object creation and business construction rules.
+
+### Chain of Responsibility
+
+Used in the credit analysis process to execute independent validation rules sequentially.
+
+### Repository
+
+Domain repositories define contracts while infrastructure provides the persistence implementations.
+
+### Mapper
+
+Mappers isolate transformations between:
+
+```text
+Domain
+   ↕
+Application
+   ↕
+Persistence / Web
+```
+
+### Value Objects
+
+The domain uses Value Objects to encapsulate validation and domain concepts such as:
+
+* `Money`
+* `CPF`
+* `Email`
+* `PhoneNumber`
+* `CreditScore`
+* `InterestRate`
+* `CustomerId`
+* `CreditId`
+* `InstallmentId`
+
+---
+
+# Future Improvements
+
+Possible future improvements include:
+
+* API documentation with OpenAPI/Swagger
+* Authentication and authorization
+* Observability and monitoring
+* Redis caching
+* Improved messaging observability
+* CI/CD pipeline
+* Additional integration tests
+* Performance improvements
+* Deployment configuration
 
 ---
 
@@ -356,5 +553,12 @@ This keeps Docker and Spring Boot synchronized using a single configuration sour
 
 **Daniela Santos**
 
-- GitHub: https://github.com/Danniesantos
-- LinkedIn: [https://www.linkedin.com/in/daniela-santos-49b434222/](https://www.linkedin.com/in/danielarobertasantos/)
+* GitHub: https://github.com/Danniesantos
+* LinkedIn: https://www.linkedin.com/in/daniela-santos-49b434222/
+
+---
+
+# License
+
+This project is licensed under the MIT License.
+
