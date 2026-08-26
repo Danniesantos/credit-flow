@@ -36,14 +36,16 @@ public class RenegotiateCreditUseCase {
         Credit credit =
                 service.findCredit(creditId);
 
+        LocalDate today =
+                LocalDate.now(clock);
+
+        credit.ensureCanBeRenegotiated(today);
+
         List<Installment> installments =
                 creditInstallmentService.generate(
                         credit,
                         input.installmentsQuantity()
                 );
-
-        LocalDate today =
-                LocalDate.now(clock);
 
         Instant now =
                 clock.instant();
