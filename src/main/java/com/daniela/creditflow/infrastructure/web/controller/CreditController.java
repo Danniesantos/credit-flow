@@ -13,13 +13,18 @@ import com.daniela.creditflow.infrastructure.web.request.SimulateCreditRequest;
 import com.daniela.creditflow.infrastructure.web.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -56,15 +61,17 @@ public class CreditController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
-                    description = "Credit successfully requested"
+                    description = "Credit successfully requested",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RequestCreditResponse.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid credit request"
-            ),
-            @ApiResponse(
-                    responseCode = "422",
-                    description = "Credit request violates a business rule"
+                    description = "Invalid credit request",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             )
     })
     @PostMapping
@@ -92,20 +99,30 @@ public class CreditController {
 
     @Operation(
             summary = "Simulate credit",
-            description = "Simulates a credit based on the requested amount, credit type, and number of installments."
+            description = "Simulates a credit based on the requested amount," +
+                    " credit type, and number of installments."
     )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Credit simulation successfully calculated"
+                    description = "Credit simulation successfully calculated",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = SimulateCreditResponse.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid simulation request"
+                    description = "Invalid simulation request",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "422",
-                    description = "Credit simulation violates a business rule"
+                    description = "Credit simulation violates a business rule",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             )
     })
     @PostMapping("/simulate")
@@ -134,15 +151,24 @@ public class CreditController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid UUID format"
+                    description = "Invalid UUID format",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Credit or customer not found"
+                    description = "Credit or customer not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "422",
-                    description = "Credit cannot be analyzed because it is not in the analysis state"
+                    description = "Credit cannot be analyzed because it is not in the analysis state",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             )
     })
     @PostMapping("/{id}/analyze")
@@ -171,16 +197,25 @@ public class CreditController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid UUID format"
+                    description = "Invalid UUID format",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Credit not found"
+                    description = "Credit not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "422",
                     description = "Credit cannot be contracted because it is not approved," +
-                            " is already contracted, or has an invalid installment configuration"
+                            " is already contracted, or has an invalid installment configuration",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             )
     })
     @PostMapping("/{id}/contract")
@@ -206,15 +241,27 @@ public class CreditController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Credit successfully retrieved"
+                    description = "Credit successfully retrieved",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = CreditDetailsResponse.class
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid UUID format"
+                    description = "Invalid UUID format",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class)
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Credit not found"
+                    description = "Credit not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class)
+                    )
             )
     })
     @GetMapping("/{id}")
@@ -240,15 +287,24 @@ public class CreditController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Credit balance successfully retrieved"
+                    description = "Credit balance successfully retrieved",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BalanceResponse.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid UUID format"
+                    description = "Invalid UUID format",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Credit not found"
+                    description = "Credit not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             )
     })
     @GetMapping("/{id}/balance")
@@ -277,15 +333,24 @@ public class CreditController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Overdue status successfully retrieved"
+                    description = "Overdue status successfully retrieved",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = OverdueResponse.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid UUID format"
+                    description = "Invalid UUID format",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Credit not found"
+                    description = "Credit not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             )
     })
     @GetMapping("/{id}/overdue")
@@ -311,11 +376,15 @@ public class CreditController {
     )
     @ApiResponse(
             responseCode = "200",
-            description = "Debtors successfully retrieved"
+            description = "Debtors successfully retrieved",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = DebtorResponse.class
+                    ))
     )
     @GetMapping("/debtors")
     public ResponseEntity<Page<DebtorResponse>> findDebtors(
-            @Parameter(description = "Pagination and sorting parameters")
+            @ParameterObject
+            @PageableDefault(page = 0, size = 10, sort = "customer.name")
             Pageable pageable) {
 
         Page<DebtorOutput> output =
@@ -336,15 +405,24 @@ public class CreditController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid UUID format"
+                    description = "Invalid UUID format",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Credit not found"
+                    description = "Credit not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "422",
-                    description = "Credit cannot be canceled because of its current status"
+                    description = "Credit cannot be canceled because of its current status",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             )
     })
     @PatchMapping("/{id}/cancel")
@@ -376,16 +454,25 @@ public class CreditController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid credit adjustment data or UUID format"
+                    description = "Invalid credit adjustment data or UUID format",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Credit not found"
+                    description = "Credit not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "422",
                     description = "Credit cannot be renegotiated or the requested " +
-                            "installment configuration violates a business rule"
+                            "installment configuration violates a business rule",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             )
     })
     @PostMapping("/{id}/renegotiate")
@@ -421,16 +508,25 @@ public class CreditController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid credit adjustment data or UUID format"
+                    description = "Invalid credit adjustment data or UUID format",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Credit not found"
+                    description = "Credit not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "422",
                     description = "Credit cannot be restructured or the requested installment " +
-                            "configuration violates a business rule"
+                            "configuration violates a business rule",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             )
     })
     @PostMapping("/{id}/restructure")
