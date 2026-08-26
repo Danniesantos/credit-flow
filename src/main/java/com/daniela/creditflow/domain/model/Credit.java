@@ -168,7 +168,7 @@ public class Credit {
         updatedInstallments.addAll(newInstallments);
 
         this.installments = updatedInstallments;
-        this.installmentsQuantity = updatedInstallments.size();
+        this.installmentsQuantity = newInstallments.size();
 
         changeStatus(
                 CreditStatus.CONTRACTED,

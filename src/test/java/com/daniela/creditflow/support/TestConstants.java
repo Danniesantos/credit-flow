@@ -26,7 +26,7 @@ public class TestConstants {
     public static final Integer INSTALLMENT_NUMBER = 1;
 
     public static final LocalDate TEST_DATE =
-            LocalDate.of(2026, 8, 7);
+            LocalDate.of(2026, 8, 24);
 
     public static final Instant PAID_AT =
             Instant.parse("2026-08-07T12:00:00Z");

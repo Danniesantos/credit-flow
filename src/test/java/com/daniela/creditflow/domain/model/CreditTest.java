@@ -557,4 +557,112 @@ class CreditTest {
         assertThat(restored.getStatus())
                 .isEqualTo(original.getStatus());
     }
+
+    @Test
+    @DisplayName("Should not renegotiate non-contracted credit")
+    void shouldNotRenegotiateNonContractedCredit() {
+
+        Credit credit =
+                CreditTestFactory.approvedCredit();
+
+        assertThatThrownBy(() ->
+                credit.ensureCanBeRenegotiated(TODAY)
+        )
+                .isInstanceOf(InvalidDomainStateException.class)
+                .hasMessageContaining("Credit cannot be renegotiated");
+    }
+
+    @Test
+    @DisplayName("Should not renegotiate when installments are not overdue")
+    void shouldNotRenegotiateWhenInstallmentsAreNotOverdue() {
+
+        Credit credit =
+                CreditTestFactory.contractedCredit();
+
+        assertThat(credit.canRenegotiate(TODAY))
+                .isFalse();
+    }
+
+    @Test
+    @DisplayName("Should renegotiate credit with paid and overdue installments")
+    void shouldRenegotiateCreditWithPaidAndOverdueInstallments() {
+
+        Credit credit =
+                CreditTestFactory.creditWithPaidAndOverdueInstallments();
+
+        assertThat(credit.paidInstallments())
+                .hasSize(1);
+
+        assertThat(credit.overdueInstallmentsQuantity(TODAY))
+                .isEqualTo(2);
+
+        assertThat(credit.canRenegotiate(TODAY))
+                .isTrue();
+
+        List<Installment> newInstallments =
+                InstallmentTestFactory.installments(
+                        credit.getId(),
+                        credit.nextInstallmentNumber(),
+                        6
+                );
+
+        credit.renegotiate(
+                newInstallments,
+                TODAY,
+                NOW
+        );
+
+        assertThat(credit.paidInstallments())
+                .hasSize(1);
+
+        assertThat(credit.getInstallments())
+                .hasSize(7);
+    }
+
+    @Test
+    @DisplayName("Should count only pending overdue installments")
+    void shouldCountOnlyPendingOverdueInstallments() {
+
+        Credit credit =
+                CreditTestFactory.creditWithPaidAndOverdueInstallments();
+
+        assertThat(credit.paidInstallmentsQuantity())
+                .isEqualTo(1);
+
+        assertThat(credit.overdueInstallmentsQuantity(TODAY))
+                .isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("Should preserve paid installments when renegotiating overdue credit")
+    void shouldPreservePaidInstallmentsWhenRenegotiating() {
+
+        Credit credit =
+                CreditTestFactory.creditWithPaidAndOverdueInstallments();
+
+        Installment paidInstallment =
+                credit.paidInstallments().getFirst();
+
+        List<Installment> newInstallments =
+                InstallmentTestFactory.installments(
+                        credit.getId(),
+                        credit.nextInstallmentNumber(),
+                        6
+                );
+
+        credit.renegotiate(
+                newInstallments,
+                TODAY,
+                NOW
+        );
+
+        assertThat(credit.paidInstallments())
+                .containsExactly(paidInstallment);
+
+        assertThat(credit.getInstallments())
+                .hasSize(7);
+
+        assertThat(credit.pendingInstallments())
+                .hasSize(6);
+    }
 }
