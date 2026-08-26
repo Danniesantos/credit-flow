@@ -10,14 +10,18 @@ import com.daniela.creditflow.infrastructure.web.request.CustomerRequest;
 import com.daniela.creditflow.infrastructure.web.response.CustomerResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -48,15 +52,24 @@ public class CustomerController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
-                    description = "Customer successfully created"
+                    description = "Customer successfully created",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomerResponse.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid customer data"
+                    description = "Invalid customer data",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = "Customer CPF or email already exists"
+                    description = "Customer CPF or email already exists",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             )
     })
     @PostMapping
@@ -80,18 +93,25 @@ public class CustomerController {
 
     @Operation(
             summary = "List customers",
-            description = "Returns a paginated list of customers."
+            description = "Returns a paginated list of customers. " +
+                    "Results are sorted by name by default."
     )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Customers successfully retrieved"
-            )
+                    description = "Customers successfully retrieved",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomerResponse.class)
+                    ))
     })
     @GetMapping
     public ResponseEntity<Page<CustomerResponse>> findAll(
-            @Parameter(description = "Page number, starting from 0")
-            @PageableDefault(page = 0, size = 10, sort = "name")
+            @ParameterObject
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "name"
+            )
             Pageable pageable) {
 
         Page<CustomerOutput> outputs =
@@ -110,15 +130,25 @@ public class CustomerController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Customer successfully retrieved"
+                    description = "Customer successfully retrieved",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomerResponse.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid UUID format"
+                    description = "Invalid UUID format",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Customer not found"
+                    description = "Customer not found",
+                    content = @Content(
+                            mediaType = "application/problem+json",
+                            schema = @Schema(implementation = ProblemDetail.class)
+                    )
             )
     })
     @GetMapping("/{id}")
@@ -149,15 +179,24 @@ public class CustomerController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid UUID format"
+                    description = "Invalid UUID format",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Customer not found"
+                    description = "Customer not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = "Customer cannot be deactivated because it is already inactive or has open credits"
+                    description = "Customer cannot be deactivated because it is already inactive or has open credits",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             )
     })
     @PatchMapping("/{id}/status")
@@ -182,19 +221,31 @@ public class CustomerController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Customer successfully updated"
+                    description = "Customer successfully updated",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomerResponse.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid customer data or UUID format"
+                    description = "Invalid customer data or UUID format",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Customer not found"
+                    description = "Customer not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = "Customer CPF or email already exists"
+                    description = "Customer CPF or email already exists",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetail.class
+                            ))
             )
     })
     @PutMapping("/{id}")
