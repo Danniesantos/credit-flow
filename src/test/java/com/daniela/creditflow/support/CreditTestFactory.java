@@ -165,4 +165,19 @@ public final class CreditTestFactory {
                 NOW
         );
     }
+
+    public static Credit creditWithPaidAndOverdueInstallments() {
+
+        Credit credit = approvedCredit();
+
+        credit.contract(
+                InstallmentTestFactory.paidAndOverdueInstallments(
+                        credit.getId(),
+                        credit.getInstallmentsQuantity()
+                ),
+                NOW
+        );
+
+        return credit;
+    }
 }
