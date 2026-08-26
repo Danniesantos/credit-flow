@@ -50,7 +50,7 @@ public final class InstallmentTestFactory {
         return new Installment(
                 TestConstants.INSTALLMENT_NUMBER,
                 TestConstants.INSTALLMENT_AMOUNT,
-                LocalDate.now().plusDays(10),
+                TestConstants.TEST_DATE.plusDays(10),
                 new CreditId()
         );
     }
@@ -97,5 +97,40 @@ public final class InstallmentTestFactory {
             int quantity
     ) {
         return overdueInstallments(creditId, 1, quantity);
+    }
+
+    public static List<Installment> paidAndOverdueInstallments(
+            CreditId creditId,
+            int quantity
+    ) {
+
+        List<Installment> installments = new ArrayList<>(quantity);
+
+        for (int i = 0; i < quantity; i++) {
+
+            LocalDate dueDate;
+
+            if (i < 3) {
+                dueDate = TEST_DATE.minusMonths(i + 1);
+            } else {
+                dueDate = TEST_DATE.plusMonths(i - 2);
+            }
+
+            installments.add(
+                    new Installment(
+                            i + 1,
+                            TestConstants.INSTALLMENT_AMOUNT,
+                            dueDate,
+                            creditId
+                    )
+            );
+        }
+
+        installments.getFirst().pay(
+                PaymentMethod.PIX,
+                TestConstants.PAID_AT
+        );
+
+        return installments;
     }
 }

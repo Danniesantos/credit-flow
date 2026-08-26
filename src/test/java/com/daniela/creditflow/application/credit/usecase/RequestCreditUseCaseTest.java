@@ -4,10 +4,13 @@ import com.daniela.creditflow.application.credit.dto.input.RequestCreditInput;
 import com.daniela.creditflow.application.credit.dto.output.RequestCreditOutput;
 import com.daniela.creditflow.application.credit.factory.CreditFactory;
 import com.daniela.creditflow.application.credit.mapper.CreditApplicationMapper;
+import com.daniela.creditflow.application.customer.service.CustomerService;
 import com.daniela.creditflow.domain.model.Credit;
 import com.daniela.creditflow.domain.model.CreditType;
 import com.daniela.creditflow.domain.repository.CreditRepository;
+import com.daniela.creditflow.domain.valueobject.CustomerId;
 import com.daniela.creditflow.support.CreditTestFactory;
+import com.daniela.creditflow.support.CustomerTestFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +32,9 @@ class RequestCreditUseCaseTest {
 
     @Mock
     private CreditRepository creditRepository;
+
+    @Mock
+    private CustomerService customerService;
 
     @Mock
     private CreditApplicationMapper creditOutputMapper;
@@ -54,6 +60,9 @@ class RequestCreditUseCaseTest {
         RequestCreditOutput expected =
                 mock(RequestCreditOutput.class);
 
+        when(customerService.findCustomer(any(CustomerId.class)))
+                .thenReturn(CustomerTestFactory.customer());
+
         when(creditFactory.create(input))
                 .thenReturn(credit);
 
@@ -68,6 +77,9 @@ class RequestCreditUseCaseTest {
 
         assertThat(result)
                 .isEqualTo(expected);
+
+        verify(customerService)
+                .findCustomer(any(CustomerId.class));
 
         verify(creditFactory)
                 .create(input);
@@ -84,13 +96,21 @@ class RequestCreditUseCaseTest {
     void shouldSaveCreatedCredit() {
 
         RequestCreditInput input =
-                mock(RequestCreditInput.class);
+                new RequestCreditInput(
+                        UUID.randomUUID(),
+                        new BigDecimal("10000"),
+                        12,
+                        CreditType.PERSONAL
+                );
 
         RequestCreditOutput output =
                 mock(RequestCreditOutput.class);
 
         Credit credit =
                 CreditTestFactory.underAnalysisCredit();
+
+        when(customerService.findCustomer(any(CustomerId.class)))
+                .thenReturn(CustomerTestFactory.customer());
 
         when(creditFactory.create(input))
                 .thenReturn(credit);
@@ -103,9 +123,10 @@ class RequestCreditUseCaseTest {
 
         useCase.execute(input);
 
+        verify(customerService)
+                .findCustomer(any(CustomerId.class));
+
         verify(creditRepository)
-                .save(
-                        same(credit)
-                );
+                .save(same(credit));
     }
 }
