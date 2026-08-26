@@ -6,11 +6,14 @@ import com.daniela.creditflow.infrastructure.web.mapper.InstallmentWebMapper;
 import com.daniela.creditflow.infrastructure.web.request.PaymentRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,16 +42,24 @@ public class InstallmentController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid payment data or UUID format"
-            ),
+                    description = "Invalid payment data or UUID format",
+                    content = @Content(
+                            mediaType = "application/problem+json",
+                            schema = @Schema(implementation = ProblemDetail.class)
+                    )),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Credit or installment not found"
-            ),
+                    description = "Credit or installment not found",
+                    content = @Content(
+                            mediaType = "application/problem+json",
+                            schema = @Schema(implementation = ProblemDetail.class)
+                    )),
             @ApiResponse(
                     responseCode = "422",
-                    description = "Payment failed or installment cannot be paid due to an invalid credit state"
-            )
+                    description = "Payment failed or installment cannot be paid due to an invalid credit state",
+                    content = @Content(mediaType = "application/problem+json",
+                            schema = @Schema(implementation = ProblemDetail.class)
+                    ))
     })
     @PostMapping("/{installmentId}/pay")
     public ResponseEntity<Void> pay(
